@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schemas/app-config.schema.json",
+  "title": "Single HTML app configuration",
+  "type": "object",
+  "required": ["name", "slug", "version", "build"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "name": { "type": "string", "minLength": 1 },
+    "nameJa": { "type": "string" },
+    "slug": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "version": { "type": "string", "minLength": 1 },
+    "description": { "type": "string" },
+    "descriptionJa": { "type": "string" },
+    "repository": {
+      "type": "object",
+      "properties": {
+        "owner": { "type": "string" },
+        "name": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "build": {
+      "type": "object",
+      "required": ["output", "blockRuntimeNetwork"],
+      "properties": {
+        "output": { "type": "string", "minLength": 1 },
+        "blockRuntimeNetwork": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,17 @@
+{
+  "$schema": "./schemas/app-config.schema.json",
+  "name": "Local Video Compressor",
+  "nameJa": "ローカル動画圧縮",
+  "slug": "local-video-compressor",
+  "version": "1.0.1",
+  "description": "Compress videos locally in your browser with ffmpeg.wasm. No upload, no runtime network access.",
+  "descriptionJa": "ffmpeg.wasmで動画をブラウザ内だけで圧縮します。アップロードも実行時通信もありません。",
+  "repository": {
+    "owner": "ttomohisa",
+    "name": "local-video-compressor"
+  },
+  "build": {
+    "output": "dist/index.html",
+    "blockRuntimeNetwork": true
+  }
+}

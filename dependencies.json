@@ -1,0 +1,25 @@
+{
+  "$schema": "./schemas/dependencies.schema.json",
+  "dependencies": [
+    {
+      "id": "ffmpeg-core",
+      "package": "@ffmpeg/core",
+      "version": "0.12.10",
+      "license": "GPL-enabled FFmpeg build; see THIRD_PARTY_NOTICES.md",
+      "homepage": "https://github.com/ffmpegwasm/ffmpeg.wasm",
+      "assets": [
+        {
+          "key": "core-js",
+          "path": "dist/umd/ffmpeg-core.js",
+          "mime": "text/javascript",
+          "stripSourceMapComment": true
+        },
+        {
+          "key": "core-wasm",
+          "path": "dist/umd/ffmpeg-core.wasm",
+          "mime": "application/wasm"
+        }
+      ]
+    }
+  ]
+}
