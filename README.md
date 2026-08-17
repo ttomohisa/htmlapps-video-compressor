@@ -32,9 +32,9 @@ A privacy-first single-HTML video compressor powered by ffmpeg.wasm. Videos stay
 
 ### Mobile UI
 
-At narrow widths the header and cards become denser while important controls keep touch-friendly targets. After a video is selected, a safe-area-aware bottom action dock keeps the current output-size estimate and compression action available while settings are scrolled. It automatically hides during processing and after a result is available.
+On phones, the desktop cards are replaced by a more native-style grouped settings layout instead of simply stacking the desktop UI. Selection values sit on the right side of settings rows, boolean options use switch-style controls, and file/result information is compacted for narrow screens.
 
-Help, setting-info, and confirmation dialogs use a bottom-sheet presentation on phones.
+After a video is selected, an edge-to-edge translucent bottom action bar keeps the output-size estimate and primary compression action available while settings are scrolled. It respects device safe areas and hides automatically during processing and after results appear. Help, setting-info, and confirmation dialogs use bottom-sheet styling with a grab handle.
 
 ## Build on Windows
 

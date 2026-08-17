@@ -25,11 +25,12 @@ Provide an understandable video compressor that works as a fully self-contained 
 - Keep recommendations below estimated source video bitrate where possible to reduce the chance of a larger output.
 
 ## Mobile UX
-- At 640 px and below, use the compact template-style header and reduced card spacing.
-- After a video is selected, keep a safe-area-aware bottom action dock visible with the current estimated output size and compression action.
+- At 640 px and below, switch from desktop cards to native-style grouped settings rows with compact section headers.
+- Render boolean settings as switch-style controls while preserving checkbox semantics and keyboard accessibility.
+- After a video is selected, keep a safe-area-aware, edge-to-edge translucent bottom action bar visible with the current estimated output size and compression action.
 - Hide that dock while processing and after an output is available so progress/results are unobstructed.
 - Use 48 px-class touch targets for primary form/dialog actions where practical.
-- Help, setting-info, and reset confirmation dialogs become bottom sheets on narrow screens.
+- Help, setting-info, and reset confirmation dialogs become bottom sheets with a visible grab handle on narrow screens.
 - The selected-video summary remains compact and readable without requiring horizontal scrolling.
 - Japanese and English copy must fit at 360 px width.
 

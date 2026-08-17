@@ -22,6 +22,26 @@ $inputBytes = [System.IO.File]::ReadAllBytes($InputPath)
 if ($inputBytes.Length -eq 0) { throw "Input HTML is empty: $InputPath" }
 $inputHtml = [System.Text.Encoding]::UTF8.GetString($inputBytes)
 $requiresWasmUnsafeEval = $inputHtml -match "script-src[^;]*'wasm-unsafe-eval'"
+
+# Reuse the source document favicon in the lightweight wrapper so the browser tab
+# has the same icon before and after the compressed payload is restored.
+$faviconHref = ""
+$faviconLinkMatch = [regex]::Match(
+  $inputHtml,
+  '<link\b(?=[^>]*\brel\s*=\s*["''][^"'']*\bicon\b[^"'']*["''])[^>]*>',
+  [System.Text.RegularExpressions.RegexOptions]::IgnoreCase
+)
+if ($faviconLinkMatch.Success) {
+  $faviconHrefMatch = [regex]::Match(
+    $faviconLinkMatch.Value,
+    '\bhref\s*=\s*["''](?<href>[^"'']+)["'']',
+    [System.Text.RegularExpressions.RegexOptions]::IgnoreCase
+  )
+  if ($faviconHrefMatch.Success) {
+    $faviconHref = [System.Net.WebUtility]::HtmlDecode($faviconHrefMatch.Groups["href"].Value)
+  }
+}
+
 $scriptSources = if ($requiresWasmUnsafeEval) {
   "'self' 'unsafe-inline' 'wasm-unsafe-eval' blob:"
 } else {
@@ -73,6 +93,12 @@ $gzipSha256 = Get-Sha256Hex $compressedBytes
 $payloadBase64 = [Convert]::ToBase64String($compressedBytes)
 $encodedAppName = ConvertTo-HtmlText $AppName
 $encodedAppNameJa = ConvertTo-HtmlText $AppNameJa
+$encodedFaviconHref = ConvertTo-HtmlText $faviconHref
+$faviconLink = if ([string]::IsNullOrWhiteSpace($encodedFaviconHref)) {
+  ""
+} else {
+  "  <link rel=`"icon`" href=`"$encodedFaviconHref`">`n"
+}
 $sourceBytes = $inputBytes.Length
 $gzipBytes = $compressedBytes.Length
 
@@ -91,7 +117,7 @@ $wrapper = @"
   <meta name="self-extract-gzip-sha256" content="$gzipSha256">
   <meta name="self-extract-source-bytes" content="$sourceBytes">
   <meta name="self-extract-gzip-bytes" content="$gzipBytes">
-  <title>$encodedAppNameJa / $encodedAppName</title>
+$faviconLink  <title>$encodedAppNameJa / $encodedAppName</title>
   <style>
     :root { color-scheme: light; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", "Yu Gothic UI", Meiryo, sans-serif; }
     * { box-sizing: border-box; }
@@ -186,6 +212,7 @@ $manifest = [ordered]@{
     bytes = $sourceBytes
     sha256 = $sourceSha256
     requiresWasmUnsafeEval = $requiresWasmUnsafeEval
+    faviconInherited = -not [string]::IsNullOrWhiteSpace($faviconHref)
   }
   compressedPayload = [ordered]@{
     format = "gzip"

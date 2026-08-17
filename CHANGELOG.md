@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.0.5 - Self-extract favicon - 2026-08-17
+
+- Inherit the source HTML favicon into `index.self-extract.html` so the browser tab uses the app icon during unpacking.
+- Verify that the self-extract wrapper favicon matches the source favicon while keeping the wrapper ASCII-only.
+
+## 1.0.4 - Native-style mobile interface - 2026-08-17
+
+- Reworked the narrow-screen layout into native-style grouped settings instead of stacked desktop cards.
+- Added iOS/Android-like toggle switches for boolean settings while preserving accessible checkbox semantics.
+- Changed the mobile compression action into an edge-to-edge translucent bottom action bar with safe-area support.
+- Refined mobile file details, result statistics, touch feedback, dialogs, toasts, and compact header behavior.
+- Kept the desktop layout and ffmpeg.wasm processing flow unchanged.
+
 ## 1.0.3 - 2026-08-17
 
 - Fixed mojibake in the initial `index.self-extract.html` unpacking screen when built with Windows PowerShell 5.1.

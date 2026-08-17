@@ -77,6 +77,22 @@ if (-not [string]::IsNullOrWhiteSpace($ExpectedSourcePath)) {
   if ($expectedHtml -match "script-src[^;]*'wasm-unsafe-eval'" -and $html -notmatch "script-src[^;]*'wasm-unsafe-eval'") {
     throw "The source requires 'wasm-unsafe-eval', but the self-extract wrapper CSP does not allow it."
   }
+
+  $sourceIconLink = [regex]::Match(
+    $expectedHtml,
+    '<link\b(?=[^>]*\brel\s*=\s*["''][^"'']*\bicon\b[^"'']*["''])[^>]*>',
+    [System.Text.RegularExpressions.RegexOptions]::IgnoreCase
+  )
+  if ($sourceIconLink.Success) {
+    $sourceIconHref = [regex]::Match($sourceIconLink.Value, '\bhref\s*=\s*["''](?<href>[^"'']+)["'']', [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
+    $wrapperIconLink = [regex]::Match($html, '<link\b(?=[^>]*\brel\s*=\s*["''][^"'']*\bicon\b[^"'']*["''])[^>]*>', [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
+    if (-not $wrapperIconLink.Success) { throw "The source favicon was not inherited by the self-extract wrapper." }
+    $wrapperIconHref = [regex]::Match($wrapperIconLink.Value, '\bhref\s*=\s*["''](?<href>[^"'']+)["'']', [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)
+    if (-not $sourceIconHref.Success -or -not $wrapperIconHref.Success) { throw "The favicon href could not be parsed." }
+    $sourceHref = [System.Net.WebUtility]::HtmlDecode($sourceIconHref.Groups["href"].Value)
+    $wrapperHref = [System.Net.WebUtility]::HtmlDecode($wrapperIconHref.Groups["href"].Value)
+    if ($sourceHref -ne $wrapperHref) { throw "The self-extract wrapper favicon does not match the source HTML favicon." }
+  }
 }
 
 Write-Host "[OK] Self-extract verification passed: $Path" -ForegroundColor Green

@@ -28,10 +28,11 @@ A selected local video can appear as a `blob:` resource. That is an in-memory ob
 
 ## Mobile check
 At 360, 390, and 430 px widths verify:
-- Compact header and readable selected-file information.
+- Compact native-style header and readable selected-file information.
+- Grouped settings rows align labels and values cleanly, and checkbox options appear as usable switches.
 - No horizontal overflow in settings.
-- The bottom compression action appears only after a video is selected, respects the safe area, and disappears during processing/result display.
-- Help/info/reset dialogs open as bottom sheets with comfortably tappable actions.
+- The edge-to-edge bottom compression action bar appears only after a video is selected, respects the safe area, and disappears during processing/result display.
+- Help/info/reset dialogs open as bottom sheets with a grab handle and comfortably tappable actions.
 - Japanese and English labels do not clip important controls.
 
 ## CSP / WebAssembly check

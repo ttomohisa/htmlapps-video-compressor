@@ -11,7 +11,7 @@ Build and maintain a privacy-first single-HTML video compressor. Generate two on
 - ffmpeg.wasm requires the narrow `'wasm-unsafe-eval'` CSP source. Do not replace it with the broader JavaScript `'unsafe-eval'` token.
 - Process user videos in browser memory. Never upload or persist video contents.
 - Preserve Japanese and English UI support, keyboard accessibility, and light-only responsive behavior.
-- Treat mobile as a first-class layout: touch targets, safe-area insets, bottom-sheet confirmations, and the mobile compression action dock must remain usable at 360 px width.
+- Treat mobile as a first-class native-style layout: grouped setting rows, accessible switch controls, touch targets, safe-area insets, bottom-sheet confirmations, and the bottom compression action bar must remain usable at 360 px width.
 - Do not edit generated files in `dist/` manually. Edit `src/index.template.html`, config, or build scripts and rebuild.
 
 ## Build
@@ -24,7 +24,7 @@ Use `./build-standalone.ps1 -SkipSelfExtract` only when intentionally generating
 2. `powershell -ExecutionPolicy Bypass -File scripts/check-repository.ps1`
 3. Open `dist/index.html` directly from Explorer and test with a small video.
 4. Open `dist/index.self-extract.html` directly and repeat the core flow.
-5. Test desktop plus 360–430 px touch layouts, including the fixed mobile compression action, help dialogs, and reset confirmation.
+5. Test desktop plus 360–430 px touch layouts, including grouped settings, switches, the fixed mobile compression action bar, help dialogs, and reset confirmation.
 6. Confirm DevTools Network has no requests while choosing, compressing, previewing, downloading, or sharing a video.
 
 ## ffmpeg integration
