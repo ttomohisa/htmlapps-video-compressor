@@ -1,5 +1,6 @@
 param(
   [switch]$ForceDownload,
+  [switch]$SkipSelfExtract,
   [string]$OutputPath = ""
 )
 
@@ -13,6 +14,7 @@ $TemplatePath = Join-Path $Root "src\index.template.html"
 $AppConfigPath = Join-Path $Root "app.config.json"
 $DependenciesPath = Join-Path $Root "dependencies.json"
 $VerifyPath = Join-Path $Root "scripts\verify-standalone.ps1"
+$SelfExtractBuilderPath = Join-Path $Root "scripts\build-self-extract.ps1"
 $CacheRoot = Join-Path $Root ".cache"
 $DistRoot = Join-Path $Root "dist"
 
@@ -251,6 +253,42 @@ New-Item -ItemType Directory -Force -Path $outputDirectory | Out-Null
 
 & $VerifyPath -Path $OutputPath -RequireNetworkBlock ([bool]$appConfig.build.blockRuntimeNetwork)
 
+$selfExtractEnabled = $false
+$selfExtractOutputPath = ""
+if (-not $SkipSelfExtract -and ($appConfig.build.PSObject.Properties.Name -contains "selfExtract")) {
+  $selfExtractConfig = $appConfig.build.selfExtract
+  if ($selfExtractConfig -and ($selfExtractConfig.PSObject.Properties.Name -contains "enabled")) {
+    $selfExtractEnabled = [bool]$selfExtractConfig.enabled
+  }
+  if ($selfExtractEnabled) {
+    if (-not ($selfExtractConfig.PSObject.Properties.Name -contains "output")) {
+      throw "app.config.json: build.selfExtract.output is required when self-extract output is enabled."
+    }
+    if ($OutputPathWasSpecified) {
+      $customDirectory = Split-Path -Parent $OutputPath
+      $customBaseName = [System.IO.Path]::GetFileNameWithoutExtension($OutputPath)
+      $selfExtractOutputPath = Join-Path $customDirectory ($customBaseName + ".self-extract.html")
+    } else {
+      $configuredSelfExtractOutput = [string]$selfExtractConfig.output
+      if ([string]::IsNullOrWhiteSpace($configuredSelfExtractOutput)) {
+        throw "app.config.json: build.selfExtract.output cannot be empty."
+      }
+      $selfExtractOutputPath = if ([System.IO.Path]::IsPathRooted($configuredSelfExtractOutput)) {
+        $configuredSelfExtractOutput
+      } else {
+        Join-Path $Root $configuredSelfExtractOutput
+      }
+    }
+
+    Write-Step "Generating self-extracting HTML"
+    & $SelfExtractBuilderPath `
+      -InputPath $OutputPath `
+      -OutputPath $selfExtractOutputPath `
+      -AppName ([string]$appConfig.name) `
+      -AppNameJa ([string]$appConfig.nameJa)
+  }
+}
+
 $outputHash = (Get-FileHash -Algorithm SHA256 -Path $OutputPath).Hash.ToLowerInvariant()
 $outputSizeMb = [Math]::Round((Get-Item $OutputPath).Length / 1MB, 2)
 Write-Host ""
@@ -258,3 +296,6 @@ Write-Host "[OK] Standalone HTML: $OutputPath" -ForegroundColor Green
 Write-Host "[OK] Size: $outputSizeMb MB"
 Write-Host "[OK] SHA-256: $outputHash"
 Write-Host "[OK] Runtime network access is blocked by CSP."
+if ($selfExtractEnabled) {
+  Write-Host "[OK] Self-extracting HTML: $selfExtractOutputPath" -ForegroundColor Green
+}

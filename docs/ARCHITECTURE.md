@@ -4,7 +4,7 @@
 
 `build-standalone.ps1` reads `dependencies.json`, downloads the exact npm tarball, checks the package version, extracts only the configured assets, calculates hashes, and embeds them into `src/index.template.html` as one Base64 JSON bundle.
 
-The final artifact is `dist/index.html`. The adjacent `dependency-manifest.json` is build evidence and is not required by the app at runtime.
+The build produces `dist/index.html` plus `dist/index.self-extract.html`. The normal HTML is the GitHub Pages entry point. The self-extract variant gzip-compresses the complete normal HTML, stores it as Base64, and restores it locally with `DecompressionStream`. `dependency-manifest.json` and `self-extract-manifest.json` are build evidence and are not required by the app at runtime.
 
 ## H.265 fallback
 
@@ -33,3 +33,7 @@ The app uses a small purpose-built RPC layer instead of `@ffmpeg/ffmpeg`. This a
 ## Network boundary
 
 The document CSP blocks connections with `connect-src 'none'`. The worker Blob URL is created from bytes already embedded in the HTML. No application code calls `fetch`, XHR, WebSocket, EventSource, or `importScripts` at runtime.
+
+## Self-extract runtime
+
+The self-extract wrapper performs no fetch. It decodes its embedded Base64 payload, pipes the gzip bytes through browser-native `DecompressionStream`, and replaces the wrapper document with the restored standalone HTML. The wrapper mirrors the app's narrow `'wasm-unsafe-eval'` CSP permission so ffmpeg.wasm remains executable after restoration, while `connect-src 'none'` remains enforced. The verifier decompresses the payload in PowerShell and compares it byte-for-byte with `dist/index.html`.

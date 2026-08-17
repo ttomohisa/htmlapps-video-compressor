@@ -12,6 +12,6 @@ if errorlevel 1 (
 )
 
 echo.
-echo Build completed: dist\index.html
+echo Build completed. See the generated files under dist\.
 start "" "%~dp0dist\index.html"
 endlocal

@@ -48,7 +48,11 @@ $allowedPathPrefixes = @(
   'build-standalone.ps1',
   'app.config.json',
   'dependencies.json',
-  'schemas/'
+  'schemas/',
+  'scripts/build-self-extract.ps1',
+  'scripts/verify-self-extract.ps1',
+  'scripts/verify-standalone.ps1',
+  'scripts/check-repository.ps1'
 )
 
 function Get-NormalizedRelativePath([string]$Path) {

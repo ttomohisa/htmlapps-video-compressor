@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.0.3 - 2026-08-17
+
+- Fixed mojibake in the initial `index.self-extract.html` unpacking screen when built with Windows PowerShell 5.1.
+- Made `scripts/build-self-extract.ps1` ASCII-only so BOM-less UTF-8 source decoding cannot corrupt Japanese wrapper text.
+- Emit Japanese wrapper copy and localized app names as ASCII-safe HTML numeric character references, with JavaScript errors using Unicode escapes.
+- Added repository and self-extract verification guards that fail if non-ASCII bytes are reintroduced into the PowerShell builder or generated wrapper.
+
+
+## 1.0.2 - 2026-08-17
+
+- Aligned the repository build structure with the current `htmlapps-template` conventions.
+- Added `dist/index.self-extract.html`, generated as a gzip/Base64 self-extracting one-file build using browser-native `DecompressionStream`.
+- Added byte-for-byte self-extract verification and `self-extract-manifest.json`.
+- Preserved the video compressor's narrow `'wasm-unsafe-eval'` CSP requirement in the self-extract wrapper while continuing to reject broad `'unsafe-eval'`.
+- Updated GitHub Actions to build, verify, and upload both standalone variants and to skip Pages deployment cleanly until Pages is enabled.
+- Reworked narrow-screen UI with a compact template-style header, denser cards, larger touch targets, and bottom-sheet dialogs.
+- Added a safe-area-aware mobile compression action dock that shows estimated size plus the primary compression action after video selection and hides during processing/results.
+
+
 ## 1.0.1 - 2026-08-05
 
 - Switched H.265 to a fixed lowest-complexity browser profile (`ultrafast`, zero latency, no lookahead/B-frames/AQ/CU-tree)

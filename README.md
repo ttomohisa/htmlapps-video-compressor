@@ -1,12 +1,12 @@
 # Local Video Compressor
 
 [![GitHub Pages](https://github.com/ttomohisa/htmlapps-video-compressor/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/ttomohisa/htmlapps-video-compressor/actions/workflows/deploy-pages.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License: GPL-3.0-or-later](https://img.shields.io/badge/License-GPL--3.0--or--later-blue.svg)](LICENSE)
 [![Single HTML](https://img.shields.io/badge/distribution-single%20HTML-0ea5e9)](https://ttomohisa.github.io/htmlapps-video-compressor/)
 
 [日本語版 README](README.ja.md)
 
-A privacy-first single-HTML video compressor powered by ffmpeg.wasm. Videos are processed entirely in browser memory and are never uploaded.
+A privacy-first single-HTML video compressor powered by ffmpeg.wasm. Videos stay in browser memory and are never uploaded. The build produces both a readable standalone HTML and a smaller gzip self-extracting variant.
 
 ![Application preview](docs/preview.png)
 
@@ -14,82 +14,105 @@ A privacy-first single-HTML video compressor powered by ffmpeg.wasm. Videos are 
 
 [Open Local Video Compressor on GitHub Pages](https://ttomohisa.github.io/htmlapps-video-compressor/)
 
-> **CSP note:** ffmpeg.wasm requires the narrowly scoped `'wasm-unsafe-eval'` source for WebAssembly execution. The app does not enable the broader JavaScript `'unsafe-eval'`, and `connect-src 'none'` continues to block runtime network access.
+> **CSP note:** ffmpeg.wasm requires the narrowly scoped `'wasm-unsafe-eval'` source for WebAssembly execution. The broader JavaScript `'unsafe-eval'` token is not enabled, and `connect-src 'none'` continues to block runtime network access.
 
 ## Features
 
-- Change resolution without changing aspect ratio or upscaling
-- Set video bitrate
-- Choose H.264, H.265, or VP9
-- Estimate output size from duration and selected settings
-- Remove audio
-- Preview, save, and share the compressed video
-- Clear selected-video cards for size, duration, resolution, estimated total bitrate, measured frame rate, and format
-- Per-video recommendations for resolution, frame rate, and video bitrate
-- Dynamic bitrate ceilings based on output resolution and codec
-- Advanced controls for frame rate, encoding speed, audio bitrate, and metadata
-- In-app help and troubleshooting
-- Per-setting info buttons with practical guidance
-- Lowest-complexity H.265 settings plus an in-progress H.264 retry path
+- Resolution changes without aspect-ratio changes or upscaling
+- Per-video recommended video bitrate
+- H.264, H.265, and VP9
+- Estimated output size from duration and selected settings
+- Optional audio removal
+- Preview, save, and share compressed output
+- File size, duration, resolution, estimated total bitrate, measured frame rate, and format details
+- Advanced frame-rate, speed, audio-bitrate, and metadata controls
+- Low-complexity H.265 profile with an in-progress H.264 retry path
 - Japanese and English UI
 - No runtime network access
 
-## Build the standalone HTML on Windows
+### Mobile UI
 
-1. Download or clone the repository.
-2. Double-click `build-standalone.bat`.
-3. The pinned `@ffmpeg/core` package is downloaded at build time only.
-4. `dist/index.html` is generated and opened automatically.
+At narrow widths the header and cards become denser while important controls keep touch-friendly targets. After a video is selected, a safe-area-aware bottom action dock keeps the current output-size estimate and compression action available while settings are scrolled. It automatically hides during processing and after a result is available.
 
-The generated `dist/index.html` works directly from `file://` and needs no web server. It is roughly 43 MB because the FFmpeg WASM binary is embedded.
+Help, setting-info, and confirmation dialogs use a bottom-sheet presentation on phones.
 
-**Upgrading from v0.2.0:** Delete the old `dist/index.html`, then run `build-standalone.bat` again. If GitHub Pages still shows the old error after deployment, reload without cache using `Ctrl + F5`.
+## Build on Windows
 
-## Quick start
+Run `build-standalone.bat`. Python, Node.js, and a local web server are not required. The first build downloads the pinned `@ffmpeg/core`; later builds can reuse the cache.
 
-### Use the web demo
+```text
+dist/
+├─ index.html
+├─ index.self-extract.html
+├─ dependency-manifest.json
+├─ self-extract-manifest.json
+└─ .nojekyll
+```
 
-Just [open the demo](https://ttomohisa.github.io/htmlapps-video-compressor/). No installation or account is required.
+- `dist/index.html`: readable/debuggable build and the default GitHub Pages entry point
+- `dist/index.self-extract.html`: gzip-compressed distribution that restores the normal HTML locally through browser-native `DecompressionStream`
 
-### Use the download file
+Both are one-file offline applications with no runtime CDN requirement. Generate only the readable build with:
 
-1. Download [video-compressor.html](https://github.com/ttomohisa/htmlapps-video-compressor/blob/main/video-compressor.html) from this repository.
-2. Open it in a current Chromium-based browser.
+```powershell
+.\build-standalone.ps1 -SkipSelfExtract
+```
 
-### Use it fully offline(advance)
+Force a fresh dependency download with:
 
-1. Download or clone this repository.
-2. Double-click `build-offline.bat` on Windows.
-3. The first build downloads the exact dependency versions pinned in `versions.json`.
-4. Copy the generated `dist/index.html` wherever you need it.
-5. Open that single file later without an internet connection.
+```powershell
+.\build-standalone.ps1 -ForceDownload
+```
 
-Python, Node.js, and a local web server are not required. The builder uses Windows PowerShell and the built-in `tar.exe`.
+The self-extracting build requires JavaScript and a browser with `DecompressionStream` support. Keep the normal `index.html` as the GitHub Pages entry point.
 
+## Usage
 
-H.264 with the automatic settings is the safest default. H.265 is experimental because it is extremely slow in single-thread WebAssembly and should be limited to short clips. If no visible progress appears for 12 seconds, the progress screen offers “Retry with H.264” for the same video. VP9 is also slow to encode.
+1. Choose or drop a video.
+2. Review the automatically suggested resolution and bitrate.
+3. Adjust codec or audio removal only when needed.
+4. Choose **Compress with these settings**.
+5. Preview the result, then save or share it.
 
-The **Help** button explains settings, detected video information, sharing, privacy, and common failures.
+H.264 with automatic settings is the practical default. H.265 is experimental because it is very slow in single-thread WebAssembly and is intended for short clips. If it produces no visible progress for an extended period, the progress view offers an H.264 retry.
 
-## Video information
+## Privacy and offline architecture
 
-- **Estimated total bitrate** is calculated from file size and duration and includes both video and audio.
-- **Frame rate** is measured by playing several frames when the browser supports and can decode the file. It can be unavailable for some formats.
-- Compression can still be attempted when browser metadata is incomplete, as long as FFmpeg can read the source.
-
-## Architecture
-
-The build embeds the pinned FFmpeg core JavaScript and WASM assets as Base64. At runtime, the core JavaScript is concatenated directly into a dedicated classic Web Worker. The WASM bytes are transferred to that same worker and supplied through `wasmBinary`. This avoids the nested `importScripts(blob:null/...)` path that can fail when opening a standalone file through `file://`. A strict CSP includes `connect-src 'none'`.
+- `connect-src 'none'` blocks runtime connections.
+- No external CDN, analytics, ads, or remote fonts.
+- Selected videos and compressed output are not persisted.
+- JavaScript and WASM are embedded as Base64 in the standalone build.
+- FFmpeg core JavaScript runs in a dedicated classic Worker with `wasmBinary`, avoiding runtime WASM fetches and nested worker imports that are problematic under `file://`.
+- The self-extracting wrapper also restores the application entirely locally.
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [VERIFY_OFFLINE.md](VERIFY_OFFLINE.md).
 
+## Development
+
+Key files:
+
+- `app.config.json`: app metadata and both build outputs
+- `dependencies.json`: pinned npm assets
+- `src/index.template.html`: application UI and logic
+- `build-standalone.ps1`: standalone builder
+- `scripts/build-self-extract.ps1`: gzip self-extract builder
+- `scripts/verify-standalone.ps1`: readable-build checks
+- `scripts/verify-self-extract.ps1`: payload restore and byte-for-byte verification
+- `scripts/check-repository.ps1`: end-to-end repository check
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/check-repository.ps1
+```
+
 ## GitHub Pages
 
-The included Pages workflow builds on Windows and publishes `dist`. Set **Settings → Pages → Source** to **GitHub Actions**.
+`.github/workflows/deploy-pages.yml` builds and verifies both HTML variants on Windows for pushes to `main`. If Pages is enabled, `dist` is deployed. If not, deployment is skipped and the workflow summary explains the one-time setup.
+
+For a new repository choose **Settings → Pages → Build and deployment → Source → GitHub Actions**.
 
 ## Limitations
 
-ffmpeg.wasm uses CPU encoding rather than hardware acceleration. Long or high-resolution videos may be slow or may exceed browser memory, especially on mobile devices.
+ffmpeg.wasm uses CPU encoding rather than hardware acceleration. Long or high-resolution videos may be slow or exceed browser memory, especially on mobile devices.
 
 ## License
 
