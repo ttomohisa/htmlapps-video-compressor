@@ -178,6 +178,21 @@ function ConvertTo-SafeJson([object]$Value, [int]$Depth = 30) {
   return ($Value | ConvertTo-Json -Compress -Depth $Depth).Replace("<", "\u003c").Replace(">", "\u003e").Replace("&", "\u0026")
 }
 
+function Compress-GzipBytes([byte[]]$Bytes) {
+  $output = New-Object System.IO.MemoryStream
+  try {
+    $gzip = New-Object System.IO.Compression.GZipStream($output, [System.IO.Compression.CompressionLevel]::Optimal, $true)
+    try {
+      $gzip.Write($Bytes, 0, $Bytes.Length)
+    } finally {
+      $gzip.Dispose()
+    }
+    return ,$output.ToArray()
+  } finally {
+    $output.Dispose()
+  }
+}
+
 function Get-RelativeAssetPath([string]$PackageRoot, [string]$ConfiguredPath) {
   if ([string]::IsNullOrWhiteSpace($ConfiguredPath)) { throw "Dependency asset path cannot be empty." }
   $rootFull = [System.IO.Path]::GetFullPath($PackageRoot).TrimEnd([char[]]@([char]92, [char]47))
@@ -230,8 +245,16 @@ foreach ($dependency in $dependencies) {
     try { $hashBytes = $shaAlgorithm.ComputeHash($bytes) } finally { $shaAlgorithm.Dispose() }
     $sha = ($hashBytes | ForEach-Object { $_.ToString("x2") }) -join ""
 
-    $dependencyAssets[$key] = [ordered]@{ mime = $mime; base64 = [Convert]::ToBase64String($bytes) }
-    $manifestAssets += [ordered]@{ key = $key; path = [string]$asset.path; mime = $mime; bytes = $bytes.Length; sha256 = $sha }
+    $embeddedBytes = $bytes
+    $encoding = "base64"
+    if ($id -eq "ffmpeg-wasm-builder" -and $key -eq "core-wasm") {
+      Write-Step "Compressing $id/$key with gzip for embedded delivery"
+      $embeddedBytes = Compress-GzipBytes $bytes
+      $encoding = "gzip-base64"
+    }
+
+    $dependencyAssets[$key] = [ordered]@{ mime = $mime; encoding = $encoding; base64 = [Convert]::ToBase64String($embeddedBytes) }
+    $manifestAssets += [ordered]@{ key = $key; path = [string]$asset.path; mime = $mime; bytes = $bytes.Length; sha256 = $sha; embeddedEncoding = $encoding; embeddedBytes = $embeddedBytes.Length }
   }
 
   $assetBundle.dependencies[$id] = [ordered]@{
@@ -274,7 +297,7 @@ $assetBundleJson = ConvertTo-SafeJson $assetBundle 50
 $replacements = [ordered]@{
   "__APP_CONFIG_JSON__" = ConvertTo-SafeJson $appConfig 20
   "__BUILD_MANIFEST_JSON__" = ConvertTo-SafeJson $manifest 40
-  "__EMBEDDED_ASSET_BUNDLE_BASE64__" = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($assetBundleJson))
+  "__EMBEDDED_ASSET_BUNDLE_JSON__" = $assetBundleJson
 }
 foreach ($entry in $replacements.GetEnumerator()) {
   $count = ([regex]::Matches($template, [regex]::Escape($entry.Key))).Count
