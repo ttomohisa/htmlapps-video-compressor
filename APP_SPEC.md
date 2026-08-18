@@ -1,66 +1,52 @@
 # Application specification
 
 ## Product goal
-Provide an understandable video compressor that works as a fully self-contained browser app. A non-expert should be able to choose a video, accept sensible automatic settings, adjust only the essentials, see an estimated size, compress, preview, save, and share.
+Provide a simple, fully self-contained browser video compressor. A non-expert should be able to choose a local video, accept automatic settings, adjust a small set of useful controls, compress it, preview the result, and save/share it without uploading the video.
+
+## Engine
+- Engine source: `ttomohisa/htmlapps-ffmpeg-wasm-builder` GitHub Release.
+- Version is pinned once in `dependencies.json`.
+- v1.1.0 initially pins Builder `1.0.0` / FFmpeg `n9.0.1`.
+- Output: H.264 (`libx264`) video + optional AAC audio in MP4.
+- Single-thread compact public-libav runner; no SharedArrayBuffer/COOP/COEP requirement.
+- Build verifies Release SHA-256 before embedding `ffmpeg.js` and `ffmpeg.wasm`.
 
 ## Release artifacts
-- `dist/index.html`: readable standalone build and the default GitHub Pages entry point.
-- `dist/index.self-extract.html`: gzip-compressed one-file distribution that restores the normal build locally with `DecompressionStream`.
-- Both variants must work from `file://`, require no runtime network access, and preserve the ffmpeg.wasm CSP requirement for `'wasm-unsafe-eval'` without enabling broad `'unsafe-eval'`.
+- `dist/index.html`: readable standalone build and GitHub Pages entry point.
+- `dist/index.self-extract.html`: gzip/Base64 self-extracting one-file build.
+- `video-compressor.html`: root copy of `dist/index.html` for direct consumers such as Browser Kitty.
+- Both variants must work from `file://` and require no runtime network access.
 
-## Basic settings
+## Settings
 - Resolution: original, 4K, 1440p, 1080p, 720p, 480p, 360p.
-- No upscaling; preserve aspect ratio; force even output dimensions.
-- Video bitrate is automatically recommended from output pixels, frame rate, codec, and estimated source bitrate.
-- Minimum bitrate: 250 kbps, with dynamic maximums by output resolution and codec.
-- Codec: H.264 (`libx264`) in MP4, H.265 (`libx265`) in MP4 with `hvc1`, or VP9 (`libvpx-vp9`) in WebM.
+- Preserve aspect ratio, never upscale, and let the compact runner produce even dimensions.
+- Video bitrate: automatic recommendation plus manual override.
+- Output codec is fixed to H.264 / MP4.
 - Remove-audio checkbox.
-- Estimated size: `duration × (video bitrate + audio bitrate) ÷ 8 × 1.035`.
+- Advanced: output fps (original/60/30/24), x264 speed preset, AAC bitrate (64/96/128/192 kbps).
+- Metadata-retention control is intentionally not exposed.
 
-## Automatic defaults
-- H.264 / MP4 for broad playback compatibility.
-- Preserve videos at or below 360p; use an appropriate downscale step with 1080p as the default ceiling above Full HD.
-- Use 30 fps for detected high-frame-rate sources; otherwise preserve source frame rate.
-- Fast encoding preset, 96 kbps audio, metadata removed by default.
-- Keep recommendations below estimated source video bitrate where possible to reduce the chance of a larger output.
+## Runtime
+- Decode embedded `ffmpeg.js`/`ffmpeg.wasm` from the build bundle.
+- Concatenate generated Emscripten JavaScript and the app Worker body into one Blob Worker.
+- Instantiate WebAssembly from transferred bytes with `wasmBinary` + `instantiateWasm`.
+- Write `/input.bin`, invoke the compact runner through `callMain`, read `/output.mp4`, transfer output back to the main thread.
+- Parse `__FFMPEG_WASM_PROGRESS__` messages for progress.
+- Cancellation terminates the Worker.
+
+## Privacy
+- `connect-src 'none'` is mandatory.
+- No analytics, ads, remote fonts, runtime CDN, XHR/fetch, WebSocket, EventSource, dynamic import, or `importScripts()`.
+- Video content is never stored in localStorage/IndexedDB; only UI language preference may persist.
 
 ## Mobile UX
-- At 640 px and below, switch from desktop cards to native-style grouped settings rows with compact section headers.
-- Render boolean settings as switch-style controls while preserving checkbox semantics and keyboard accessibility.
-- After a video is selected, keep a safe-area-aware, edge-to-edge translucent bottom action bar visible with the current estimated output size and compression action.
-- Hide that dock while processing and after an output is available so progress/results are unobstructed.
-- Use 48 px-class touch targets for primary form/dialog actions where practical.
-- Help, setting-info, and reset confirmation dialogs become bottom sheets with a visible grab handle on narrow screens.
-- The selected-video summary remains compact and readable without requiring horizontal scrolling.
-- Japanese and English copy must fit at 360 px width.
-
-## Selected-video information
-Show file name/format, file size, duration, resolution, estimated total bitrate, measured frame rate when supported, and clear unavailable states.
-
-## Advanced settings
-Frame rate (original/60/30/24), encoding speed, audio bitrate (64/96/128/192 kbps), and keep-metadata checkbox.
-
-## Help and result
-- In-page guidance covers usage, privacy, settings, detected metadata, sharing, and troubleshooting.
-- Every basic/advanced setting has an info affordance.
-- Result includes preview, original/output sizes, actual reduction, processing time, save/share, H.265 compatibility warning, and confirmation before discarding the result.
-
-## Privacy and persistence
-- No uploads or runtime requests; `connect-src 'none'` is mandatory.
-- No analytics, ads, remote fonts, external images, or CDN assets.
-- Video contents are never stored in localStorage or IndexedDB; only language preference may persist.
-
-## Error and cancellation behavior
-- Reject files over 1.5 GB with a memory warning.
-- Allow compression when browser metadata is incomplete if FFmpeg can read the file.
-- Cancel by terminating the worker and releasing its in-memory filesystem.
-- Keep processing logs available in a disclosure section.
-- H.265 uses the fixed lowest-complexity browser profile and is labeled experimental.
-- If H.265 has no visible progress after 12 seconds, offer an in-place H.264 retry.
+Keep the existing grouped native-style mobile settings, safe-area-aware bottom action bar, compact file/result cards, and bottom-sheet dialogs.
 
 ## Acceptance criteria
+- `scripts/check-source.ps1` passes.
 - `scripts/check-repository.ps1` builds and verifies both standalone variants.
-- No unresolved build placeholders or runtime HTTP(S) asset references remain.
-- The self-extract payload restores byte-for-byte to `dist/index.html`.
-- Both generated variants contain a CSP that blocks network access; the video compressor variants preserve `'wasm-unsafe-eval'` and reject broad `'unsafe-eval'`.
-- Core flow works at desktop width and 360 px mobile width with keyboard/touch operation and no console error.
+- Release archive checksum is verified before embedding.
+- No unresolved placeholders or external runtime asset references remain.
+- CSP includes `connect-src 'none'` and `'wasm-unsafe-eval'`, but not broad `'unsafe-eval'`.
+- Root `video-compressor.html` matches `dist/index.html` after a normal build.
+- H.264/AAC MP4 compression, audio removal, cancellation, preview, save, and share are manually checked with a short test video.

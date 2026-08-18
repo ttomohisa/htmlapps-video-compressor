@@ -2,38 +2,38 @@
 
 ## Build-time flow
 
-`build-standalone.ps1` reads `dependencies.json`, downloads the exact npm tarball, checks the package version, extracts only the configured assets, calculates hashes, and embeds them into `src/index.template.html` as one Base64 JSON bundle.
+1. `dependencies.json` pins one FFmpeg WASM Builder version.
+2. `build-standalone.ps1` derives tag/asset names from that version.
+3. It downloads the Release `SHA256SUMS.txt` and binary ZIP.
+4. The ZIP SHA-256 is verified before extraction.
+5. `ffmpeg.js` and `ffmpeg.wasm` are hashed and embedded as Base64 in the application bundle.
+6. `dist/dependency-manifest.json` records the resolved Release and corresponding-source URL.
+7. `dist/index.html` is verified, then optionally wrapped as `dist/index.self-extract.html`.
+8. A normal build copies `dist/index.html` to root `video-compressor.html`.
 
-The build produces `dist/index.html` plus `dist/index.self-extract.html`. The normal HTML is the GitHub Pages entry point. The self-extract variant gzip-compresses the complete normal HTML, stores it as Base64, and restores it locally with `DecompressionStream`. `dependency-manifest.json` and `self-extract-manifest.json` are build evidence and are not required by the app at runtime.
-
-## H.265 fallback
-
-The single-thread core runs x265 with a fixed lowest-complexity profile. If the encoder has not produced visible progress after 12 seconds, the UI offers a retry action that terminates the worker, switches to H.264, rebuilds the arguments, and restarts without rereading a new user-selected file.
+Only this build phase uses the network.
 
 ## Runtime flow
 
-1. The inline loader decodes the embedded asset bundle.
-2. When compression starts, the app reads the embedded `ffmpeg-core.js` text.
-3. The core JavaScript and the app's worker RPC function are concatenated into one classic Web Worker source and converted to a single Blob URL.
-4. The embedded `ffmpeg-core.wasm` is decoded into an `ArrayBuffer` and transferred to that worker.
-5. The Emscripten module receives the bytes through `wasmBinary`, avoiding a WASM network request.
-6. The source video is transferred to FFmpeg's in-memory file system.
-7. FFmpeg writes the compressed output to the same in-memory file system.
-8. The output bytes return to the main thread as a transferable `ArrayBuffer`, then become a Blob/File for preview, save, or share.
-9. Input and output files are unlinked from the worker file system. Cancelling terminates the complete worker.
+1. The inline loader decodes the embedded core JavaScript and WASM.
+2. Compression creates a dedicated classic Worker.
+3. The generated Emscripten `ffmpeg.js` and the app Worker body are placed in the same Blob.
+4. The WASM bytes and input video `ArrayBuffer` are transferred to the Worker.
+5. `createFFmpegCore` receives `wasmBinary` and a direct `instantiateWasm` callback, so no WASM URL is fetched.
+6. The input is written to `/input.bin` in MEMFS.
+7. The app calls the compact public-libav runner with `callMain` using `--input`, `--output`, resize/fps/bitrate/preset/audio arguments.
+8. Progress lines beginning with `__FFMPEG_WASM_PROGRESS__` update the UI.
+9. `/output.mp4` is returned as a transferable buffer and converted to a Blob/File for preview/save/share.
+10. The Worker is terminated after completion or cancellation.
 
-## Why `importScripts` is not used
+## Why no `importScripts()`
 
-A worker created from a Blob URL can have an opaque `blob:null` origin when the standalone HTML is opened through `file://`. Loading a second Blob URL from inside that worker with `importScripts` can therefore fail with a `NetworkError`. The build now places the FFmpeg core source directly in the first worker, removing that nested Blob load entirely.
+A standalone page opened with `file://` can create opaque `blob:null/...` worker URLs. Nested Blob loading is not portable there. Keeping generated core JavaScript and the Worker body in one Blob removes that dependency.
 
-## Why the wrapper package is not embedded
+## Why H.264 only
 
-The app uses a small purpose-built RPC layer instead of `@ffmpeg/ffmpeg`. This avoids an additional wrapper worker/chunk and makes every runtime asset explicit in a single-file, `file://`-compatible build.
+The application intentionally follows the compact Builder profile: the input side supports the codecs compiled into that profile, while output is deliberately H.264 + optional AAC in MP4. This removes the old H.265/VP9 UI paths and keeps runtime size/behavior predictable.
 
 ## Network boundary
 
-The document CSP blocks connections with `connect-src 'none'`. The worker Blob URL is created from bytes already embedded in the HTML. No application code calls `fetch`, XHR, WebSocket, EventSource, or `importScripts` at runtime.
-
-## Self-extract runtime
-
-The self-extract wrapper performs no fetch. It decodes its embedded Base64 payload, pipes the gzip bytes through browser-native `DecompressionStream`, and replaces the wrapper document with the restored standalone HTML. The wrapper mirrors the app's narrow `'wasm-unsafe-eval'` CSP permission so ffmpeg.wasm remains executable after restoration, while `connect-src 'none'` remains enforced. The verifier decompresses the payload in PowerShell and compares it byte-for-byte with `dist/index.html`.
+The generated HTML uses `connect-src 'none'`. The source checker rejects runtime `fetch`, XHR, WebSocket, EventSource, dynamic `import()`, `importScripts()`, and unexpected URLs. Build scripts/configuration are the only locations allowed to contain dependency URLs.

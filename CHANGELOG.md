@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.1.0 - FFmpeg 9 compact WASM engine - 2026-08-18
+
+- Replaced the old `@ffmpeg/core` runtime with the compact core produced by `htmlapps-ffmpeg-wasm-builder`.
+- Pinned Builder `1.0.0` in one `dependencies.json` version field and derive the Release tag/asset names from it.
+- Added SHA-256 verification against the Builder Release `SHA256SUMS.txt` before embedding `ffmpeg.js` / `ffmpeg.wasm`.
+- Switched runtime execution to the Builder public-libav runner contract via `createFFmpegCore` + `callMain`, with direct `instantiateWasm` and no nested `importScripts()`.
+- Fixed output to H.264/AAC MP4; removed H.265, VP9, metadata-retention, and H.265 retry UI paths that are not supported by the compact runner.
+- Preserved resize, bitrate, fps, x264 speed, audio bitrate/removal, progress, logs, cancellation, preview, save, and share.
+- Added a Help entry showing the exact Builder version and corresponding-source link recorded at build time.
+- Added `update-ffmpeg.bat X.Y.Z` for one-command Builder version updates and verified rebuilds.
+- Added root `video-compressor.html` generation for Browser Kitty/direct distribution.
+- Updated license notices, architecture, offline-verification, security, and repository guidance.
+
 ## 1.0.5 - Self-extract favicon - 2026-08-17
 
 - Inherit the source HTML favicon into `index.self-extract.html` so the browser tab uses the app icon during unpacking.

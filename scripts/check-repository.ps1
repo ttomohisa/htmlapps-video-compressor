@@ -13,6 +13,8 @@ $required = @(
   "dependencies.json",
   "src\index.template.html",
   "build-standalone.ps1",
+  "update-ffmpeg.bat",
+  "scripts\update-ffmpeg.ps1",
   "scripts\build-self-extract.ps1",
   "scripts\check-source.ps1",
   "scripts\verify-standalone.ps1",
@@ -42,9 +44,34 @@ if ([string]::IsNullOrWhiteSpace([string]$app.name)) { throw "app.config.json: n
 if ([string]::IsNullOrWhiteSpace([string]$app.slug)) { throw "app.config.json: slug is required" }
 if ([string]::IsNullOrWhiteSpace([string]$app.version)) { throw "app.config.json: version is required" }
 
+
+$dependencies = Get-Content -Raw -Encoding UTF8 (Join-Path $Root "dependencies.json") | ConvertFrom-Json
+$ffmpegDependency = @($dependencies.dependencies | Where-Object { [string]$_.id -eq "ffmpeg-wasm-builder" })
+if ($ffmpegDependency.Count -ne 1) { throw "dependencies.json must contain exactly one ffmpeg-wasm-builder dependency" }
+if ([string]$ffmpegDependency[0].source -ne "github-release") { throw "ffmpeg-wasm-builder must use source=github-release" }
+if ([string]$ffmpegDependency[0].version -notmatch '^[0-9]+\.[0-9]+\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$') { throw "ffmpeg-wasm-builder version must be an explicit semver" }
+if ([string]$ffmpegDependency[0].releaseAsset -notmatch '\{version\}') { throw "releaseAsset must derive from the single version field" }
+if ([string]$ffmpegDependency[0].sourceAsset -notmatch '\{version\}') { throw "sourceAsset must derive from the single version field" }
+
 & (Join-Path $Root "scripts\check-source.ps1")
 $buildArguments = @{}
 if ($ForceDownload) { $buildArguments.ForceDownload = $true }
 & (Join-Path $Root "build-standalone.ps1") @buildArguments
+
+$distOutput = Join-Path $Root "dist\index.html"
+$rootOutput = Join-Path $Root "video-compressor.html"
+if (-not (Test-Path -LiteralPath $rootOutput)) { throw "Root distribution HTML was not generated: video-compressor.html" }
+$distHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $distOutput).Hash
+$rootHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $rootOutput).Hash
+if ($distHash -ne $rootHash) { throw "video-compressor.html must match dist/index.html" }
+
+$manifestPath = Join-Path $Root "dist\dependency-manifest.json"
+$manifest = Get-Content -Raw -Encoding UTF8 -LiteralPath $manifestPath | ConvertFrom-Json
+$resolved = @($manifest.dependencies | Where-Object { [string]$_.id -eq "ffmpeg-wasm-builder" })
+if ($resolved.Count -ne 1) { throw "Generated manifest must contain exactly one ffmpeg-wasm-builder dependency" }
+if ([string]$resolved[0].version -ne [string]$ffmpegDependency[0].version) { throw "Generated manifest Builder version does not match dependencies.json" }
+if ([string]$resolved[0].archiveSha256 -notmatch '^[0-9a-f]{64}$') { throw "Generated manifest must record the verified Release archive SHA-256" }
+if ([string]$resolved[0].sourceSha256 -notmatch '^[0-9a-f]{64}$') { throw "Generated manifest must record the corresponding-source SHA-256" }
+if ([string]::IsNullOrWhiteSpace([string]$resolved[0].correspondingSourceUrl)) { throw "Generated manifest must record the corresponding-source URL" }
 
 Write-Host "[OK] Repository check passed." -ForegroundColor Green

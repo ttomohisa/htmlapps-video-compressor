@@ -22,6 +22,9 @@ if ($content -match '<iframe\b') { $errors.Add("iframe is not allowed in the sta
 if ($RequireNetworkBlock -and $content -notmatch "connect-src\s+'none'") { $errors.Add("CSP must include connect-src 'none'.") }
 if ($content -notmatch "script-src[^;]*'wasm-unsafe-eval'") { $errors.Add("CSP must include script-src 'wasm-unsafe-eval' for ffmpeg.wasm.") }
 if ($content -match "(?<!wasm-)'unsafe-eval'") { $errors.Add("CSP must not include the broader JavaScript 'unsafe-eval'.") }
+if ($content -notmatch 'ffmpeg-wasm-builder') { $errors.Add("Embedded Builder dependency metadata was not found.") }
+if ($content -notmatch '__FFMPEG_WASM_PROGRESS__') { $errors.Add("Compact runner progress marker was not found.") }
+if ($content -match '@ffmpeg/core|ffmpeg-core\.js|libx265|libvpx-vp9') { $errors.Add("Legacy FFmpeg runtime/codec references remain in the standalone output.") }
 
 if ($errors.Count -gt 0) {
   $errors | ForEach-Object { Write-Error $_ }

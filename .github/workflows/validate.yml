@@ -24,5 +24,8 @@ jobs:
           name: local-video-compressor
           path: |
             dist/index.html
+            dist/index.self-extract.html
             dist/dependency-manifest.json
+            dist/self-extract-manifest.json
+            video-compressor.html
           if-no-files-found: error

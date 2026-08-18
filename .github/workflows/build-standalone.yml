@@ -23,7 +23,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Build and verify standalone HTML
         shell: pwsh
@@ -39,5 +39,6 @@ jobs:
             dist/dependency-manifest.json
             dist/self-extract-manifest.json
             dist/.nojekyll
+            video-compressor.html
           if-no-files-found: error
           retention-days: 14
