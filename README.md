@@ -20,7 +20,7 @@ A single-HTML video compressor that keeps processing inside the browser. It can 
 
 - H.264 / AAC / MP4 output for compatibility and faster browser-side encoding
 - VP9 / Opus / WebM output for higher compression when encoding time is acceptable
-- Source video bitrate measured from actual video-stream packets and used as the initial video bitrate
+- Source video bitrate measured from actual video-stream packets, with a codec/dimension-aware recommended output bitrate selected by default
 - Display-matrix rotation applied to output pixels so portrait/rotated MP4/MOV stays correctly oriented
 - Resolution changes with aspect-ratio preservation and no upscaling
 - Output frame rate, encoding speed, and audio bitrate controls
@@ -29,9 +29,11 @@ A single-HTML video compressor that keeps processing inside the browser. It can 
 - WORKERFS input so large source videos are not copied wholesale into MEMFS before processing
 - Progress, processing log, and cancellation
 - Preview, save, and share output
+- Editable output file name with automatic `.mp4` / `.webm` extension handling
 - Japanese and English UI
 - No runtime network access
 - Responsive desktop/mobile UI
+- Mobile bottom action bar for Video, Settings, Estimate, and Compress
 
 ## FFmpeg WASM dependency
 
@@ -99,10 +101,10 @@ The script updates `dependencies.json`, downloads the matching Release, verifies
 ## Usage
 
 1. Choose or drop a video.
-2. Wait for local inspection to finish. The measured source video bitrate becomes the initial video bitrate.
+2. Wait for local inspection to finish. The measured source video bitrate is shown as source information, while the recommended output video bitrate is selected by default.
 3. Choose **H.264 / MP4** or **VP9 / WebM**.
-4. Adjust resolution, bitrate, frame rate, encoding speed, or audio settings when needed.
-5. Select **Compress with these settings**.
+4. Adjust resolution, bitrate, frame rate, encoding speed, audio settings, and the output file name when needed.
+5. Select **Compress with these settings**. On mobile, the bottom **Compress** action is also available.
 6. Preview, save, or share the generated MP4/WebM file.
 
 H.264 remains the default because it is generally faster to encode and broadly compatible. VP9 is intended for cases where a smaller file is worth longer browser-side encoding time.

@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.3.1 - Help, output naming, and mobile workflow - 2026-09-03
+
+- Use the recommended video bitrate as the default after source inspection, while keeping the measured source bitrate visible as reference information.
+- Fixed the Help question-mark dot so it renders reliably.
+- Fixed Help dialog sizing and scrolling so the full guide remains reachable on desktop and mobile.
+- Added a user-editable output file name with automatic `.mp4` / `.webm` extension handling.
+- Reworked the smartphone workflow around a fixed bottom action bar inspired by Image Counter: Video, Settings, Estimate, and Compress.
+- Returned the estimate card to normal document flow on mobile so it no longer floats over the interface.
+- Keep the smartphone bottom action bar visible from the initial empty state through the workflow, with Compress disabled until a video is ready.
+- Adjust mobile section navigation so card tops remain visible below the sticky header instead of scrolling underneath it.
+- Keep the in-card “Compress with these settings” action visible in the estimated-size card in addition to the fixed bottom Compress action.
+
 ## 1.3.0 - VP9, measured bitrate, and rotation preservation - 2026-09-03
 
 - Replaced the PowerShell `Get-FileHash` cmdlet dependency in build/verification scripts with .NET SHA-256 hashing for broader Windows PowerShell compatibility.

@@ -13,7 +13,7 @@ Maintain a privacy-first, single-HTML local video compressor. Runtime video proc
 
 ## UI rules
 - Light theme only.
-- Preserve the current compact desktop/mobile layout and safe-area mobile action dock.
+- Preserve the current compact desktop/mobile layout and safe-area mobile bottom action bar.
 - Keep the selectable output codec control with `H.264 / MP4` as the default and `VP9 / WebM` as the higher-compression option.
 - Keep resolution, bitrate, fps, speed, audio bitrate, audio removal, progress, logs, cancellation, preview, save, and share.
 - Japanese and English must remain in sync.

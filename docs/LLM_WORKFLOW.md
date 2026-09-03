@@ -7,7 +7,7 @@
 5. Run `scripts/check-source.ps1` before building.
 6. Build with `build-standalone.bat` on Windows.
 7. Test both `dist/index.html` and `dist/index.self-extract.html` by opening them directly.
-8. At 360–430 px widths, verify the mobile compression action dock and bottom-sheet dialogs.
+8. At 360–430 px widths, verify the mobile bottom action bar and bottom-sheet dialogs.
 9. Test one short video with every codec, audio kept and removed, and at least two resolutions.
 10. Verify preview, download, share fallback, cancellation, Japanese/English, and mobile layout.
 11. Open DevTools Network and confirm zero runtime requests.

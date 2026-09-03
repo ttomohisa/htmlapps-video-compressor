@@ -30,6 +30,10 @@ if ($content -notmatch '__FFMPEG_WASM_PROGRESS__') { $errors.Add("Compact runner
 if ($content -match '@ffmpeg/core|ffmpeg-core\.js|libx265') { $errors.Add("Legacy FFmpeg runtime/codec references remain in the standalone output.") }
 if ($content -notmatch 'VP9\s*/\s*WebM') { $errors.Add("VP9 / WebM output UI was not found.") }
 if ($content -notmatch 'H\.264\s*/\s*MP4') { $errors.Add("H.264 / MP4 output UI was not found.") }
+if ($content -notmatch 'id="outputNameInput"') { $errors.Add("Editable output filename control was not found.") }
+if ($content -notmatch 'id="mobileBar"') { $errors.Add("Mobile bottom action bar was not found.") }
+if ($content -notmatch 'dialog\[open\]\{display:flex;flex-direction:column\}') { $errors.Add("Scrollable Help dialog flex layout was not found.") }
+if ($content -notmatch 'cx="12"\s+cy="17"\s+r="1\.15"') { $errors.Add("Reliable Help question-mark dot was not found.") }
 
 if ($errors.Count -gt 0) {
   $errors | ForEach-Object { Write-Error $_ }

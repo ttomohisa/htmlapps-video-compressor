@@ -22,7 +22,7 @@ powershell -ExecutionPolicy Bypass -File scripts/verify-self-extract.ps1 -Path d
 2. Disconnect the computer from the network.
 3. Open `dist/index.html` directly from Explorer (`file://`).
 4. Select a short MP4/MOV and confirm that local inspection completes before compression becomes available.
-5. Confirm the displayed source video bitrate comes from the inspection report and becomes the initial video bitrate.
+5. Confirm the displayed source video bitrate comes from the inspection report, while the editable output bitrate starts from the recommended value.
 6. Compress with H.264 / MP4 and confirm H.264 + AAC output.
 7. Compress the same input with VP9 / WebM and confirm VP9 + Opus output.
 8. Use a portrait/rotated MP4/MOV whose orientation is carried by Display Matrix metadata. Confirm the result is visually upright and its output pixel dimensions follow the displayed orientation.
