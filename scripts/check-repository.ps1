@@ -71,7 +71,7 @@ if ([string]::IsNullOrWhiteSpace([string]$app.version)) { throw "app.config.json
 if ([string]$app.version -ne "1.3.1") { throw "app.config.json: expected release version 1.3.1" }
 
 $templateText = [System.IO.File]::ReadAllText((Join-Path $Root "src\index.template.html"), [System.Text.Encoding]::UTF8)
-foreach ($requiredMarker in @("id="outputNameInput"", "id="mobileBar"", "dialog[open]{display:flex;flex-direction:column}")) {
+foreach ($requiredMarker in @('id="outputNameInput"', 'id="mobileBar"', 'dialog[open]{display:flex;flex-direction:column}')) {
   if (-not $templateText.Contains($requiredMarker)) { throw "src/index.template.html is missing v1.3.1 marker: $requiredMarker" }
 }
 
