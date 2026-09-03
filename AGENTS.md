@@ -1,10 +1,10 @@
 # AGENTS.md
 
 ## Project goal
-Maintain a privacy-first, single-HTML local video compressor. Runtime video processing must remain completely local and output H.264/AAC MP4 through the compact FFmpeg WASM Builder core.
+Maintain a privacy-first, single-HTML local video compressor. Runtime video processing must remain completely local and support H.264/AAC MP4 plus VP9/Opus WebM through the compact FFmpeg WASM Builder core.
 
 ## Engine rules
-- Do not reintroduce `@ffmpeg/core`, `@ffmpeg/ffmpeg`, H.265/x265, VP9/libvpx output paths, pthreads, SharedArrayBuffer, or COOP/COEP without an explicit architectural decision.
+- Do not reintroduce `@ffmpeg/core`, `@ffmpeg/ffmpeg`, H.265/x265, pthreads, SharedArrayBuffer, or COOP/COEP without an explicit architectural decision. Keep the current H.264/x264 and VP9/libvpx output paths unless the app specification is intentionally changed.
 - The engine version is pinned once in `dependencies.json` under `ffmpeg-wasm-builder.version`.
 - Build-time Release downloads must verify `SHA256SUMS.txt` before embedding assets.
 - Keep the corresponding-source asset recorded in the generated dependency manifest and exposed in Help.
@@ -14,7 +14,7 @@ Maintain a privacy-first, single-HTML local video compressor. Runtime video proc
 ## UI rules
 - Light theme only.
 - Preserve the current compact desktop/mobile layout and safe-area mobile action dock.
-- Output codec is displayed as fixed `H.264 / MP4`, not as a selectable control.
+- Keep the selectable output codec control with `H.264 / MP4` as the default and `VP9 / WebM` as the higher-compression option.
 - Keep resolution, bitrate, fps, speed, audio bitrate, audio removal, progress, logs, cancellation, preview, save, and share.
 - Japanese and English must remain in sync.
 

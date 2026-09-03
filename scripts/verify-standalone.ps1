@@ -27,7 +27,9 @@ if ($content -notmatch '"core-wasm"\s*:\s*\{[^}]*"encoding"\s*:\s*"gzip-base64"'
 if ($content -notmatch 'new\s+DecompressionStream\(["'']gzip["'']\)') { $errors.Add("The gzip decompressor for ffmpeg.wasm was not found.") }
 if ($content -match 'EMBEDDED_ASSET_BUNDLE_BASE64') { $errors.Add("Outer Base64 asset bundle wrapper must not be present.") }
 if ($content -notmatch '__FFMPEG_WASM_PROGRESS__') { $errors.Add("Compact runner progress marker was not found.") }
-if ($content -match '@ffmpeg/core|ffmpeg-core\.js|libx265|libvpx-vp9') { $errors.Add("Legacy FFmpeg runtime/codec references remain in the standalone output.") }
+if ($content -match '@ffmpeg/core|ffmpeg-core\.js|libx265') { $errors.Add("Legacy FFmpeg runtime/codec references remain in the standalone output.") }
+if ($content -notmatch 'VP9\s*/\s*WebM') { $errors.Add("VP9 / WebM output UI was not found.") }
+if ($content -notmatch 'H\.264\s*/\s*MP4') { $errors.Add("H.264 / MP4 output UI was not found.") }
 
 if ($errors.Count -gt 0) {
   $errors | ForEach-Object { Write-Error $_ }

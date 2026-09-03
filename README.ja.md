@@ -6,7 +6,7 @@
 
 [English README](README.md)
 
-動画をアップロードせず、ブラウザ内だけで **H.264 / AAC の MP4** へ圧縮する単一HTMLアプリです。FFmpegエンジンは [`htmlapps-ffmpeg-wasm-builder`](https://github.com/ttomohisa/htmlapps-ffmpeg-wasm-builder) が生成する、SharedArrayBuffer不要のFFmpeg 9 compact WebAssemblyを使用します。
+動画をアップロードせず、ブラウザ内だけで圧縮する単一HTMLアプリです。互換性を優先する **H.264 / AAC の MP4** と、より小さいファイルを狙う **VP9 / Opus の WebM** を選べます。FFmpegエンジンは [`htmlapps-ffmpeg-wasm-builder`](https://github.com/ttomohisa/htmlapps-ffmpeg-wasm-builder) が生成する、SharedArrayBuffer不要のFFmpeg 9 compact WebAssemblyを使用します。
 
 ![アプリ画面](docs/preview.png)
 
@@ -18,38 +18,32 @@
 
 ## 主な機能
 
-- H.264 / AAC / MP4へ固定出力し、再生互換性を優先
+- H.264 / AAC / MP4：再生互換性とブラウザ内エンコード速度を優先
+- VP9 / Opus / WebM：処理時間が長くなっても容量を小さくしたい場合向け
+- 元動画の映像パケットを実際に解析して平均映像ビットレートを測定し、その値を映像ビットレートの初期値に設定
+- MP4/MOVのDisplay Matrixによる回転を実画素へ適用し、縦向き・回転付き動画の向きを維持
 - 解像度変更（縦横比維持・アップスケールなし）
-- 映像ビットレート変更と動画ごとのおすすめ値
-- 出力フレームレート、x264圧縮速度、音声ビットレート
+- 出力フレームレート、圧縮速度、音声ビットレート
 - オーディオ削除
-- 動画の長さと設定から圧縮後サイズを概算
+- 選択した出力ビットレートと動画時間から圧縮後サイズを概算
+- WORKERFSで入力File/Blobを参照し、大きな元動画を丸ごとMEMFSへ複製しない構成
 - 圧縮中の進捗、ログ、キャンセル
 - 圧縮後のプレビュー・保存・共有
 - 日本語 / English
-- 実行時通信なし。動画はブラウザのメモリ内だけで処理
+- 完全ローカル処理。実行時通信なし
 - PC / スマートフォン向けレスポンシブUI
 
 ## FFmpeg WASMの取り込み方
 
-このリポジトリには巨大なWASMを直接コミットしません。`dependencies.json` に使用する **FFmpeg WASM Builderのバージョンを1か所だけ**固定し、ビルド時にGitHub Releaseから取得します。
+このリポジトリには大きなWASMを直接コミットしません。`dependencies.json` に使用する **FFmpeg WASM Builderのバージョンを1か所だけ**固定し、ビルド時にGitHub Releaseから取得します。
 
 現在の固定バージョン:
 
 ```json
-"version": "1.0.0"
+"version": "1.6.0"
 ```
 
-`build-standalone.bat` は次の順で処理します。
-
-1. `htmlapps-ffmpeg-wasm-builder` の対応Releaseから `SHA256SUMS.txt` を取得
-2. `ffmpeg-wasm-video-compressor-vX.Y.Z.zip` を取得
-3. Release記載のSHA-256と一致することを検証
-4. `ffmpeg.js` と `ffmpeg.wasm` をBase64でHTMLへ内包
-5. `dist/index.html` と自己解凍版を生成・検証
-6. Browser Kitty等から直接利用しやすいよう、通常版をルートの `video-compressor.html` にもコピー
-
-ブラウザ実行時にはGitHub Releaseへアクセスしません。
+Builder v1.6.0の `video-compressor` profileでは、libvpx VP9、Opus、元動画のストリーム解析、回転補正、WORKERFS入力を追加しています。ブラウザ実行時にはGitHub Releaseへアクセスしません。
 
 ## ビルド
 
@@ -86,25 +80,34 @@ video-compressor.html   # dist/index.html と同内容
 .\build-standalone.ps1 -ForceDownload
 ```
 
-## FFmpegを更新する
-
-Builder側で新しいReleaseが出たら、たとえば `v1.0.1` へ更新する場合は次だけです。
+Builderの変更をRelease前に確認する場合は、Builder側で `build-video-compressor.bat` を実行した後、その生成先を直接指定できます。
 
 ```text
-update-ffmpeg.bat 1.0.1
+build-with-local-ffmpeg.bat ..\htmlapps-ffmpeg-wasm-builder\dist\video-compressor
 ```
 
-`dependencies.json` のバージョンを更新し、新しいReleaseの取得・SHA-256検証・単一HTML再ビルドまで実行します。FFmpeg更新後は必ず生成HTMLで実動画の圧縮確認も行ってください。
+このローカル統合ビルドは開発確認用です。正式な配布HTMLは従来どおりGitHub Releaseのassetと `SHA256SUMS.txt` を検証して生成します。
+
+## FFmpegを更新する
+
+Builder側で新しいReleaseが出たら、次のように更新します。
+
+```text
+update-ffmpeg.bat 1.6.0
+```
+
+`dependencies.json` のバージョンを更新し、新しいReleaseの取得・SHA-256検証・単一HTML再ビルドまで実行します。FFmpeg更新後は必ず生成HTMLで実動画の圧縮確認も行います。
 
 ## 使い方
 
 1. 動画をドロップまたは選択します。
-2. 自動提案された解像度とビットレートを確認します。
-3. 必要ならfps、圧縮速度、音声設定を調整します。
-4. 「この設定で圧縮」を押します。
-5. H.264 / AACのMP4として生成された結果をプレビューし、「保存」または「共有」を押します。
+2. ブラウザ内の解析が終わると、元動画の実測映像ビットレートが映像ビットレートの初期値になります。
+3. 「H.264 / MP4」または「VP9 / WebM」を選びます。
+4. 必要なら解像度、ビットレート、fps、圧縮速度、音声設定を調整します。
+5. 「この設定で圧縮」を押します。
+6. 生成されたMP4/WebMをプレビューし、「保存」または「共有」を押します。
 
-出力コーデックは選択式ではなくH.264 / MP4に固定しています。旧版にあったH.265 / VP9出力とメタデータ保持オプションは、compact runnerへの移行に伴い削除しました。
+初期値はH.264 / MP4です。一般にブラウザ内でのエンコードが速く再生互換性も高いためです。VP9 / WebMは、処理時間よりファイル容量を優先するときに選ぶ想定です。
 
 ## プライバシーとオフライン設計
 
@@ -113,6 +116,7 @@ update-ffmpeg.bat 1.0.1
 - 選択動画と圧縮結果を永続保存しない
 - `ffmpeg.js` と `ffmpeg.wasm` を単一HTMLへ内包
 - FFmpeg処理は専用Workerで実行
+- 元動画のFile/BlobはWORKERFS経由で参照し、入力全体をMEMFSへ複製しない
 - WASMバイトを `instantiateWasm` へ直接渡し、`file://` でもWASMのURL解決を不要にする
 - Workerソースも1つのBlobへまとめ、ネストした `importScripts()` を使わない
 - SharedArrayBuffer / COOP / COEPは不要
@@ -126,9 +130,10 @@ update-ffmpeg.bat 1.0.1
 - `dependencies.json`: FFmpeg WASM Builderの固定バージョンとRelease asset定義
 - `src/index.template.html`: UIとアプリ本体
 - `build-standalone.ps1`: Release取得、checksum検証、単一HTML生成
+- `build-with-local-ffmpeg.bat`: Builderのローカル生成物を直接使う開発確認用ビルド
 - `update-ffmpeg.bat`: Builderバージョン更新用
 - `scripts/check-repository.ps1`: ソース確認からビルド検証までを実行
-- `THIRD_PARTY_NOTICES.md`: FFmpeg/x264/Emscriptenの配布情報
+- `THIRD_PARTY_NOTICES.md`: FFmpeg/x264/libvpx/Opus/Emscriptenの配布情報
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/check-repository.ps1
@@ -136,6 +141,6 @@ powershell -ExecutionPolicy Bypass -File scripts/check-repository.ps1
 
 ## ライセンス
 
-このアプリのリポジトリは **GPL-3.0-or-later** です。内包する `htmlapps-ffmpeg-wasm-builder` の生成FFmpeg/x264コアは **GPL-2.0-or-later** として配布されます。
+このアプリのリポジトリは **GPL-3.0-or-later** です。内包する `htmlapps-ffmpeg-wasm-builder` のFFmpeg/x264/libvpx/Opusコアは、GPLのx264をリンクするため **GPL-2.0-or-later** として配布されます。libvpxとOpusの個別ライセンス・特許許諾情報もBuilderのRelease bundleに含めます。
 
 生成HTMLのヘルプ画面にも、使用中のBuilderバージョンと対応ソースへのリンクを表示します。詳細は [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) を参照してください。

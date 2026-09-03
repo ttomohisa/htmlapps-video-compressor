@@ -5,11 +5,11 @@
       "id": "ffmpeg-wasm-builder",
       "source": "github-release",
       "repository": "ttomohisa/htmlapps-ffmpeg-wasm-builder",
-      "version": "1.0.0",
+      "version": "1.6.0",
       "releaseAsset": "ffmpeg-wasm-video-compressor-v{version}.zip",
       "checksumsAsset": "SHA256SUMS.txt",
       "sourceAsset": "ffmpeg-wasm-sources-v{version}.tar.gz",
-      "license": "Generated FFmpeg/x264 core: GPL-2.0-or-later; see THIRD_PARTY_NOTICES.md",
+      "license": "Generated FFmpeg/x264/libvpx/Opus core: GPL-2.0-or-later; see THIRD_PARTY_NOTICES.md",
       "homepage": "https://github.com/ttomohisa/htmlapps-ffmpeg-wasm-builder",
       "assets": [
         {

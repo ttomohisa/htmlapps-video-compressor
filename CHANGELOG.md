@@ -1,5 +1,32 @@
 # Changelog
 
+## 1.3.0 - VP9, measured bitrate, and rotation preservation - 2026-09-03
+
+- Replaced the PowerShell `Get-FileHash` cmdlet dependency in build/verification scripts with .NET SHA-256 hashing for broader Windows PowerShell compatibility.
+- Added optional VP9 / Opus WebM output while keeping H.264 / AAC MP4 as the default.
+- Replaced file-size/duration source-bitrate estimation with local FFmpeg stream inspection that measures actual video packet bytes over stream duration.
+- Use the measured source video bitrate as the initial video bitrate after a file is selected; recommendations remain a separate user action.
+- Added Display Matrix inspection and FFmpeg-style autorotation so portrait/rotated MP4/MOV inputs are encoded with the correct pixel orientation.
+- Switched source input to WORKERFS so inspection and compression do not copy the entire selected File into MEMFS first.
+- Added codec-aware output extension/MIME, speed mapping, help text, Japanese/English copy, and dependency/license documentation.
+- Pinned the application to FFmpeg WASM Builder v1.6.0, which adds libvpx v1.16.0 and Opus v1.5.2 to the video-compressor profile.
+- Lowered the editable bitrate floor to 50 kbps while keeping recommendations at 250 kbps or above, so very-low-bitrate sources can retain their exact measured bitrate as the initial value.
+- Added `build-with-local-ffmpeg.bat` / `-LocalFfmpegRoot` for testing a local Builder output before publishing a GitHub Release; release builds keep the verified checksum path.
+- Polished the 390px mobile bitrate controls and bottom spacing so labels no longer collapse into narrow wrapped columns and the fixed compression dock does not cover footer content.
+- Updated repository guidance and standalone verification so VP9 / WebM is treated as a supported v1.3.0 path rather than a legacy codec.
+
+
+## 1.2.0 - Template-aligned UI refresh - 2026-09-03
+
+- Replaced the header and standalone favicon with the repository canonical `assets/favicon.svg`, embedded directly into the HTML.
+- Made the self-extract loading screen inherit the same embedded canonical icon instead of using a separate fallback mark.
+- Added a clearer page introduction and template-style local-processing badge while keeping the existing compression flow intact.
+- Removed the second mobile-only native-style override layer so narrow screens use the same template-aligned card, spacing, and control language as desktop.
+- Kept the mobile estimated-size / compression action dock, with safe-area spacing and large touch targets.
+- Changed the header Help action to the template-style icon-only control and retained Japanese/English accessible labels.
+- Replaced the stale version-specific CSP recovery message with version-neutral guidance.
+- Refreshed Japanese, English, and mobile screenshots and verified the H.264/AAC MP4 compression flow with the embedded FFmpeg WASM engine.
+
 ## 1.1.0 - FFmpeg 9 compact WASM engine - 2026-08-18
 
 - Replaced the old `@ffmpeg/core` runtime with the compact core produced by `htmlapps-ffmpeg-wasm-builder`.

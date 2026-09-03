@@ -18,6 +18,7 @@ $targets = @(
   (Join-Path $Root "scripts"),
   (Join-Path $Root "build-standalone.ps1"),
   (Join-Path $Root "build-standalone.bat"),
+  (Join-Path $Root "build-with-local-ffmpeg.bat"),
   (Join-Path $Root "app.config.json"),
   (Join-Path $Root "dependencies.json")
 )

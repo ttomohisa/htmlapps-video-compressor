@@ -1,23 +1,25 @@
 # Third-party notices
 
-## FFmpeg WASM Builder v1.0.0 generated core
+## FFmpeg WASM Builder v1.6.0 generated core
 
 This application embeds build artifacts from:
 
 - Project: `ttomohisa/htmlapps-ffmpeg-wasm-builder`
-- Builder release: `v1.0.0`
-- Binary release asset: `ffmpeg-wasm-video-compressor-v1.0.0.zip`
-- Corresponding-source asset: `ffmpeg-wasm-sources-v1.0.0.tar.gz`
+- Builder release: `v1.6.0`
+- Binary release asset: `ffmpeg-wasm-video-compressor-v1.6.0.zip`
+- Corresponding-source asset: `ffmpeg-wasm-sources-v1.6.0.tar.gz`
 - Embedded files: `ffmpeg.js`, `ffmpeg.wasm`
-- Generated FFmpeg/x264 core license: GPL-2.0-or-later
+- Generated video-compressor core license: GPL-2.0-or-later
 
-The Builder v1.0.0 release is built from these pinned upstream versions:
+The Builder v1.6.0 source pins:
 
 - FFmpeg `n9.0.1`, commit `bf1b838f2ab88b4f8fd83443325c782ea0e0f7fa`
 - x264 commit `31e19f92f00c7003fa115047ce50978bc98c3a0d`
+- libvpx `v1.16.0`, commit `1024874c5919305883187e2953de8fcb4c3d7fa6`
+- Opus `v1.5.2`, commit `ddbe48383984d56acd9e1ab6a090c54ca6b735a6`
 - Emscripten `6.0.6`
 
-The Builder's own scripts/runtime are MIT-licensed, but that does not relicense the generated FFmpeg/x264 WebAssembly core. The core is built with FFmpeg GPL components and libx264 and is distributed as GPL-2.0-or-later.
+The Builder's own scripts/runtime are MIT-licensed, but that does not relicense the generated WebAssembly core. The `video-compressor` profile enables GPL FFmpeg components and links x264, so the generated core is distributed under GPL-2.0-or-later. libvpx retains its BSD-style license and upstream `PATENTS` grant. Opus retains its three-clause BSD license and upstream patent grant. Release bundles carry the applicable upstream notices.
 
 ## Build-time verification and source availability
 
@@ -29,6 +31,6 @@ The generated app's Help dialog also reads this build manifest and exposes the e
 
 ## Runtime behavior
 
-No third-party asset is fetched at runtime. `ffmpeg.js` and `ffmpeg.wasm` are embedded in the single HTML and executed in a dedicated Worker. Runtime network access is blocked by CSP with `connect-src 'none'`.
+No third-party asset is fetched at runtime. `ffmpeg.js` and `ffmpeg.wasm` are embedded in the single HTML and executed in a dedicated Worker. Source File/Blob input is exposed through WORKERFS. Runtime network access is blocked by CSP with `connect-src 'none'`.
 
 Keep this file, the repository license, and the corresponding-source information with source redistributions of this application.

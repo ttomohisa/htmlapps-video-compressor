@@ -21,17 +21,21 @@ powershell -ExecutionPolicy Bypass -File scripts/verify-self-extract.ps1 -Path d
 1. Run `build-standalone.bat` while online once so the pinned Builder Release is cached.
 2. Disconnect the computer from the network.
 3. Open `dist/index.html` directly from Explorer (`file://`).
-4. Compress a short MP4/MOV and confirm H.264/AAC MP4 output.
-5. Repeat with audio removal, a resolution change, fps change, and cancellation.
-6. Open `dist/index.self-extract.html` directly and repeat the core flow.
-7. Confirm the Help dialog shows the embedded Builder version. The corresponding-source link is allowed as explicit user navigation; compression itself must not request it.
-8. Reconnect, clear DevTools Network, and compress again. No runtime asset request should appear.
+4. Select a short MP4/MOV and confirm that local inspection completes before compression becomes available.
+5. Confirm the displayed source video bitrate comes from the inspection report and becomes the initial video bitrate.
+6. Compress with H.264 / MP4 and confirm H.264 + AAC output.
+7. Compress the same input with VP9 / WebM and confirm VP9 + Opus output.
+8. Use a portrait/rotated MP4/MOV whose orientation is carried by Display Matrix metadata. Confirm the result is visually upright and its output pixel dimensions follow the displayed orientation.
+9. Repeat with audio removal, a resolution change, fps change, and cancellation.
+10. Open `dist/index.self-extract.html` directly and repeat the core flow.
+11. Confirm the Help dialog shows the embedded Builder version. The corresponding-source link is allowed as explicit user navigation; compression itself must not request it.
+12. Reconnect, clear DevTools Network, and compress again. No runtime asset request should appear.
 
 A selected local video can appear as a `blob:` resource. That is an in-memory object URL, not an upload.
 
 ## Mobile check
 
-At 360, 390, and 430 px widths verify grouped settings, switch-style boolean controls, no horizontal overflow, safe-area bottom action bar, bottom-sheet dialogs, readable Japanese/English labels, progress/cancel flow, and result actions.
+At 360, 390, and 430 px widths verify no horizontal overflow, safe-area bottom action bar, dialogs within the viewport, readable Japanese/English labels, codec selection, inspection state, progress/cancel flow, and result actions. Long file names must not break the layout.
 
 ## CSP / WebAssembly check
 

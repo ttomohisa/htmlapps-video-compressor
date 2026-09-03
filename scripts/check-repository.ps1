@@ -6,6 +6,19 @@ $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 $Root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 
+
+function Get-FileSha256Hex([string]$Path) {
+  if (-not (Test-Path -LiteralPath $Path)) { throw "File not found for SHA-256: $Path" }
+  $algorithm = [System.Security.Cryptography.SHA256]::Create()
+  $stream = [System.IO.File]::OpenRead($Path)
+  try {
+    return (($algorithm.ComputeHash($stream) | ForEach-Object { $_.ToString("x2") }) -join "")
+  } finally {
+    $stream.Dispose()
+    $algorithm.Dispose()
+  }
+}
+
 $required = @(
   "AGENTS.md",
   "APP_SPEC.md",
@@ -13,6 +26,7 @@ $required = @(
   "dependencies.json",
   "src\index.template.html",
   "build-standalone.ps1",
+  "build-with-local-ffmpeg.bat",
   "update-ffmpeg.bat",
   "scripts\update-ffmpeg.ps1",
   "scripts\build-self-extract.ps1",
@@ -30,6 +44,17 @@ $required = @(
 foreach ($relative in $required) {
   $path = Join-Path $Root $relative
   if (-not (Test-Path $path)) { throw "Required repository file is missing: $relative" }
+}
+
+$hashSensitiveScripts = @(
+  (Join-Path $Root "build-standalone.ps1"),
+  (Join-Path $Root "scripts\build-self-extract.ps1")
+)
+foreach ($scriptPath in $hashSensitiveScripts) {
+  $scriptText = [System.IO.File]::ReadAllText($scriptPath)
+  if ($scriptText -match '(?<![A-Za-z0-9_-])Get-FileHash(?![A-Za-z0-9_-])') {
+    throw "Build scripts must use the .NET SHA-256 helper instead of Get-FileHash: $scriptPath"
+  }
 }
 
 $selfExtractBuilderPath = Join-Path $Root "scripts\build-self-extract.ps1"
@@ -61,8 +86,8 @@ if ($ForceDownload) { $buildArguments.ForceDownload = $true }
 $distOutput = Join-Path $Root "dist\index.html"
 $rootOutput = Join-Path $Root "video-compressor.html"
 if (-not (Test-Path -LiteralPath $rootOutput)) { throw "Root distribution HTML was not generated: video-compressor.html" }
-$distHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $distOutput).Hash
-$rootHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $rootOutput).Hash
+$distHash = (Get-FileSha256Hex $distOutput)
+$rootHash = (Get-FileSha256Hex $rootOutput)
 if ($distHash -ne $rootHash) { throw "video-compressor.html must match dist/index.html" }
 
 $manifestPath = Join-Path $Root "dist\dependency-manifest.json"

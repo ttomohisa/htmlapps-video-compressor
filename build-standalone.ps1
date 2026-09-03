@@ -1,7 +1,8 @@
 param(
   [switch]$ForceDownload,
   [switch]$SkipSelfExtract,
-  [string]$OutputPath = ""
+  [string]$OutputPath = "",
+  [string]$LocalFfmpegRoot = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -34,6 +35,19 @@ function Get-Json([string]$Path) {
   return Get-Content -Raw -Encoding UTF8 -LiteralPath $Path | ConvertFrom-Json
 }
 
+
+function Get-FileSha256Hex([string]$Path) {
+  if (-not (Test-Path -LiteralPath $Path)) { throw "File not found for SHA-256: $Path" }
+  $algorithm = [System.Security.Cryptography.SHA256]::Create()
+  $stream = [System.IO.File]::OpenRead($Path)
+  try {
+    return (($algorithm.ComputeHash($stream) | ForEach-Object { $_.ToString("x2") }) -join "")
+  } finally {
+    $stream.Dispose()
+    $algorithm.Dispose()
+  }
+}
+
 function Get-SafeId([string]$Value) {
   if ([string]::IsNullOrWhiteSpace($Value)) { throw "Dependency id cannot be empty." }
   if ($Value -notmatch '^[a-z0-9][a-z0-9._-]*$') { throw "Dependency id '$Value' must use lowercase letters, numbers, dot, underscore, or hyphen." }
@@ -61,7 +75,7 @@ function Get-GitHubReleasePackage([object]$Dependency) {
   $archivePath = Join-Path $packageRoot $releaseAsset
   $checksumsPath = Join-Path $packageRoot $checksumsAsset
   $baseUrl = "https://github.com/$repository/releases/download/$tag"
-  $headers = @{ "User-Agent" = "htmlapps-video-compressor/1.1" }
+  $headers = @{ "User-Agent" = "htmlapps-video-compressor/1.3" }
 
   if ($ForceDownload -and (Test-Path -LiteralPath $packageRoot)) {
     Remove-Item -Recurse -Force -LiteralPath $packageRoot
@@ -95,7 +109,7 @@ function Get-GitHubReleasePackage([object]$Dependency) {
 
   $needsDownload = -not (Test-Path -LiteralPath $archivePath)
   if (-not $needsDownload) {
-    $cachedSha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $archivePath).Hash.ToLowerInvariant()
+    $cachedSha256 = (Get-FileSha256Hex $archivePath)
     if ($cachedSha256 -ne $expectedSha256) {
       Write-Warning "Cached release asset checksum mismatch. Downloading it again."
       Remove-Item -Force -LiteralPath $archivePath
@@ -110,7 +124,7 @@ function Get-GitHubReleasePackage([object]$Dependency) {
     Remove-Item -Force -ErrorAction SilentlyContinue -LiteralPath $partial
     Write-Step "Downloading $repository $tag / $releaseAsset"
     Invoke-WebRequest -Uri "$baseUrl/$releaseAsset" -OutFile $partial -UseBasicParsing -Headers $headers
-    $actualSha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $partial).Hash.ToLowerInvariant()
+    $actualSha256 = (Get-FileSha256Hex $partial)
     if ($actualSha256 -ne $expectedSha256) {
       Remove-Item -Force -ErrorAction SilentlyContinue -LiteralPath $partial
       throw "Release asset SHA-256 mismatch. Expected $expectedSha256 but got $actualSha256"
@@ -118,7 +132,7 @@ function Get-GitHubReleasePackage([object]$Dependency) {
     Move-Item -Force -LiteralPath $partial -Destination $archivePath
   }
 
-  $archiveSha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $archivePath).Hash.ToLowerInvariant()
+  $archiveSha256 = (Get-FileSha256Hex $archivePath)
   if ($archiveSha256 -ne $expectedSha256) {
     throw "Verified archive checksum changed unexpectedly: $archivePath"
   }
@@ -141,6 +155,39 @@ function Get-GitHubReleasePackage([object]$Dependency) {
     ResolvedTag = $tag
     ResolvedReleaseAsset = $releaseAsset
     ResolvedSourceAsset = $sourceAsset
+  }
+}
+
+function Get-LocalFfmpegPackage([object]$Dependency, [string]$ConfiguredRoot) {
+  if ([string]::IsNullOrWhiteSpace($ConfiguredRoot)) { throw "Local FFmpeg root cannot be empty." }
+  $rootPath = if ([System.IO.Path]::IsPathRooted($ConfiguredRoot)) { $ConfiguredRoot } else { Join-Path $Root $ConfiguredRoot }
+  $rootPath = [System.IO.Path]::GetFullPath($rootPath)
+  $manifestPath = Join-Path $rootPath "manifest.json"
+  foreach ($required in @("ffmpeg.js", "ffmpeg.wasm", "manifest.json")) {
+    if (-not (Test-Path -LiteralPath (Join-Path $rootPath $required))) { throw "Local FFmpeg build is missing $required under $rootPath" }
+  }
+  $localManifest = Get-Json $manifestPath
+  if ([string]$localManifest.profile -ne "video-compressor") { throw "Local FFmpeg manifest profile must be video-compressor." }
+  $expectedVersion = [string]$Dependency.version
+  $actualVersion = [string]$localManifest.builderVersion
+  if ([string]::IsNullOrWhiteSpace($actualVersion)) { throw "Local FFmpeg manifest does not contain builderVersion." }
+  if ($actualVersion -ne $expectedVersion) { throw "Local FFmpeg Builder version mismatch. Expected $expectedVersion but got $actualVersion." }
+  if ($localManifest.runtime -and ($localManifest.runtime.PSObject.Properties.Name -contains "workerFsInput") -and -not [bool]$localManifest.runtime.workerFsInput) {
+    throw "Local FFmpeg build does not have WORKERFS input enabled."
+  }
+  Write-Step "Using local FFmpeg WASM build: $rootPath"
+  return [ordered]@{
+    Root = $rootPath
+    Archive = ""
+    ArchiveSha256 = ""
+    SourceSha256 = ""
+    ReleaseUrl = ""
+    CorrespondingSourceUrl = ""
+    ResolvedVersion = $actualVersion
+    ResolvedTag = "local-v$actualVersion"
+    ResolvedReleaseAsset = "local-build"
+    ResolvedSourceAsset = ""
+    IsLocal = $true
   }
 }
 
@@ -224,7 +271,9 @@ foreach ($dependency in $dependencies) {
   if ([string]$dependency.source -ne "github-release") {
     throw "Unsupported dependency source '$([string]$dependency.source)' for '$id'."
   }
-  $package = Get-GitHubReleasePackage $dependency
+  $useLocalFfmpeg = $id -eq "ffmpeg-wasm-builder" -and -not [string]::IsNullOrWhiteSpace($LocalFfmpegRoot)
+  $package = if ($useLocalFfmpeg) { Get-LocalFfmpegPackage $dependency $LocalFfmpegRoot } else { Get-GitHubReleasePackage $dependency }
+  $resolvedSource = if ($useLocalFfmpeg) { "local-build" } else { "github-release" }
   $dependencyAssets = [ordered]@{}
   $manifestAssets = @()
   $assetKeys = @{}
@@ -258,7 +307,7 @@ foreach ($dependency in $dependencies) {
   }
 
   $assetBundle.dependencies[$id] = [ordered]@{
-    source = "github-release"
+    source = $resolvedSource
     repository = [string]$dependency.repository
     version = [string]$package.ResolvedVersion
     tag = [string]$package.ResolvedTag
@@ -266,7 +315,7 @@ foreach ($dependency in $dependencies) {
   }
   $manifestDependencies += [ordered]@{
     id = $id
-    source = "github-release"
+    source = $resolvedSource
     repository = [string]$dependency.repository
     version = [string]$package.ResolvedVersion
     tag = [string]$package.ResolvedTag
@@ -285,7 +334,7 @@ foreach ($dependency in $dependencies) {
 
 $manifest = [ordered]@{
   schemaVersion = 2
-  builder = "htmlapps-video-compressor/1.1"
+  builder = "htmlapps-video-compressor/1.3"
   generatedAtUtc = [DateTime]::UtcNow.ToString("o")
   app = [ordered]@{ name = [string]$appConfig.name; slug = [string]$appConfig.slug; version = [string]$appConfig.version }
   dependencies = $manifestDependencies
@@ -343,12 +392,12 @@ if (-not $OutputPathWasSpecified) {
   Write-Host "[OK] Repository distribution HTML: $distributionPath" -ForegroundColor Green
 }
 
-$outputHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $OutputPath).Hash.ToLowerInvariant()
+$outputHash = (Get-FileSha256Hex $OutputPath)
 $outputSizeMb = [Math]::Round((Get-Item -LiteralPath $OutputPath).Length / 1MB, 2)
 Write-Host ""
 Write-Host "[OK] Standalone HTML: $OutputPath" -ForegroundColor Green
 Write-Host "[OK] Size: $outputSizeMb MB"
 Write-Host "[OK] SHA-256: $outputHash"
-Write-Host "[OK] FFmpeg WASM Release checksum verified before embedding."
+if ([string]::IsNullOrWhiteSpace($LocalFfmpegRoot)) { Write-Host "[OK] FFmpeg WASM Release checksum verified before embedding." } else { Write-Host "[OK] Local FFmpeg WASM build embedded for development verification." }
 Write-Host "[OK] Runtime network access is blocked by CSP."
 if ($selfExtractEnabled) { Write-Host "[OK] Self-extracting HTML: $selfExtractOutputPath" -ForegroundColor Green }

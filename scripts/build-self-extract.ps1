@@ -74,6 +74,18 @@ function Get-Sha256Hex([byte[]]$Bytes) {
   }
 }
 
+
+function Get-FileSha256Hex([string]$Path) {
+  $algorithm = [System.Security.Cryptography.SHA256]::Create()
+  $stream = [System.IO.File]::OpenRead($Path)
+  try {
+    return (($algorithm.ComputeHash($stream) | ForEach-Object { $_.ToString("x2") }) -join "")
+  } finally {
+    $stream.Dispose()
+    $algorithm.Dispose()
+  }
+}
+
 function ConvertTo-HtmlText([string]$Value) {
   $encoded = [System.Net.WebUtility]::HtmlEncode($Value)
   $builder = New-Object System.Text.StringBuilder
@@ -99,6 +111,11 @@ $faviconLink = if ([string]::IsNullOrWhiteSpace($encodedFaviconHref)) {
 } else {
   "  <link rel=`"icon`" href=`"$encodedFaviconHref`">`n"
 }
+$appMark = if ([string]::IsNullOrWhiteSpace($encodedFaviconHref)) {
+  '    <div class="app-mark fallback" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="14" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="m9.5 9 6 3-6 3V9Z" fill="currentColor"/></svg></div>'
+} else {
+  "    <div class=`"app-mark`" aria-hidden=`"true`"><img src=`"$encodedFaviconHref`" alt=`"`"></div>"
+}
 $sourceBytes = $inputBytes.Length
 $gzipBytes = $compressedBytes.Length
 
@@ -123,7 +140,9 @@ $faviconLink  <title>$encodedAppNameJa / $encodedAppName</title>
     * { box-sizing: border-box; }
     body { margin: 0; min-height: 100dvh; display: grid; place-items: center; padding: max(20px, env(safe-area-inset-top)) 18px max(20px, env(safe-area-inset-bottom)); color: #20211f; background: #f5f5f2; }
     main { width: min(31rem, 100%); padding: 24px 20px; text-align: center; border: 1px solid #dadbd6; border-radius: 18px; background: #fff; box-shadow: 0 12px 34px rgba(25, 28, 24, .08); }
-    .app-mark { display: grid; place-items: center; width: 46px; height: 46px; margin: 0 auto 16px; border-radius: 14px; background: #16624f; color: #fff; }
+    .app-mark { display: grid; place-items: center; width: 46px; height: 46px; margin: 0 auto 16px; border-radius: 12px; overflow: hidden; }
+    .app-mark img { display: block; width: 46px; height: 46px; }
+    .app-mark.fallback { background: #16624f; color: #fff; }
     .app-mark svg { width: 24px; height: 24px; }
     .spinner { width: 1.7rem; height: 1.7rem; margin: 0 auto 14px; border: .18rem solid #d8dfdc; border-top-color: #16624f; border-radius: 50%; animation: spin .8s linear infinite; }
     h1 { margin: 0 0 7px; font-size: 1rem; line-height: 1.45; }
@@ -142,9 +161,7 @@ $faviconLink  <title>$encodedAppNameJa / $encodedAppName</title>
 </head>
 <body>
   <main>
-    <div class="app-mark" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="14" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="m9.5 9 6 3-6 3V9Z" fill="currentColor"/></svg>
-    </div>
+$appMark
     <div class="spinner" aria-hidden="true"></div>
     <h1>&#x30A2;&#x30D7;&#x30EA;&#x3092;&#x5C55;&#x958B;&#x3057;&#x3066;&#x3044;&#x307E;&#x3059; / Unpacking the app</h1>
     <p>&#x5727;&#x7E2E;&#x6E08;&#x307F;&#x306E;&#x5358;&#x4E00;HTML&#x3092;&#x3001;&#x3053;&#x306E;&#x7AEF;&#x672B;&#x5185;&#x3060;&#x3051;&#x3067;&#x5FA9;&#x5143;&#x3057;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;</p>
@@ -223,7 +240,7 @@ $manifest = [ordered]@{
   output = [ordered]@{
     path = [System.IO.Path]::GetFileName($OutputPath)
     bytes = (Get-Item $OutputPath).Length
-    sha256 = (Get-FileHash -Algorithm SHA256 -Path $OutputPath).Hash.ToLowerInvariant()
+    sha256 = (Get-FileSha256Hex $OutputPath)
   }
   runtime = [ordered]@{
     decompressor = "DecompressionStream"
