@@ -146,3 +146,9 @@ powershell -ExecutionPolicy Bypass -File scripts/check-repository.ps1
 このアプリのリポジトリは **GPL-3.0-or-later** です。内包する `htmlapps-ffmpeg-wasm-builder` のFFmpeg/x264/libvpx/Opusコアは、GPLのx264をリンクするため **GPL-2.0-or-later** として配布されます。libvpxとOpusの個別ライセンス・特許許諾情報もBuilderのRelease bundleに含めます。
 
 生成HTMLのヘルプ画面にも、使用中のBuilderバージョンと対応ソースへのリンクを表示します。詳細は [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) を参照してください。
+
+## 入力切り替えの回帰テスト
+
+PowerShellに加えてNode.js 22以降を用意してください。`node scripts/test-source-lifecycle.cjs` でテンプレートのテストを実行できます。HTMLのパスを引数に渡すと通常版の生成物も確認できます。`scripts/check-repository.ps1` はビルド前にソースとルート配布HTMLを確認し、ビルド後に生成HTMLとルート配布物の一致も確認します。テンプレートを変更したら `build-standalone.ps1` で配布HTMLを再生成してください。
+
+実際のアプリスクリプトを使い、DOM・動画イベント・Worker通信・タイマー・埋め込みコア準備だけをテスト用に制御します。架空の小さなファイル情報と出力バイト列で、入力の切り替え・削除、古いコールバック、キャンセル直後の再試行、リソース解放、H.264/VP9の引数と出力名を確認します。動画のデコードやWASM実行は行いません。ブラウザー、実動画、オフライン、保存・共有、モバイルの手動確認は `VERIFY_OFFLINE.md` に従って別途行ってください。

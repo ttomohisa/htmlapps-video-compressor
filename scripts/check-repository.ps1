@@ -84,6 +84,14 @@ if ([string]$ffmpegDependency[0].version -notmatch '^[0-9]+\.[0-9]+\.[0-9]+(?:[-
 if ([string]$ffmpegDependency[0].releaseAsset -notmatch '\{version\}') { throw "releaseAsset must derive from the single version field" }
 if ([string]$ffmpegDependency[0].sourceAsset -notmatch '\{version\}') { throw "sourceAsset must derive from the single version field" }
 
+$node = Get-Command node -ErrorAction SilentlyContinue
+if ($null -eq $node) { throw "Node.js 22 or newer is required for application regression checks." }
+$regressionScript = Join-Path $Root "scripts\test-source-lifecycle.cjs"
+& $node.Source $regressionScript
+if ($LASTEXITCODE -ne 0) { throw "Application source lifecycle regression checks failed." }
+& $node.Source $regressionScript (Join-Path $Root "video-compressor.html")
+if ($LASTEXITCODE -ne 0) { throw "Checked-in distribution lifecycle checks failed. Rebuild video-compressor.html." }
+
 & (Join-Path $Root "scripts\check-source.ps1")
 $buildArguments = @{}
 if ($ForceDownload) { $buildArguments.ForceDownload = $true }
@@ -95,6 +103,8 @@ if (-not (Test-Path -LiteralPath $rootOutput)) { throw "Root distribution HTML w
 $distHash = (Get-FileSha256Hex $distOutput)
 $rootHash = (Get-FileSha256Hex $rootOutput)
 if ($distHash -ne $rootHash) { throw "video-compressor.html must match dist/index.html" }
+& $node.Source $regressionScript $distOutput
+if ($LASTEXITCODE -ne 0) { throw "Built standalone lifecycle regression checks failed." }
 
 $manifestPath = Join-Path $Root "dist\dependency-manifest.json"
 $manifest = Get-Content -Raw -Encoding UTF8 -LiteralPath $manifestPath | ConvertFrom-Json

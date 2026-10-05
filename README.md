@@ -144,3 +144,9 @@ powershell -ExecutionPolicy Bypass -File scripts/check-repository.ps1
 This application repository is **GPL-3.0-or-later**. The generated FFmpeg/x264/libvpx/Opus WebAssembly core from `htmlapps-ffmpeg-wasm-builder` is distributed under **GPL-2.0-or-later** because the profile links GPL x264. libvpx and Opus retain their own upstream notices and patent grants inside the Builder release bundle.
 
 The generated app also exposes the Builder version and corresponding-source link in its Help dialog. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
+## Source lifecycle regression checks
+
+Install Node.js 22 or newer in addition to PowerShell. Run `node scripts/test-source-lifecycle.cjs` for the source checks, or pass an HTML path to check a readable standalone build. `scripts/check-repository.ps1` checks the source and checked-in root HTML before building, then checks the generated standalone HTML and root parity. Rebuild with `build-standalone.ps1` after changing the template.
+
+The tests execute the actual inline app with controlled DOM/media events, Worker messages, timers and embedded-core preparation. Tiny fictional file metadata and output bytes cover selection replacement/removal, stale callbacks, cancel/retry, resource disposal, H.264/VP9 arguments and output naming. They do not decode video, instantiate WASM, or replace the manual browser, real-video, offline, save/share and mobile checks in `VERIFY_OFFLINE.md`.

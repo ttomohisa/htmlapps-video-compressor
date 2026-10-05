@@ -12,12 +12,14 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v7
-      - name: Check source network boundary
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Build and check application regressions
         shell: powershell
-        run: .\scripts\check-source.ps1
-      - name: Build standalone HTML
-        shell: powershell
-        run: .\build-standalone.ps1
+        run: .\scripts\check-repository.ps1
       - name: Upload validation artifact
         uses: actions/upload-artifact@v7
         with:

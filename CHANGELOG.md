@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Bind source metadata, inspection fallback and compression to their owning operation so removed or superseded files cannot change current settings or preview state.
+- Cancel metadata/frame callbacks and dispose each operation's worker, URL and pending request, including cancellation during embedded-core preparation and immediate retry.
+- Keep the selected source stable during compression until cancellation, preserve a user-selected bitrate after inspection fallback, and reset the visible extension together with the default codec.
+- Add actual-source lifecycle regression checks to aggregate validation and CI; rebuild the root standalone distribution.
+
 ## 1.3.1 - Help, output naming, and mobile workflow - 2026-09-03
 
 - Use the recommended video bitrate as the default after source inspection, while keeping the measured source bitrate visible as reference information.
