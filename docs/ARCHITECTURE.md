@@ -48,3 +48,11 @@ The generated HTML uses `connect-src 'none'`. The source checker rejects runtime
 Each selection or compression owns an operation with the source file, source generation, and cancellable cleanup callbacks. Replacement, removal, cancellation and unload retire that operation before releasing its resources. Metadata and frame-rate fallback callbacks check ownership before publishing or touching the shared preview. Metadata listeners, timeout and frame requests are removed on retirement.
 
 Core WASM bytes remain shared and cached. Each worker invocation checks ownership again after asynchronous core preparation, owns its Worker and Blob URL locally, and disposes only its own request. Retired workers cannot publish logs, progress, errors or output. Compression cleanup also checks ownership so an immediate retry is not reset by the cancelled invocation. While compression is active, new selection is ignored until cancellation or completion.
+
+## Completed output naming
+
+The result's Rename dialog captures the current output File identity and edits only its basename. It derives the read-only extension from that completed file, never from the codec selected for the next run. Applying a changed, normalized name creates a new File wrapper over the same encoded bytes, preserving MIME type and lastModified; the output Blob, preview URL and result statistics remain unchanged. Save and Share both read this current output File.
+
+Empty or unchanged names leave the original File in place. Cancel, Close, Escape and backdrop dismissal discard the draft. Clearing or replacing the source, or starting another compression, closes the dialog; submission also checks File identity so an obsolete dialog cannot rename a newer result. This path never starts a Worker and does not alter next-run settings. Both naming controls use the same pure basename normalizer.
+
+The Save click handler explicitly requests normal download feedback. Share's unsupported-browser fallback requests a silent download and displays its own single explanatory message.

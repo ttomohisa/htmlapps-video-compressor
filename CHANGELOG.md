@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Rename a completed result without recompressing: keep its encoded format, bytes, preview, and statistics while updating Save and Share together.
+- Restore the localized download-start message for the Save button without duplicating the unsupported-Share fallback message.
+- Add completed-result naming, dismissal, stale-dialog, and Save/Share regression coverage.
+
 - Bind source metadata, inspection fallback and compression to their owning operation so removed or superseded files cannot change current settings or preview state.
 - Cancel metadata/frame callbacks and dispose each operation's worker, URL and pending request, including cancellation during embedded-core preparation and immediate retry.
 - Keep the selected source stable during compression until cancellation, preserve a user-selected bitrate after inspection fallback, and reset the visible extension together with the default codec.
