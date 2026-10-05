@@ -22,7 +22,7 @@ Only this build phase uses the network.
 5. The selected browser `File` is mounted in the Worker through Emscripten WORKERFS under `/workerfs`; the full source video is not copied into a JavaScript ArrayBuffer or MEMFS first.
 6. `createFFmpegCore` receives `wasmBinary` and a direct `instantiateWasm` callback, so no WASM URL is fetched.
 7. Inspection runs the compact public-libav runner with `--inspect-output /inspect.json`. The runner reads container/stream packets and reports actual video packet bytes, duration, average video bitrate, fps, coded/display dimensions, and display-matrix rotation.
-8. The measured video bitrate becomes the UI's initial video bitrate value.
+8. The measured video bitrate remains source information; the codec/dimension-aware recommendation initializes the editable output bitrate. A user override is preserved when inspection or its fallback completes.
 9. Compression runs the same runner with `--codec h264` to `/output.mp4` or `--codec vp9` to `/output.webm`, plus resize/fps/bitrate/speed/audio arguments.
 10. If the source contains a display matrix, autorotation is applied in the video filter graph before resize. The output therefore contains correctly oriented pixels rather than relying on copied rotation metadata.
 11. Progress lines beginning with `__FFMPEG_WASM_PROGRESS__` update the UI.
@@ -42,3 +42,9 @@ H.265/x265 is not included in this profile. The project avoids adding it as the 
 ## Network boundary
 
 The generated HTML uses `connect-src 'none'`. The source checker rejects runtime `fetch`, XHR, WebSocket, EventSource, dynamic `import()`, `importScripts()`, and unexpected URLs. Build scripts/configuration are the only locations allowed to contain dependency URLs.
+
+## Source and worker ownership
+
+Each selection or compression owns an operation with the source file, source generation, and cancellable cleanup callbacks. Replacement, removal, cancellation and unload retire that operation before releasing its resources. Metadata and frame-rate fallback callbacks check ownership before publishing or touching the shared preview. Metadata listeners, timeout and frame requests are removed on retirement.
+
+Core WASM bytes remain shared and cached. Each worker invocation checks ownership again after asynchronous core preparation, owns its Worker and Blob URL locally, and disposes only its own request. Retired workers cannot publish logs, progress, errors or output. Compression cleanup also checks ownership so an immediate retry is not reset by the cancelled invocation. While compression is active, new selection is ignored until cancellation or completion.
