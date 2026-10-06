@@ -48,7 +48,8 @@ function environment() {
     pause() { this.pauses = (this.pauses || 0) + 1; }
     play() { return Promise.resolve(); }
     scrollIntoView() {} getBoundingClientRect() { return { height: 40, top: 0 }; }
-    showModal() { this.open = true; } close() { this.open = false; }
+    showModal() { this.open = true; } close() { this.open = false; this.dispatch('close'); }
+    focus() { this.focused = true; } select() { this.selected = true; }
     click() { this.dispatch('click'); }
   }
   const elements = new Map();
@@ -84,7 +85,7 @@ function environment() {
   const context = vm.createContext(sandbox);
   let script = html.match(/<script>\s*([\s\S]*?)<\/script>/)[1]
     .replace('__APP_CONFIG_JSON__', '{}').replace('__BUILD_MANIFEST_JSON__', '{}').replace('__EMBEDDED_ASSET_BUNDLE_JSON__', '{}');
-  script = script.replace(/\}\)\(\);\s*$/, 'globalThis.api={state,els,selectFile,clearFile,compress,cancel,buildArgs,targetDimensions};})();');
+  script = script.replace(/\}\)\(\);\s*$/, 'globalThis.api={state,els,selectFile,clearFile,compress,cancel,buildArgs,targetDimensions,download,share,t};})();');
   vm.runInContext(script, context, { filename: sourcePath });
   const core = deferred();
   sandbox.window.StandaloneAssets = { text: () => '', bytesAsync: () => core.promise };
@@ -305,3 +306,170 @@ test('retirement handles later rejected play promise without preview mutation', 
   assert.equal(e.el('sourcePreview').currentTime, 3); assert.equal(e.el('sourcePreview').pauses, pauses);
   assert.equal(frames.size, 0); assert.equal(e.api.state.source.fps, 60); noWorkerResources(e);
 });
+
+
+// Completed-output actions operate on synthetic encoded bytes, never real media.
+async function finishOutput(e, codec = 'h264') {
+  await e.ready();
+  e.el('codecSelect').value = codec; e.el('codecSelect').dispatch('change');
+  e.el('outputNameInput').value = 'before';
+  const compression = e.api.compress(); await flush();
+  e.workers.at(-1).reply(new Uint8Array([1, 2, 3, 254]).buffer); await compression;
+}
+function resultSnapshot(e) {
+  return { file: e.api.state.outputFile, blob: e.api.state.outputBlob, url: e.api.state.outputUrl,
+    preview: e.el('resultPreview').src, workers: e.workers.length, urls: [...e.urls.keys()],
+    reduction: e.api.state.outputReduction,
+    stats: ['resultOriginalSize', 'resultOutputSize', 'resultSavings', 'resultElapsed'].map(id => e.el(id).textContent) };
+}
+function assertOutputUnchanged(e, before, sameFile = true) {
+  const after = resultSnapshot(e);
+  if (sameFile) assert.equal(after.file, before.file);
+  for (const key of ['blob', 'url', 'preview', 'workers', 'reduction']) assert.equal(after[key], before[key], key);
+  assert.deepEqual(after.urls, before.urls); assert.deepEqual(after.stats, before.stats);
+}
+function submitRename(e, value) {
+  e.el('renameInput').value = value; e.el('renameForm').dispatch('submit');
+}
+
+test('rename controls have an accessible form and a non-editable actual extension', () => {
+  assert.match(html, /<button[^>]*id="renameButton"[^>]*type="button"/);
+  assert.match(html, /<dialog[^>]*id="renameDialog"[^>]*aria-labelledby="renameTitle"/);
+  assert.match(html, /<form[^>]*id="renameForm"/);
+  assert.match(html, /<label[^>]*for="renameInput"/);
+  assert.match(html, /<input[^>]*id="renameInput"[^>]*maxlength="180"[^>]*aria-describedby="renameHint"/);
+  assert.match(html, /<span[^>]*id="renameExtension"/);
+  assert.match(html, /<button[^>]*id="renameApplyButton"[^>]*type="submit"/);
+});
+for (const codec of ['h264', 'vp9']) for (const language of ['en', 'ja']) {
+  test(`completed ${codec} rename preserves encoded output and updates Save and Share: ${language}`, async () => {
+    const e = environment(); await finishOutput(e, codec); e.api.state.language = language;
+    const before = resultSnapshot(e), ext = codec === 'vp9' ? '.webm' : '.mp4';
+    e.el('codecSelect').value = codec === 'vp9' ? 'h264' : 'vp9'; e.el('codecSelect').dispatch('change');
+    e.el('outputNameInput').value = 'next-run';
+    e.el('renameButton').click();
+    assert.equal(e.el('renameDialog').open, true);
+    assert.equal(e.el('renameInput').value, 'before'); assert.equal(e.el('renameExtension').textContent, ext);
+    assert.equal(e.el('renameInput').focused, true); assert.equal(e.el('renameInput').selected, true);
+    const name = language === 'ja' ? '共有用動画' : 'shared-video';
+    submitRename(e, name + (codec === 'vp9' ? '.MP4' : '.WEBM'));
+    const file = e.api.state.outputFile;
+    assert.equal(e.el('renameDialog').open, false); assert.notEqual(file, before.file);
+    assert.equal(file.name, name + ext); assert.equal(e.el('resultName').textContent, file.name);
+    assert.equal(file.type, before.file.type); assert.equal(file.size, before.file.size);
+    assert.equal(file.lastModified, before.file.lastModified);
+    assert.deepEqual([...new Uint8Array(await file.arrayBuffer())], [1, 2, 3, 254]);
+    assert.equal(e.el('outputNameInput').value, 'next-run'); assertOutputUnchanged(e, before, false);
+    assert.equal(e.el('toastRegion').children.at(-1).textContent,
+      language === 'ja' ? '圧縮結果のファイル名を変更しました。' : 'Result file renamed.');
+    e.el('downloadButton').click(); assert.equal(e.context.document.body.children.at(-1).download, name + ext);
+    let shared; e.context.navigator.canShare = () => true; e.context.navigator.share = async data => { shared = data; };
+    await e.api.share(); assert.equal(shared.files[0], file); assert.equal(shared.title, name + ext);
+    e.el('renameButton').click(); assert.equal(e.el('renameInput').value, name);
+    submitRename(e, 'again'); assert.equal(e.api.state.outputFile.name, 'again' + ext);
+    assertOutputUnchanged(e, before, false);
+  });
+}
+for (const action of ['cancel', 'close', 'escape', 'backdrop']) {
+  test(`rename ${action} discards the draft and preserves the result`, async () => {
+    const e = environment(); await finishOutput(e); const before = resultSnapshot(e);
+    const toasts = e.el('toastRegion').children.length;
+    e.el('renameButton').click(); e.el('renameInput').value = 'discard';
+    if (action === 'cancel') e.el('renameCancelButton').click();
+    if (action === 'close') e.el('renameCloseButton').click();
+    if (action === 'escape') e.el('renameDialog').dispatch('cancel');
+    if (action === 'backdrop') e.el('renameDialog').click();
+    assert.equal(e.el('renameDialog').open, false); assertOutputUnchanged(e, before);
+    submitRename(e, 'late-submit'); assertOutputUnchanged(e, before);
+    assert.equal(e.el('toastRegion').children.length, toasts);
+    e.el('renameButton').click(); assert.equal(e.el('renameInput').value, 'before');
+  });
+}
+for (const value of ['', '   ', '.MP4', '... ', 'before', 'before.webm']) {
+  test(`empty or unchanged normalized rename retains the original File: ${JSON.stringify(value)}`, async () => {
+    const e = environment(); await finishOutput(e); const before = resultSnapshot(e);
+    const toasts = e.el('toastRegion').children.length;
+    e.el('renameButton').click(); submitRename(e, value);
+    assertOutputUnchanged(e, before); assert.equal(e.el('renameDialog').open, false);
+    assert.equal(e.el('toastRegion').children.length, toasts);
+  });
+}
+test('filename normalization is shared with next-run naming and remains plain text', async () => {
+  const e = environment(); await finishOutput(e);
+  for (const [input, expected] of [
+    ['  folder/name:*?"<>|clip.WEBM  ', 'folder-name-clip'],
+    ['<b>hello</b>... ', '-b-hello-b-'], ['日本語の動画.MP4', '日本語の動画'],
+    ['x'.repeat(190), 'x'.repeat(180)], ['x'.repeat(179) + '. rest', 'x'.repeat(179)]
+  ]) {
+    e.el('renameButton').click(); submitRename(e, input);
+    assert.equal(e.api.state.outputFile.name, expected + '.mp4');
+    assert.equal(e.el('resultName').textContent, expected + '.mp4');
+    e.el('outputNameInput').value = input; e.el('outputNameInput').dispatch('blur');
+    assert.equal(e.el('outputNameInput').value, expected);
+  }
+});
+test('rename guards an absent output and an active compression', async () => {
+  const e = environment(); e.el('renameButton').click(); assert.notEqual(e.el('renameDialog').open, true);
+  await finishOutput(e); const before = resultSnapshot(e);
+  e.api.state.processing = true; e.el('renameButton').click(); assert.notEqual(e.el('renameDialog').open, true);
+  assertOutputUnchanged(e, before); e.api.state.processing = false;
+});
+test('rename identity guard rejects a different result even when the name matches', async () => {
+  const e = environment(); await finishOutput(e); e.el('renameButton').click();
+  const old = e.api.state.outputFile;
+  e.api.state.outputFile = new File([old], old.name, { type: old.type, lastModified: old.lastModified });
+  const before = resultSnapshot(e); submitRename(e, 'stale');
+  assertOutputUnchanged(e, before); assert.equal(e.el('renameDialog').open, false);
+});
+for (const action of ['clear', 'replace', 'recompress']) {
+  test(`output ${action} closes rename and prevents stale submission`, async () => {
+    const e = environment(); await finishOutput(e); e.el('renameButton').click();
+    let pending;
+    if (action === 'clear') e.api.clearFile();
+    if (action === 'replace') {
+      pending = e.api.selectFile(e.fixture('replacement.mp4')); e.metadata(); await flush();
+      e.workers.at(-1).reply(e.inspection()); await pending;
+    }
+    if (action === 'recompress') {
+      pending = e.api.compress(); await flush();
+      e.workers.at(-1).reply(new Uint8Array([9, 8]).buffer); await pending;
+    }
+    assert.equal(e.el('renameDialog').open, false);
+    const before = resultSnapshot(e); submitRename(e, 'stale'); assertOutputUnchanged(e, before);
+  });
+}
+for (const language of ['en', 'ja']) test(`Save click emits one download-start message: ${language}`, async () => {
+  const e = environment(); await finishOutput(e); e.api.state.language = language;
+  const before = e.el('toastRegion').children.length;
+  e.el('downloadButton').click();
+  assert.equal(e.el('toastRegion').children.length - before, 1);
+  assert.equal(e.el('toastRegion').children.at(-1).textContent, language === 'ja' ? '保存を開始しました。' : 'Download started.');
+  assert.equal(e.context.document.body.children.at(-1).download, 'before.mp4');
+});
+test('explicit silent download and unsupported Share preserve feedback behavior', async () => {
+  const e = environment(); await finishOutput(e);
+  const before = e.el('toastRegion').children.length;
+  e.api.download(true); assert.equal(e.el('toastRegion').children.length, before);
+  await e.api.share(); assert.equal(e.el('toastRegion').children.length, before + 1);
+  assert.equal(e.el('toastRegion').children.at(-1).textContent, 'File sharing is unavailable, so the download was started.');
+});
+test('Save without output and aborted native Share have no side effects', async () => {
+  const e = environment(); e.el('downloadButton').click();
+  assert.equal(e.context.document.body.children.length, 0); assert.equal(e.el('toastRegion').children.length, 0);
+  await finishOutput(e); const before = e.el('toastRegion').children.length;
+  const children = e.context.document.body.children.length;
+  e.context.navigator.share = async () => { const error = new Error('cancelled'); error.name = 'AbortError'; throw error; };
+  await e.api.share(); assert.equal(e.el('toastRegion').children.length, before);
+  assert.equal(e.context.document.body.children.length, children);
+});
+for (const value of ['clip.mp4.webm', 'clip.mp4.']) {
+  test(`untouched Rename preserves a basename that still ends in a codec suffix: ${value}`, async () => {
+    const e = environment(); await finishOutput(e);
+    e.el('renameButton').click(); submitRename(e, value);
+    assert.equal(e.api.state.outputFile.name, 'clip.mp4.mp4');
+    const before = resultSnapshot(e), toasts = e.el('toastRegion').children.length;
+    e.el('renameButton').click(); assert.equal(e.el('renameInput').value, 'clip.mp4');
+    e.el('renameForm').dispatch('submit');
+    assertOutputUnchanged(e, before); assert.equal(e.el('toastRegion').children.length, toasts);
+  });
+}

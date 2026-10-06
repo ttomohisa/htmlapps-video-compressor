@@ -29,7 +29,8 @@ A single-HTML video compressor that keeps processing inside the browser. It can 
 - WORKERFS input so large source videos are not copied wholesale into MEMFS before processing
 - Progress, processing log, and cancellation
 - Preview, save, and share output
-- Editable output file name with automatic `.mp4` / `.webm` extension handling
+- Editable next-run output file name with automatic `.mp4` / `.webm` extension handling
+- Rename the completed result before saving or sharing, without recompressing or changing its actual format
 - Japanese and English UI
 - No runtime network access
 - Responsive desktop/mobile UI
