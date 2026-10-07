@@ -1,6 +1,9 @@
 # Changelog
 
-## Unreleased
+## 1.3.2 - 2026-10-07
+
+- Localize the header language target and tooltip to the current UI language while retaining the `EN` / `JA` labels, Help text, privacy copy, and layout.
+- Add regression coverage for language round trips and fallback accessibility metadata.
 
 - Rename a completed result without recompressing: keep its encoded format, bytes, preview, and statistics while updating Save and Share together.
 - Restore the localized download-start message for the Save button without duplicating the unsupported-Share fallback message.

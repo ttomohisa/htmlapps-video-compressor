@@ -3,7 +3,7 @@
   "name": "Local Video Compressor",
   "nameJa": "ローカル動画圧縮",
   "slug": "local-video-compressor",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "Compress videos locally in your browser to H.264/MP4 or VP9/WebM with a pinned compact FFmpeg 9 WebAssembly build. No upload or runtime network access.",
   "descriptionJa": "FFmpeg 9のcompact WebAssemblyを使い、動画をブラウザ内だけでH.264/MP4またはVP9/WebMへ圧縮します。アップロードも実行時通信もありません。",
   "defaultLanguage": "auto",

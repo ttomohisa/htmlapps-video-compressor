@@ -68,11 +68,11 @@ $app = Get-Content -Raw -Encoding UTF8 (Join-Path $Root "app.config.json") | Con
 if ([string]::IsNullOrWhiteSpace([string]$app.name)) { throw "app.config.json: name is required" }
 if ([string]::IsNullOrWhiteSpace([string]$app.slug)) { throw "app.config.json: slug is required" }
 if ([string]::IsNullOrWhiteSpace([string]$app.version)) { throw "app.config.json: version is required" }
-if ([string]$app.version -ne "1.3.1") { throw "app.config.json: expected release version 1.3.1" }
+if ([string]$app.version -ne "1.3.2") { throw "app.config.json: expected release version 1.3.2" }
 
 $templateText = [System.IO.File]::ReadAllText((Join-Path $Root "src\index.template.html"), [System.Text.Encoding]::UTF8)
 foreach ($requiredMarker in @('id="outputNameInput"', 'id="mobileBar"', 'dialog[open]{display:flex;flex-direction:column}')) {
-  if (-not $templateText.Contains($requiredMarker)) { throw "src/index.template.html is missing v1.3.1 marker: $requiredMarker" }
+  if (-not $templateText.Contains($requiredMarker)) { throw "src/index.template.html is missing v1.3.2 marker: $requiredMarker" }
 }
 
 

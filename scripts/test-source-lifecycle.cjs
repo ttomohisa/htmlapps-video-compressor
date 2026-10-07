@@ -473,3 +473,26 @@ for (const value of ['clip.mp4.webm', 'clip.mp4.']) {
     assertOutputUnchanged(e, before); assert.equal(e.el('toastRegion').children.length, toasts);
   });
 }
+
+// Header regressions execute the app's actual language click handler.
+test('header language action is localized and survives repeated round trips', () => {
+  const e = environment();
+  const before = { file: e.api.state.file, codec: e.el('codecSelect').value, bitrate: e.el('bitrateInput').value };
+  for (const language of ['en', 'ja', 'en', 'ja', 'en']) {
+    const ja = language === 'ja';
+    assert.equal(e.api.state.language, language);
+    assert.equal(e.el('languageLabel').textContent, ja ? 'EN' : 'JA');
+    assert.equal(e.el('languageButton').getAttribute('aria-label'), ja ? '英語に切り替え' : 'Switch to Japanese');
+    assert.equal(e.el('languageButton').title, ja ? '英語に切り替え' : 'Switch to Japanese');
+    assert.equal(e.el('helpButton').getAttribute('aria-label'), ja ? 'ヘルプ' : 'Help');
+    assert.equal(e.el('helpButton').title, ja ? 'ヘルプ' : 'Help');
+    assert.equal(e.api.t('privacyShort'), ja ? '完全ローカル処理' : 'Fully local processing');
+    assert.deepEqual({ file: e.api.state.file, codec: e.el('codecSelect').value, bitrate: e.el('bitrateInput').value }, before);
+    e.el('languageButton').click();
+  }
+});
+test('Japanese fallback header names its English target before initialization', () => {
+  const button = html.match(/<button\b[^>]*id="languageButton"[^>]*>/)[0];
+  assert.match(button, /aria-label="英語に切り替え"/);
+  assert.match(button, /title="英語に切り替え"/);
+});
