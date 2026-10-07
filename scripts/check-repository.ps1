@@ -68,11 +68,11 @@ $app = Get-Content -Raw -Encoding UTF8 (Join-Path $Root "app.config.json") | Con
 if ([string]::IsNullOrWhiteSpace([string]$app.name)) { throw "app.config.json: name is required" }
 if ([string]::IsNullOrWhiteSpace([string]$app.slug)) { throw "app.config.json: slug is required" }
 if ([string]::IsNullOrWhiteSpace([string]$app.version)) { throw "app.config.json: version is required" }
-if ([string]$app.version -ne "1.3.2") { throw "app.config.json: expected release version 1.3.2" }
+if ([string]$app.version -ne "1.3.3") { throw "app.config.json: expected release version 1.3.3" }
 
 $templateText = [System.IO.File]::ReadAllText((Join-Path $Root "src\index.template.html"), [System.Text.Encoding]::UTF8)
 foreach ($requiredMarker in @('id="outputNameInput"', 'id="mobileBar"', 'dialog[open]{display:flex;flex-direction:column}')) {
-  if (-not $templateText.Contains($requiredMarker)) { throw "src/index.template.html is missing v1.3.2 marker: $requiredMarker" }
+  if (-not $templateText.Contains($requiredMarker)) { throw "src/index.template.html is missing required application marker: $requiredMarker" }
 }
 
 
@@ -114,5 +114,10 @@ if ([string]$resolved[0].version -ne [string]$ffmpegDependency[0].version) { thr
 if ([string]$resolved[0].archiveSha256 -notmatch '^[0-9a-f]{64}$') { throw "Generated manifest must record the verified Release archive SHA-256" }
 if ([string]$resolved[0].sourceSha256 -notmatch '^[0-9a-f]{64}$') { throw "Generated manifest must record the corresponding-source SHA-256" }
 if ([string]::IsNullOrWhiteSpace([string]$resolved[0].correspondingSourceUrl)) { throw "Generated manifest must record the corresponding-source URL" }
+
+& $node.Source --test (Join-Path $Root "scripts\test-support\timing-readers.test.cjs")
+if ($LASTEXITCODE -ne 0) { throw "Media timing parser regression checks failed." }
+& $node.Source (Join-Path $Root "scripts\test-core-timing.cjs") $distOutput
+if ($LASTEXITCODE -ne 0) { throw "Embedded FFmpeg media timing regression checks failed." }
 
 Write-Host "[OK] Repository check passed." -ForegroundColor Green

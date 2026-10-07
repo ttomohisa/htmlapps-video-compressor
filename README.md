@@ -43,10 +43,10 @@ The repository does not commit the large generated WASM binary. `dependencies.js
 Current pin:
 
 ```json
-"version": "1.6.0"
+"version": "1.10.1"
 ```
 
-Builder v1.6.0 adds libvpx VP9, Opus, source-stream inspection, autorotation, and WORKERFS input to the `video-compressor` profile. The runtime never downloads FFmpeg from GitHub.
+Builder v1.10.1 fixes final-frame MP4 duration and preserves Original-FPS timestamps. Builder v1.6.0 originally added libvpx VP9, Opus, source-stream inspection, autorotation, and WORKERFS input to the `video-compressor` profile. The runtime never downloads FFmpeg from GitHub.
 
 ## Build on Windows
 
@@ -94,7 +94,7 @@ This local integration path is for development verification only. Release builds
 When a new Builder release is ready, update one version number and rebuild with:
 
 ```text
-update-ffmpeg.bat 1.6.0
+update-ffmpeg.bat 1.10.1
 ```
 
 The script updates `dependencies.json`, downloads the matching Release, verifies its SHA-256, and rebuilds the standalone files.

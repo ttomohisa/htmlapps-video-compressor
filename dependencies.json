@@ -5,7 +5,7 @@
       "id": "ffmpeg-wasm-builder",
       "source": "github-release",
       "repository": "ttomohisa/htmlapps-ffmpeg-wasm-builder",
-      "version": "1.6.0",
+      "version": "1.10.1",
       "releaseAsset": "ffmpeg-wasm-video-compressor-v{version}.zip",
       "checksumsAsset": "SHA256SUMS.txt",
       "sourceAsset": "ffmpeg-wasm-sources-v{version}.tar.gz",

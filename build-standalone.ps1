@@ -75,7 +75,7 @@ function Get-GitHubReleasePackage([object]$Dependency) {
   $archivePath = Join-Path $packageRoot $releaseAsset
   $checksumsPath = Join-Path $packageRoot $checksumsAsset
   $baseUrl = "https://github.com/$repository/releases/download/$tag"
-  $headers = @{ "User-Agent" = "htmlapps-video-compressor/1.3.2" }
+  $headers = @{ "User-Agent" = "htmlapps-video-compressor/1.3.3" }
 
   if ($ForceDownload -and (Test-Path -LiteralPath $packageRoot)) {
     Remove-Item -Recurse -Force -LiteralPath $packageRoot
@@ -334,7 +334,7 @@ foreach ($dependency in $dependencies) {
 
 $manifest = [ordered]@{
   schemaVersion = 2
-  builder = "htmlapps-video-compressor/1.3.2"
+  builder = "htmlapps-video-compressor/1.3.3"
   generatedAtUtc = [DateTime]::UtcNow.ToString("o")
   app = [ordered]@{ name = [string]$appConfig.name; slug = [string]$appConfig.slug; version = [string]$appConfig.version }
   dependencies = $manifestDependencies

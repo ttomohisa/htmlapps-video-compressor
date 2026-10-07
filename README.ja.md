@@ -43,10 +43,10 @@
 現在の固定バージョン:
 
 ```json
-"version": "1.6.0"
+"version": "1.10.1"
 ```
 
-Builder v1.6.0の `video-compressor` profileでは、libvpx VP9、Opus、元動画のストリーム解析、回転補正、WORKERFS入力を追加しています。ブラウザ実行時にはGitHub Releaseへアクセスしません。
+Builder v1.10.1ではMP4の最終フレームの時間を修正し、「元のまま」の可変フレーム時刻を保持します。Builder v1.6.0の `video-compressor` profileでは、libvpx VP9、Opus、元動画のストリーム解析、回転補正、WORKERFS入力を追加しています。ブラウザ実行時にはGitHub Releaseへアクセスしません。
 
 ## ビルド
 
@@ -96,7 +96,7 @@ build-with-local-ffmpeg.bat ..\htmlapps-ffmpeg-wasm-builder\dist\video-compresso
 Builder側で新しいReleaseが出たら、次のように更新します。
 
 ```text
-update-ffmpeg.bat 1.6.0
+update-ffmpeg.bat 1.10.1
 ```
 
 `dependencies.json` のバージョンを更新し、新しいReleaseの取得・SHA-256検証・単一HTML再ビルドまで実行します。FFmpeg更新後は必ず生成HTMLで実動画の圧縮確認も行います。

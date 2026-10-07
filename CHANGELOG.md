@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.3 - 2026-10-07
+
+- Update the compact core to checksum-verified FFmpeg WASM Builder v1.10.1, fixing the zero-duration final MP4 sample and shortened video edit interval.
+- Preserve Original-FPS variable timestamps and complete single-frame output while keeping H.264/AAC and VP9/Opus support.
+- Add actual embedded-core timing regressions using the app argument builder, strict MP4 sample/edit checks, audio and WebM controls, and root/readable/self-extract byte parity to aggregate validation.
+
 ## 1.3.2 - 2026-10-07
 
 - Localize the header language target and tooltip to the current UI language while retaining the `EN` / `JA` labels, Help text, privacy copy, and layout.
