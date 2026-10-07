@@ -1,17 +1,17 @@
 # Third-party notices
 
-## FFmpeg WASM Builder v1.6.0 generated core
+## FFmpeg WASM Builder v1.10.1 generated core
 
 This application embeds build artifacts from:
 
 - Project: `ttomohisa/htmlapps-ffmpeg-wasm-builder`
-- Builder release: `v1.6.0`
-- Binary release asset: `ffmpeg-wasm-video-compressor-v1.6.0.zip`
-- Corresponding-source asset: `ffmpeg-wasm-sources-v1.6.0.tar.gz`
+- Builder release: `v1.10.1`
+- Binary release asset: `ffmpeg-wasm-video-compressor-v1.10.1.zip`
+- Corresponding-source asset: `ffmpeg-wasm-sources-v1.10.1.tar.gz`
 - Embedded files: `ffmpeg.js`, `ffmpeg.wasm`
 - Generated video-compressor core license: GPL-2.0-or-later
 
-The Builder v1.6.0 source pins:
+The Builder v1.10.1 source pins:
 
 - FFmpeg `n9.0.1`, commit `bf1b838f2ab88b4f8fd83443325c782ea0e0f7fa`
 - x264 commit `31e19f92f00c7003fa115047ce50978bc98c3a0d`

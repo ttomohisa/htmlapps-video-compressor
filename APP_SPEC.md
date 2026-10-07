@@ -1,5 +1,11 @@
 # Application specification
 
+## v1.3.3 media timing requirements
+
+- MP4 preserves a positive final-frame duration and a complete video edit interval, with or without audio.
+- Original FPS preserves variable presentation timestamps; selected FPS retains a constant presentation cadence.
+- Actual embedded-core timing tests cover both generated variants through exact payload parity.
+
 ## v1.3.2 UX requirements
 
 - The header language action shows `EN` in Japanese and `JA` in English. Its accessible name and tooltip describe the target language in the current UI language. Preserve localized Help labels and privacy copy.
@@ -15,7 +21,7 @@ Provide a simple, fully self-contained browser video compressor. A non-expert sh
 ## Engine
 - Engine source: `ttomohisa/htmlapps-ffmpeg-wasm-builder` GitHub Release.
 - Version is pinned once in `dependencies.json`.
-- Builder `1.6.0` / FFmpeg `n9.0.1` is pinned for app v1.3.2.
+- Builder `1.10.1` / FFmpeg `n9.0.1` is pinned for app v1.3.3.
 - Output A: H.264 (`libx264`) video + optional AAC audio in MP4.
 - Output B: VP9 (`libvpx-vp9`) video + optional Opus audio in WebM.
 - Single-thread compact public-libav runner; no SharedArrayBuffer/COOP/COEP requirement.
@@ -60,7 +66,7 @@ Use the template-aligned card and control language on narrow screens. Keep the s
 
 ## Acceptance criteria
 - `scripts/check-source.ps1` passes.
-- `scripts/check-repository.ps1` builds and verifies both standalone variants after Builder v1.6.0 is available.
+- `scripts/check-repository.ps1` builds and verifies both standalone variants using the checksum-verified Builder release.
 - Release archive checksum is verified before embedding.
 - No unresolved placeholders or external runtime asset references remain.
 - CSP includes `connect-src 'none'` and `'wasm-unsafe-eval'`, but not broad `'unsafe-eval'`.
