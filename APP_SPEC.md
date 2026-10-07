@@ -1,6 +1,8 @@
 # Application specification
 
-## v1.3.1 UX requirements
+## v1.3.2 UX requirements
+
+- The header language action shows `EN` in Japanese and `JA` in English. Its accessible name and tooltip describe the target language in the current UI language. Preserve localized Help labels and privacy copy.
 
 - The Help icon must render its question-mark dot reliably at all supported sizes.
 - Help content must remain fully scrollable without clipping on desktop or mobile.
@@ -13,7 +15,7 @@ Provide a simple, fully self-contained browser video compressor. A non-expert sh
 ## Engine
 - Engine source: `ttomohisa/htmlapps-ffmpeg-wasm-builder` GitHub Release.
 - Version is pinned once in `dependencies.json`.
-- Builder `1.6.0` / FFmpeg `n9.0.1` is pinned for app v1.3.1.
+- Builder `1.6.0` / FFmpeg `n9.0.1` is pinned for app v1.3.2.
 - Output A: H.264 (`libx264`) video + optional AAC audio in MP4.
 - Output B: VP9 (`libvpx-vp9`) video + optional Opus audio in WebM.
 - Single-thread compact public-libav runner; no SharedArrayBuffer/COOP/COEP requirement.
