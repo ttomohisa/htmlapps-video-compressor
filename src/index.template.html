@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#f5f5f2">
   <meta name="description" content="FFmpeg 9 WebAssemblyで動画をブラウザ内だけでH.264 / MP4またはVP9 / WebMへ圧縮する単一HTMLアプリです。">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'wasm-unsafe-eval' blob:; style-src 'unsafe-inline'; img-src data: blob:; media-src data: blob:; worker-src blob:; connect-src 'none'; font-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTQiIGZpbGw9IiMxNjYyNGYiLz4KICA8cmVjdCB4PSIxMiIgeT0iMTIiIHdpZHRoPSI0MCIgaGVpZ2h0PSIzMCIgcng9IjYiIGZpbGw9IiNmZmYiLz4KICA8cmVjdCB4PSIxNyIgeT0iMTciIHdpZHRoPSIzMCIgaGVpZ2h0PSIyMCIgcng9IjMiIGZpbGw9IiNlMWYwZWEiLz4KICA8cGF0aCBkPSJtMjcgMjEgMTMgNi0xMyA2WiIgZmlsbD0iIzE2NjI0ZiIvPgogIDxwYXRoIGQ9Ik0xNCA0M3Y3aDExTTUwIDQzdjdIMzkiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KICA8cGF0aCBkPSJNMjAgNTBoMjQiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8Y2lyY2xlIGN4PSI0NCIgY3k9IjUwIiByPSIzLjQiIGZpbGw9IiNmZmYiLz4KICA8cGF0aCBkPSJNNDQgNTB2NyIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjMuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPHBhdGggZD0iTTM4IDU3aDEyIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMy41IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTYiIGZpbGw9IiMxNjYyNGYiLz4KICA8cmVjdCB4PSIxMiIgeT0iMTIiIHdpZHRoPSI0MCIgaGVpZ2h0PSIzMCIgcng9IjYiIGZpbGw9IiNmZmYiLz4KICA8cmVjdCB4PSIxNyIgeT0iMTciIHdpZHRoPSIzMCIgaGVpZ2h0PSIyMCIgcng9IjMiIGZpbGw9IiNlMWYwZWEiLz4KICA8cGF0aCBkPSJtMjcgMjEgMTMgNi0xMyA2WiIgZmlsbD0iIzE2NjI0ZiIvPgogIDxwYXRoIGQ9Ik0xNCA0M3Y3aDExTTUwIDQzdjdIMzkiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KICA8cGF0aCBkPSJNMjAgNTBoMjQiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8Y2lyY2xlIGN4PSI0NCIgY3k9IjUwIiByPSIzLjQiIGZpbGw9IiNmZmYiLz4KICA8cGF0aCBkPSJNNDQgNTB2NyIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjMuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPHBhdGggZD0iTTM4IDU3aDEyIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMy41IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+">
   <title>ローカル動画圧縮</title>
   <style>
     :root{
@@ -62,7 +62,7 @@
     <div class="header-inner">
       <div class="brand">
         <div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#16624f"/>
+  <rect width="64" height="64" rx="16" fill="#16624f"/>
   <rect x="12" y="12" width="40" height="30" rx="6" fill="#fff"/>
   <rect x="17" y="17" width="30" height="20" rx="3" fill="#e1f0ea"/>
   <path d="m27 21 13 6-13 6Z" fill="#16624f"/>
