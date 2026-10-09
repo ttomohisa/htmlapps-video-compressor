@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.4 - 2026-10-09
+
+- Normalize the app icon background to `#16624f` with 25% corner radii, and keep the asset, header and favicon consistent without changing the artwork.
+
 ## 1.3.3 - 2026-10-07
 
 - Update the compact core to checksum-verified FFmpeg WASM Builder v1.10.1, fixing the zero-duration final MP4 sample and shortened video edit interval.
