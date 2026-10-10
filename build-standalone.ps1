@@ -2,7 +2,8 @@ param(
   [switch]$ForceDownload,
   [switch]$SkipSelfExtract,
   [string]$OutputPath = "",
-  [string]$LocalFfmpegRoot = ""
+  [string]$LocalFfmpegRoot = "",
+  [ValidateSet("all", "single-thread", "multi-thread")][string]$Threading = "all"
 )
 
 $ErrorActionPreference = "Stop"
@@ -11,6 +12,23 @@ Set-StrictMode -Version Latest
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 $Root = Split-Path -Parent $MyInvocation.MyCommand.Path
+if ($Threading -eq "all") {
+  foreach ($variant in @("single-thread", "multi-thread")) {
+    $arguments = @{ Threading = $variant; LocalFfmpegRoot = $LocalFfmpegRoot }
+    if ($ForceDownload) { $arguments.ForceDownload = $true }
+    if ($SkipSelfExtract) { $arguments.SkipSelfExtract = $true }
+    if (-not [string]::IsNullOrWhiteSpace($OutputPath)) {
+      $customOutput = if ([IO.Path]::IsPathRooted($OutputPath)) { $OutputPath } else { Join-Path $Root $OutputPath }
+      $arguments.OutputPath = if ($variant -eq "single-thread") { $customOutput } else {
+        Join-Path (Split-Path -Parent ([IO.Path]::GetFullPath($customOutput))) ([IO.Path]::GetFileNameWithoutExtension($customOutput) + ".mt.html")
+      }
+    }
+    & $PSCommandPath @arguments
+  }
+  Copy-Item -Force -LiteralPath (Join-Path $Root "cloudflare\_headers") -Destination (Join-Path $Root "dist\_headers")
+  return
+}
+
 $TemplatePath = Join-Path $Root "src\index.template.html"
 $AppConfigPath = Join-Path $Root "app.config.json"
 $DependenciesPath = Join-Path $Root "dependencies.json"
@@ -59,7 +77,7 @@ function Get-GitHubReleasePackage([object]$Dependency) {
   $version = [string]$Dependency.version
   if ([string]::IsNullOrWhiteSpace($version)) { throw "GitHub Release dependencies require version." }
   $tag = "v$version"
-  $releaseAsset = ([string]$Dependency.releaseAsset).Replace("{version}", $version)
+  $releaseAsset = ([string]$Dependency.releaseAsset).Replace("{version}", $version).Replace("{threading}", $Threading)
   $checksumsAsset = [string]$Dependency.checksumsAsset
   $sourceAsset = ([string]$Dependency.sourceAsset).Replace("{version}", $version)
   if ([string]::IsNullOrWhiteSpace($repository) -or $repository -notmatch '^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$') {
@@ -69,13 +87,13 @@ function Get-GitHubReleasePackage([object]$Dependency) {
     throw "GitHub Release dependencies require releaseAsset, checksumsAsset, and sourceAsset."
   }
 
-  $cacheKey = (([string]$Dependency.id) + "-" + ($tag -replace '[^A-Za-z0-9._-]', '-'))
+  $cacheKey = (([string]$Dependency.id) + "-" + ($tag -replace '[^A-Za-z0-9._-]', '-') + "-" + $Threading)
   $packageRoot = Join-Path $CacheRoot $cacheKey
   $extractRoot = Join-Path $packageRoot "extracted"
   $archivePath = Join-Path $packageRoot $releaseAsset
   $checksumsPath = Join-Path $packageRoot $checksumsAsset
   $baseUrl = "https://github.com/$repository/releases/download/$tag"
-  $headers = @{ "User-Agent" = "htmlapps-video-compressor/1.3.3" }
+  $headers = @{ "User-Agent" = "htmlapps-video-compressor/1.3.6" }
 
   if ($ForceDownload -and (Test-Path -LiteralPath $packageRoot)) {
     Remove-Item -Recurse -Force -LiteralPath $packageRoot
@@ -162,6 +180,8 @@ function Get-LocalFfmpegPackage([object]$Dependency, [string]$ConfiguredRoot) {
   if ([string]::IsNullOrWhiteSpace($ConfiguredRoot)) { throw "Local FFmpeg root cannot be empty." }
   $rootPath = if ([System.IO.Path]::IsPathRooted($ConfiguredRoot)) { $ConfiguredRoot } else { Join-Path $Root $ConfiguredRoot }
   $rootPath = [System.IO.Path]::GetFullPath($rootPath)
+  $variantRoot = Join-Path $rootPath $Threading
+  if (Test-Path -LiteralPath $variantRoot -PathType Container) { $rootPath = $variantRoot }
   $manifestPath = Join-Path $rootPath "manifest.json"
   foreach ($required in @("ffmpeg.js", "ffmpeg.wasm", "manifest.json")) {
     if (-not (Test-Path -LiteralPath (Join-Path $rootPath $required))) { throw "Local FFmpeg build is missing $required under $rootPath" }
@@ -253,7 +273,7 @@ function Get-RelativeAssetPath([string]$PackageRoot, [string]$ConfiguredPath) {
 $appConfig = Get-Json $AppConfigPath
 $dependencyConfig = Get-Json $DependenciesPath
 if (-not $OutputPathWasSpecified) {
-  $configuredOutput = [string]$appConfig.build.output
+  $configuredOutput = if ($Threading -eq "multi-thread") { "dist/index.mt.html" } else { [string]$appConfig.build.output }
   if ([string]::IsNullOrWhiteSpace($configuredOutput)) { $configuredOutput = "dist/index.html" }
   $OutputPath = if ([System.IO.Path]::IsPathRooted($configuredOutput)) { $configuredOutput } else { Join-Path $Root $configuredOutput }
 }
@@ -273,6 +293,10 @@ foreach ($dependency in $dependencies) {
   }
   $useLocalFfmpeg = $id -eq "ffmpeg-wasm-builder" -and -not [string]::IsNullOrWhiteSpace($LocalFfmpegRoot)
   $package = if ($useLocalFfmpeg) { Get-LocalFfmpegPackage $dependency $LocalFfmpegRoot } else { Get-GitHubReleasePackage $dependency }
+  $runtimeManifest = Get-Json (Join-Path $package.Root "manifest.json")
+  if ([string]$runtimeManifest.profile -ne "video-compressor" -or [string]$runtimeManifest.runtime.threading -ne $Threading) { throw "FFmpeg runtime profile/threading mismatch." }
+  if ([string]$runtimeManifest.builderVersion -ne [string]$dependency.version -or -not [bool]$runtimeManifest.runtime.workerFsInput) { throw "FFmpeg runtime version/WORKERFS mismatch." }
+  if ([bool]$runtimeManifest.runtime.requiresSharedArrayBuffer -ne ($Threading -eq "multi-thread")) { throw "FFmpeg runtime SharedArrayBuffer requirement mismatch." }
   $resolvedSource = if ($useLocalFfmpeg) { "local-build" } else { "github-release" }
   $dependencyAssets = [ordered]@{}
   $manifestAssets = @()
@@ -334,7 +358,8 @@ foreach ($dependency in $dependencies) {
 
 $manifest = [ordered]@{
   schemaVersion = 2
-  builder = "htmlapps-video-compressor/1.3.3"
+  builder = "htmlapps-video-compressor/1.3.6"
+  threading = $Threading
   generatedAtUtc = [DateTime]::UtcNow.ToString("o")
   app = [ordered]@{ name = [string]$appConfig.name; slug = [string]$appConfig.slug; version = [string]$appConfig.version }
   dependencies = $manifestDependencies
@@ -358,7 +383,7 @@ $outputDirectory = Split-Path -Parent $OutputPath
 New-Item -ItemType Directory -Force -Path $outputDirectory | Out-Null
 $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 [System.IO.File]::WriteAllText($OutputPath, $template, $utf8NoBom)
-[System.IO.File]::WriteAllText((Join-Path $outputDirectory "dependency-manifest.json"), ($manifest | ConvertTo-Json -Depth 40), $utf8NoBom)
+[System.IO.File]::WriteAllText((Join-Path $outputDirectory $(if ($Threading -eq "multi-thread") { "dependency-manifest.mt.json" } else { "dependency-manifest.json" })), ($manifest | ConvertTo-Json -Depth 40), $utf8NoBom)
 [System.IO.File]::WriteAllText((Join-Path $outputDirectory ".nojekyll"), "", $utf8NoBom)
 
 & $VerifyPath -Path $OutputPath -RequireNetworkBlock ([bool]$appConfig.build.blockRuntimeNetwork)
@@ -375,19 +400,19 @@ if (-not $SkipSelfExtract -and ($appConfig.build.PSObject.Properties.Name -conta
       $customBaseName = [System.IO.Path]::GetFileNameWithoutExtension($OutputPath)
       $selfExtractOutputPath = Join-Path $customDirectory ($customBaseName + ".self-extract.html")
     } else {
-      $configuredSelfExtractOutput = [string]$selfExtractConfig.output
+      $configuredSelfExtractOutput = if ($Threading -eq "multi-thread") { "dist/index.mt.self-extract.html" } else { [string]$selfExtractConfig.output }
       if ([string]::IsNullOrWhiteSpace($configuredSelfExtractOutput)) { throw "app.config.json: build.selfExtract.output cannot be empty." }
       $selfExtractOutputPath = if ([System.IO.Path]::IsPathRooted($configuredSelfExtractOutput)) { $configuredSelfExtractOutput } else { Join-Path $Root $configuredSelfExtractOutput }
     }
     Write-Step "Generating self-extracting HTML"
-    & $SelfExtractBuilderPath -InputPath $OutputPath -OutputPath $selfExtractOutputPath -AppName ([string]$appConfig.name) -AppNameJa ([string]$appConfig.nameJa)
+    & $SelfExtractBuilderPath -InputPath $OutputPath -OutputPath $selfExtractOutputPath -AppName ([string]$appConfig.name) -AppNameJa ([string]$appConfig.nameJa) -ManifestFileName $(if ($Threading -eq "multi-thread") { "self-extract-manifest.mt.json" } else { "self-extract-manifest.json" })
   }
 }
 
 # Keep the repository-root distribution file in sync for Browser Kitty and
 # direct GitHub consumers.  A custom -OutputPath deliberately skips this copy.
 if (-not $OutputPathWasSpecified) {
-  $distributionPath = Join-Path $Root "video-compressor.html"
+  $distributionPath = Join-Path $Root $(if ($Threading -eq "multi-thread") { "video-compressor.mt.html" } else { "video-compressor.html" })
   Copy-Item -Force -LiteralPath $OutputPath -Destination $distributionPath
   Write-Host "[OK] Repository distribution HTML: $distributionPath" -ForegroundColor Green
 }

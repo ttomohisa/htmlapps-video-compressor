@@ -40,3 +40,11 @@ At 360, 390, and 430 px widths verify no horizontal overflow, safe-area bottom a
 ## CSP / WebAssembly check
 
 Both generated variants must keep `connect-src 'none'`. They require `'wasm-unsafe-eval'` for WebAssembly compilation and must not contain the broader standalone token `'unsafe-eval'`.
+
+## Multi-thread verification
+
+Serve `dist/index.mt.html` and `dist/index.mt.self-extract.html` on an isolated HTTP(S) host with the headers in [ST / MT distribution](docs/MULTITHREAD.md). Check `crossOriginIsolated === true`, actual shared-memory/pthread startup and four encoder threads; compress H.264/AAC and VP9/Opus, decode the results and compare timing/dimensions/audio. Repeat, cancel mid-encode and retry, then verify no stale progress or worker activity remains. Repeat with audio removed.
+
+On an ordinary host or `file://`, MT must display the isolation explanation and refuse engine startup. ST must still select, inspect and compress without SharedArrayBuffer. Check Japanese/English, mobile/short viewport layout, all dialog close routes, and uniform drop/estimate backgrounds.
+
+Source/lifecycle doubles and the ST Node core harness do not replace actual MT browser validation. GitHub Pages provides only a raw MT import/download artifact, not an isolated MT demo; it does not install a Service Worker.

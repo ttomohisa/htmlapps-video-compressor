@@ -4,7 +4,7 @@
 Maintain a privacy-first, single-HTML local video compressor. Runtime video processing must remain completely local and support H.264/AAC MP4 plus VP9/Opus WebM through the compact FFmpeg WASM Builder core.
 
 ## Engine rules
-- Do not reintroduce `@ffmpeg/core`, `@ffmpeg/ffmpeg`, H.265/x265, pthreads, SharedArrayBuffer, or COOP/COEP without an explicit architectural decision. Keep the current H.264/x264 and VP9/libvpx output paths unless the app specification is intentionally changed.
+- Do not reintroduce `@ffmpeg/core`, `@ffmpeg/ffmpeg` or H.265/x265. The approved architecture keeps separate ST and MT Compressor variants, both with H.264/x264 and VP9/libvpx output. ST remains SharedArrayBuffer-free; MT explicitly requires cross-origin isolation.
 - The engine version is pinned once in `dependencies.json` under `ffmpeg-wasm-builder.version`.
 - Build-time Release downloads must verify `SHA256SUMS.txt` before embedding assets.
 - Keep the corresponding-source asset recorded in the generated dependency manifest and exposed in Help.
@@ -25,7 +25,7 @@ Before release, run:
 powershell -ExecutionPolicy Bypass -File scripts/check-repository.ps1
 ```
 
-Then manually open both generated HTML variants from `file://` and compress a short representative video. Test cancellation and audio removal too.
+Then open the ST readable/self-extract outputs from `file://`, and MT outputs on an HTTP(S) host with COOP/COEP. Compress short representative MP4/WebM videos, test cancellation/retry and audio removal, and verify MT cannot silently run without isolation.
 
 ## Updating FFmpeg
 Prefer:

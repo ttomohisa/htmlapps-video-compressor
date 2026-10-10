@@ -1,17 +1,17 @@
 # Third-party notices
 
-## FFmpeg WASM Builder v1.10.1 generated core
+## FFmpeg WASM Builder v1.10.3 generated core
 
 This application embeds build artifacts from:
 
 - Project: `ttomohisa/htmlapps-ffmpeg-wasm-builder`
-- Builder release: `v1.10.1`
-- Binary release asset: `ffmpeg-wasm-video-compressor-v1.10.1.zip`
-- Corresponding-source asset: `ffmpeg-wasm-sources-v1.10.1.tar.gz`
+- Builder release: `v1.10.3`
+- Binary release asset: `ffmpeg-wasm-video-compressor-v1.10.3.zip`
+- Corresponding-source asset: `ffmpeg-wasm-sources-v1.10.3.tar.gz`
 - Embedded files: `ffmpeg.js`, `ffmpeg.wasm`
 - Generated video-compressor core license: GPL-2.0-or-later
 
-The Builder v1.10.1 source pins:
+The Builder v1.10.3 source pins:
 
 - FFmpeg `n9.0.1`, commit `bf1b838f2ab88b4f8fd83443325c782ea0e0f7fa`
 - x264 commit `31e19f92f00c7003fa115047ce50978bc98c3a0d`
@@ -34,3 +34,5 @@ The generated app's Help dialog also reads this build manifest and exposes the e
 No third-party asset is fetched at runtime. `ffmpeg.js` and `ffmpeg.wasm` are embedded in the single HTML and executed in a dedicated Worker. Source File/Blob input is exposed through WORKERFS. Runtime network access is blocked by CSP with `connect-src 'none'`.
 
 Keep this file, the repository license, and the corresponding-source information with source redistributions of this application.
+
+Both ST and MT use the same pinned Builder source/version and licensing. Each generated dependency manifest records its own verified binary archive checksum and the common corresponding-source archive. See [ST / MT distribution](docs/MULTITHREAD.md).

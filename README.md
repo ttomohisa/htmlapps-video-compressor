@@ -6,7 +6,7 @@
 
 [日本語版 README](README.ja.md)
 
-A single-HTML video compressor that keeps processing inside the browser. It can output **H.264 / AAC MP4** for broad compatibility or **VP9 / Opus WebM** when smaller files are preferred. The engine is the compact FFmpeg 9 WebAssembly build produced by [`htmlapps-ffmpeg-wasm-builder`](https://github.com/ttomohisa/htmlapps-ffmpeg-wasm-builder), without SharedArrayBuffer requirements.
+A single-HTML video compressor that keeps processing inside the browser. It can output **H.264 / AAC MP4** for broad compatibility or **VP9 / Opus WebM** when smaller files are preferred. The engine is the compact FFmpeg 9 WebAssembly build produced by [`htmlapps-ffmpeg-wasm-builder`](https://github.com/ttomohisa/htmlapps-ffmpeg-wasm-builder), with a portable single-thread variant and an explicitly isolated multi-thread variant.
 
 ![Application preview](docs/preview.png)
 
@@ -43,10 +43,10 @@ The repository does not commit the large generated WASM binary. `dependencies.js
 Current pin:
 
 ```json
-"version": "1.10.1"
+"version": "1.10.3"
 ```
 
-Builder v1.10.1 fixes final-frame MP4 duration and preserves Original-FPS timestamps. Builder v1.6.0 originally added libvpx VP9, Opus, source-stream inspection, autorotation, and WORKERFS input to the `video-compressor` profile. The runtime never downloads FFmpeg from GitHub.
+Builder v1.10.3 fixes final-frame MP4 duration and preserves Original-FPS timestamps. Builder v1.6.0 originally added libvpx VP9, Opus, source-stream inspection, autorotation, and WORKERFS input to the `video-compressor` profile. The runtime never downloads FFmpeg from GitHub.
 
 ## Build on Windows
 
@@ -94,7 +94,7 @@ This local integration path is for development verification only. Release builds
 When a new Builder release is ready, update one version number and rebuild with:
 
 ```text
-update-ffmpeg.bat 1.10.1
+update-ffmpeg.bat 1.10.3
 ```
 
 The script updates `dependencies.json`, downloads the matching Release, verifies its SHA-256, and rebuilds the standalone files.
@@ -120,7 +120,7 @@ H.264 remains the default because it is generally faster to encode and broadly c
 - Source File/Blob input is exposed to the Worker through WORKERFS rather than copied in full into MEMFS.
 - WASM bytes are instantiated directly through `instantiateWasm`, avoiding runtime URL resolution under `file://`.
 - Generated core JavaScript and the app Worker code share one Blob; no nested `importScripts()` is used.
-- SharedArrayBuffer, COOP, and COEP are not required.
+- ST requires neither SharedArrayBuffer nor COOP/COEP. MT requires all three and reports a clear error on unsupported hosts.
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [VERIFY_OFFLINE.md](VERIFY_OFFLINE.md).
 
@@ -151,3 +151,9 @@ The generated app also exposes the Builder version and corresponding-source link
 Install Node.js 22 or newer in addition to PowerShell. Run `node scripts/test-source-lifecycle.cjs` for the source checks, or pass an HTML path to check a readable standalone build. `scripts/check-repository.ps1` checks the source and checked-in root HTML before building, then checks the generated standalone HTML and root parity. Rebuild with `build-standalone.ps1` after changing the template.
 
 The tests execute the actual inline app with controlled DOM/media events, Worker messages, timers and embedded-core preparation. Tiny fictional file metadata and output bytes cover selection replacement/removal, stale callbacks, cancel/retry, resource disposal, H.264/VP9 arguments and output naming. They do not decode video, instantiate WASM, or replace the manual browser, real-video, offline, save/share and mobile checks in `VERIFY_OFFLINE.md`.
+
+## Single-thread and multi-thread builds
+
+The default build produces both ST (`index.html` / `video-compressor.html`) and MT (`index.mt.html` / `video-compressor.mt.html`), plus matching self-extracting files and separate manifests. Both retain MP4 and WebM. ST supports direct disk use; MT requires an isolated HTTP(S) host and SharedArrayBuffer.
+
+GitHub Pages keeps its ST root demo. Its raw MT file is provided for import/download; Browser Kitty supplies the required isolation headers on its Compressor route. No Service Worker is installed and unsupported MT environments fail clearly. See [ST / MT distribution](docs/MULTITHREAD.md).

@@ -56,3 +56,11 @@ The result's Rename dialog captures the current output File identity and edits o
 Empty or unchanged names leave the original File in place. Cancel, Close, Escape and backdrop dismissal discard the draft. Clearing or replacing the source, or starting another compression, closes the dialog; submission also checks File identity so an obsolete dialog cannot rename a newer result. This path never starts a Worker and does not alter next-run settings. Both naming controls use the same pure basename normalizer.
 
 The Save click handler explicitly requests normal download feedback. Share's unsupported-browser fallback requests a silent download and displays its own single explanatory message.
+
+## Threading variants
+
+`build-standalone.ps1` builds each mode independently with one pinned Builder version. Download caches include the mode; release checksum, profile, Builder version, WORKERFS and runtime threading are checked before embedding. The manifest records the selected mode. ST and MT have separate readable, root, self-extract and metadata outputs.
+
+MT also passes the embedded generated core as `mainScriptUrlOrBlob` for Emscripten nested pthread workers. It never requests a separate worker asset. Both the page and worker reject a non-isolated MT environment. Terminating the owning worker on completion, replacement or cancellation also terminates its nested workers. ST retains the original one-Blob/direct-instantiation path.
+
+See [distribution and hosting](MULTITHREAD.md) for the exact artifact/header contracts.
