@@ -82,3 +82,7 @@ Use the template-aligned card and control language on narrow screens. Keep the s
 - Compress remains disabled until a usable video is ready; the other actions may navigate to their sections at any time.
 - Mobile navigation must stop with the target card border visible below the sticky header.
 - The estimated-size card keeps its own “Compress with these settings” button even when the fixed bottom Compress action is present.
+
+## Modal accessibility and responsive audit
+
+Lock document/body scrolling only while a native modal is open. Preserve the existing flex shell, scroll body, native keyboard focus, and close handlers. The local-processing badge uses a decorative shield without changing the privacy claim. See `docs/LAYOUT_AUDIT.md` for coverage and environment limits.
