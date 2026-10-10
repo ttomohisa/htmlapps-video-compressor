@@ -68,7 +68,7 @@ $app = Get-Content -Raw -Encoding UTF8 (Join-Path $Root "app.config.json") | Con
 if ([string]::IsNullOrWhiteSpace([string]$app.name)) { throw "app.config.json: name is required" }
 if ([string]::IsNullOrWhiteSpace([string]$app.slug)) { throw "app.config.json: slug is required" }
 if ([string]::IsNullOrWhiteSpace([string]$app.version)) { throw "app.config.json: version is required" }
-if ([string]$app.version -ne "1.3.4") { throw "app.config.json: expected release version 1.3.4" }
+if ([string]$app.version -ne "1.3.5") { throw "app.config.json: expected release version 1.3.5" }
 
 $templateText = [System.IO.File]::ReadAllText((Join-Path $Root "src\index.template.html"), [System.Text.Encoding]::UTF8)
 foreach ($requiredMarker in @('id="outputNameInput"', 'id="mobileBar"', 'dialog[open]{display:flex;flex-direction:column}')) {
@@ -119,5 +119,10 @@ if ([string]::IsNullOrWhiteSpace([string]$resolved[0].correspondingSourceUrl)) {
 if ($LASTEXITCODE -ne 0) { throw "Media timing parser regression checks failed." }
 & $node.Source (Join-Path $Root "scripts\test-core-timing.cjs") $distOutput
 if ($LASTEXITCODE -ne 0) { throw "Embedded FFmpeg media timing regression checks failed." }
+
+foreach ($target in @("src\index.template.html", "video-compressor.html", "dist\index.html", "dist\index.self-extract.html")) {
+  & $node.Source (Join-Path $Root "scripts\test-dialog-layout.cjs") (Join-Path $Root $target)
+  if ($LASTEXITCODE -ne 0) { throw "Dialog layout regression checks failed for $target" }
+}
 
 Write-Host "[OK] Repository check passed." -ForegroundColor Green

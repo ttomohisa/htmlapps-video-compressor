@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.5 - 2026-10-10
+
+- Prevent the page behind native dialogs from scrolling, while preserving their existing bounded header/body layout and dismissal behavior.
+- Use the shared decorative shield before the local-processing badge.
+- Add regression coverage and document desktop, narrow, and short-viewport validation.
+
 ## 1.3.4 - 2026-10-09
 
 - Normalize the app icon background to `#16624f` with 25% corner radii, and keep the asset, header and favicon consistent without changing the artwork.
