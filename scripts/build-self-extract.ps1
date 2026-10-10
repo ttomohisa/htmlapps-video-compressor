@@ -1,4 +1,5 @@
 param(
+  [string]$ManifestFileName = "self-extract-manifest.json",
   [Parameter(Mandatory = $true)]
   [string]$InputPath,
   [Parameter(Mandatory = $true)]
@@ -220,7 +221,7 @@ $outputDirectory = Split-Path -Parent $OutputPath
 New-Item -ItemType Directory -Force -Path $outputDirectory | Out-Null
 [System.IO.File]::WriteAllText($OutputPath, $wrapper, (New-Object System.Text.UTF8Encoding($false)))
 
-$manifestPath = Join-Path $outputDirectory "self-extract-manifest.json"
+$manifestPath = Join-Path $outputDirectory $ManifestFileName
 $manifest = [ordered]@{
   schemaVersion = 1
   generatedAtUtc = [DateTime]::UtcNow.ToString("o")

@@ -26,6 +26,11 @@ jobs:
           name: local-video-compressor
           path: |
             dist/index.html
+            dist/index.mt.html
+            dist/index.mt.self-extract.html
+            dist/dependency-manifest.mt.json
+            dist/self-extract-manifest.mt.json
+            video-compressor.mt.html
             dist/index.self-extract.html
             dist/dependency-manifest.json
             dist/self-extract-manifest.json

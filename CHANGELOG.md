@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.6
+
+- Add separately built Single-thread and Multi-thread Compressor HTML using Builder 1.10.3 with both MP4 and WebM output.
+- Preserve portable ST; require cross-origin isolation explicitly for MT and keep all media processing local.
+- Add separate readable/self-extract MT artifacts, manifests and preview isolation headers.
+- Remove estimated-size gradient and blurred drop-area decoration, retaining the existing light theme and dialog fixes.
+
+
 ## 1.3.5 - 2026-10-10
 
 - Prevent the page behind native dialogs from scrolling, while preserving their existing bounded header/body layout and dismissal behavior.

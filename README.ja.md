@@ -6,7 +6,7 @@
 
 [English README](README.md)
 
-動画をアップロードせず、ブラウザ内だけで圧縮する単一HTMLアプリです。互換性を優先する **H.264 / AAC の MP4** と、より小さいファイルを狙う **VP9 / Opus の WebM** を選べます。FFmpegエンジンは [`htmlapps-ffmpeg-wasm-builder`](https://github.com/ttomohisa/htmlapps-ffmpeg-wasm-builder) が生成する、SharedArrayBuffer不要のFFmpeg 9 compact WebAssemblyを使用します。
+動画をアップロードせず、ブラウザ内だけで圧縮する単一HTMLアプリです。互換性を優先する **H.264 / AAC の MP4** と、より小さいファイルを狙う **VP9 / Opus の WebM** を選べます。FFmpegエンジンは [`htmlapps-ffmpeg-wasm-builder`](https://github.com/ttomohisa/htmlapps-ffmpeg-wasm-builder) が生成する、Single-thread版とMulti-thread版を持つFFmpeg 9 compact WebAssemblyを使用します。
 
 ![アプリ画面](docs/preview.png)
 
@@ -43,10 +43,10 @@
 現在の固定バージョン:
 
 ```json
-"version": "1.10.1"
+"version": "1.10.3"
 ```
 
-Builder v1.10.1ではMP4の最終フレームの時間を修正し、「元のまま」の可変フレーム時刻を保持します。Builder v1.6.0の `video-compressor` profileでは、libvpx VP9、Opus、元動画のストリーム解析、回転補正、WORKERFS入力を追加しています。ブラウザ実行時にはGitHub Releaseへアクセスしません。
+Builder v1.10.3ではMP4の最終フレームの時間を修正し、「元のまま」の可変フレーム時刻を保持します。Builder v1.6.0の `video-compressor` profileでは、libvpx VP9、Opus、元動画のストリーム解析、回転補正、WORKERFS入力を追加しています。ブラウザ実行時にはGitHub Releaseへアクセスしません。
 
 ## ビルド
 
@@ -96,7 +96,7 @@ build-with-local-ffmpeg.bat ..\htmlapps-ffmpeg-wasm-builder\dist\video-compresso
 Builder側で新しいReleaseが出たら、次のように更新します。
 
 ```text
-update-ffmpeg.bat 1.10.1
+update-ffmpeg.bat 1.10.3
 ```
 
 `dependencies.json` のバージョンを更新し、新しいReleaseの取得・SHA-256検証・単一HTML再ビルドまで実行します。FFmpeg更新後は必ず生成HTMLで実動画の圧縮確認も行います。
@@ -122,7 +122,7 @@ update-ffmpeg.bat 1.10.1
 - 元動画のFile/BlobはWORKERFS経由で参照し、入力全体をMEMFSへ複製しない
 - WASMバイトを `instantiateWasm` へ直接渡し、`file://` でもWASMのURL解決を不要にする
 - Workerソースも1つのBlobへまとめ、ネストした `importScripts()` を使わない
-- SharedArrayBuffer / COOP / COEPは不要
+- Single-thread版はSharedArrayBuffer / COOP / COEP不要。Multi-thread版にはSharedArrayBufferとcross-origin isolationが必要
 
 詳細は [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) と [VERIFY_OFFLINE.md](VERIFY_OFFLINE.md) を参照してください。
 
@@ -153,3 +153,11 @@ powershell -ExecutionPolicy Bypass -File scripts/check-repository.ps1
 PowerShellに加えてNode.js 22以降を用意してください。`node scripts/test-source-lifecycle.cjs` でテンプレートのテストを実行できます。HTMLのパスを引数に渡すと通常版の生成物も確認できます。`scripts/check-repository.ps1` はビルド前にソースとルート配布HTMLを確認し、ビルド後に生成HTMLとルート配布物の一致も確認します。テンプレートを変更したら `build-standalone.ps1` で配布HTMLを再生成してください。
 
 実際のアプリスクリプトを使い、DOM・動画イベント・Worker通信・タイマー・埋め込みコア準備だけをテスト用に制御します。架空の小さなファイル情報と出力バイト列で、入力の切り替え・削除、古いコールバック、キャンセル直後の再試行、リソース解放、H.264/VP9の引数と出力名を確認します。動画のデコードやWASM実行は行いません。ブラウザー、実動画、オフライン、保存・共有、モバイルの手動確認は `VERIFY_OFFLINE.md` に従って別途行ってください。
+
+## Single-thread版とMulti-thread版
+
+通常のビルドは両方を生成します。`dist/index.html` / `video-compressor.html` は、保存したファイルを直接開けるSingle-thread版です。`dist/index.mt.html` / `video-compressor.mt.html` は、HTTP(S)、COOP `same-origin`、COEP `require-corp` とSharedArrayBufferが必要なMulti-thread版です。どちらもMP4・WebMへ出力できます。自己展開版と依存関係マニフェストも版ごとに生成します。
+
+Browser KittyではMulti-thread版を配信し、動画圧縮のURLだけにCOOP / COEPを設定します。GitHub Pagesの通常デモはSingle-thread版のままです。Pages上の `index.mt.html` は取り込み・ダウンロード用で、Pages自体には必要なヘッダーを設定できません。Service Workerは追加しません。非対応環境では理由を表示して停止し、Single-thread版へ黙って切り替えません。
+
+詳細は [ST / MT配信仕様](docs/MULTITHREAD.md) を参照してください。

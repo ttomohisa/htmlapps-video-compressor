@@ -21,10 +21,10 @@ Provide a simple, fully self-contained browser video compressor. A non-expert sh
 ## Engine
 - Engine source: `ttomohisa/htmlapps-ffmpeg-wasm-builder` GitHub Release.
 - Version is pinned once in `dependencies.json`.
-- Builder `1.10.1` / FFmpeg `n9.0.1` is pinned for app v1.3.3.
+- Builder `1.10.3` / FFmpeg `n9.0.1` is pinned for app v1.3.3.
 - Output A: H.264 (`libx264`) video + optional AAC audio in MP4.
 - Output B: VP9 (`libvpx-vp9`) video + optional Opus audio in WebM.
-- Single-thread compact public-libav runner; no SharedArrayBuffer/COOP/COEP requirement.
+- Separate ST/MT compact public-libav runners. ST has no SharedArrayBuffer/COOP/COEP requirement; MT requires cross-origin isolation and preserves MP4/WebM output.
 - Builder inspection mode measures the selected video stream from packet bytes and stream duration without decoding the full video.
 - Builder autorotation reads `AV_PKT_DATA_DISPLAYMATRIX` and applies the same 90/180/270-degree transpose/flip logic used by FFmpeg autorotate before resizing/encoding.
 - Build verifies Release SHA-256 before embedding `ffmpeg.js` and `ffmpeg.wasm`.
@@ -86,3 +86,7 @@ Use the template-aligned card and control language on narrow screens. Keep the s
 ## Modal accessibility and responsive audit
 
 Lock document/body scrolling only while a native modal is open. Preserve the existing flex shell, scroll body, native keyboard focus, and close handlers. The local-processing badge uses a decorative shield without changing the privacy claim. See `docs/LAYOUT_AUDIT.md` for coverage and environment limits.
+
+## Approved MT extension
+
+See [ST / MT distribution](docs/MULTITHREAD.md). Maintain separate artifacts, explicit capability gating, no runtime network dependencies, and the existing ST portable/offline contract. Both drop area and output estimate use solid backgrounds.

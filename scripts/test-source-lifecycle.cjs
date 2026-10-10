@@ -16,7 +16,7 @@ function deferred() {
   return { promise, resolve, reject };
 }
 async function flush() { for (let i = 0; i < 12; i++) await Promise.resolve(); }
-function environment() {
+function environment(options = {}) {
   class Element {
     constructor(id = '') {
       Object.assign(this, { id, value: '', textContent: '', disabled: false, hidden: false,
@@ -77,7 +77,7 @@ function environment() {
     Promise, Date, Math, Number, String, Error, performance: { now: () => 1000 },
     atob: x => Buffer.from(x, 'base64').toString('binary'),
     URL: { createObjectURL: x => { const url = 'blob:test/' + ++urlId; urls.set(url, x); return url; }, revokeObjectURL: x => urls.delete(x) },
-    Worker: WorkerDouble,
+    Worker: WorkerDouble, crossOriginIsolated: options.isolated !== false, SharedArrayBuffer: options.shared === false ? undefined : SharedArrayBuffer,
     setTimeout: (fn, ms) => { const id = ++timerId; timers.set(id, { fn, ms }); return id; },
     clearTimeout: id => timers.delete(id), setInterval: () => ++timerId, clearInterval() {}
   };
@@ -85,7 +85,8 @@ function environment() {
   const context = vm.createContext(sandbox);
   let script = html.match(/<script>\s*([\s\S]*?)<\/script>/)[1]
     .replace('__APP_CONFIG_JSON__', '{}').replace('__BUILD_MANIFEST_JSON__', '{}').replace('__EMBEDDED_ASSET_BUNDLE_JSON__', '{}');
-  script = script.replace(/\}\)\(\);\s*$/, 'globalThis.api={state,els,selectFile,clearFile,compress,cancel,buildArgs,targetDimensions,download,share,t};})();');
+  if (options.threading) script = script.replace(/const RUNTIME_VARIANT=[^;]+;/, `const RUNTIME_VARIANT=${JSON.stringify(options.threading)};`);
+  script = script.replace(/\}\)\(\);\s*$/, 'globalThis.api={state,els,selectFile,clearFile,compress,cancel,buildArgs,targetDimensions,download,share,t,runtimeAllowed:typeof runtimeAllowed==="function"?runtimeAllowed:()=>true};})();');
   vm.runInContext(script, context, { filename: sourcePath });
   const core = deferred();
   sandbox.window.StandaloneAssets = { text: () => '', bytesAsync: () => core.promise };
@@ -495,4 +496,33 @@ test('Japanese fallback header names its English target before initialization', 
   const button = html.match(/<button\b[^>]*id="languageButton"[^>]*>/)[0];
   assert.match(button, /aria-label="英語に切り替え"/);
   assert.match(button, /title="英語に切り替え"/);
+});
+
+
+test('MT refuses non-isolated input before allocating URLs or workers', async () => {
+  const e = environment({threading:'multi-thread', isolated:false});
+  e.api.selectFile(e.fixture());
+  assert.equal(e.api.runtimeAllowed(), false);
+  assert.equal(e.api.state.file, null);
+  assert.equal(e.urls.size, 0);
+  assert.equal(e.workers.length, 0);
+});
+test('MT refuses missing SharedArrayBuffer even when isolation is reported', async () => {
+  const e = environment({threading:'multi-thread', shared:false});
+  e.api.selectFile(e.fixture());
+  assert.equal(e.api.runtimeAllowed(), false);
+  assert.equal(e.workers.length, 0);
+});
+test('ST keeps input selection available without isolation or SharedArrayBuffer', async () => {
+  const e = environment({threading:'single-thread', isolated:false, shared:false});
+  assert.equal(e.api.runtimeAllowed(), true);
+  const loading=e.api.selectFile(e.fixture());
+  assert.ok(e.api.state.file);
+  e.api.clearFile(); await loading;
+});
+test('MT transfers its mode and embedded core source for nested pthread workers', async () => {
+  const e = environment({threading:'multi-thread'});
+  await e.ready();
+  assert.equal(e.workers[0].message.payload.threading, 'multi-thread');
+  assert.equal(typeof e.workers[0].message.payload.coreJsText, 'string');
 });
