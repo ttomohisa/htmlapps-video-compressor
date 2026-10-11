@@ -26,7 +26,8 @@ A single-HTML video compressor that keeps processing inside the browser. It can 
 - Output frame rate, encoding speed, and audio bitrate controls
 - Optional audio removal
 - Estimated output size based on the selected output bitrate and duration
-- WORKERFS input so large source videos are not copied wholesale into MEMFS before processing
+- Small videos (up to 32 MiB) are read once after selection and supplied through MEMFS, avoiding later FileReaderSync permission failures
+- Larger videos keep WORKERFS input so they are not copied wholesale into MEMFS before processing
 - Progress, processing log, and cancellation
 - Preview, save, and share output
 - Editable next-run output file name with automatic `.mp4` / `.webm` extension handling
@@ -117,7 +118,7 @@ H.264 remains the default because it is generally faster to encode and broadly c
 - Input and output video data are not persisted.
 - `ffmpeg.js` and `ffmpeg.wasm` are embedded into one HTML file.
 - FFmpeg runs in a dedicated Worker.
-- Source File/Blob input is exposed to the Worker through WORKERFS rather than copied in full into MEMFS.
+- Source videos up to 32 MiB are captured once into temporary memory and copied to the FFmpeg Worker via MEMFS; larger videos use WORKERFS to avoid a full input copy. Nothing is uploaded or persisted.
 - WASM bytes are instantiated directly through `instantiateWasm`, avoiding runtime URL resolution under `file://`.
 - Generated core JavaScript and the app Worker code share one Blob; no nested `importScripts()` is used.
 - ST requires neither SharedArrayBuffer nor COOP/COEP. MT requires all three and reports a clear error on unsupported hosts.
