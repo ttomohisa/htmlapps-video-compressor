@@ -12,7 +12,10 @@ A single-HTML video compressor that keeps processing inside the browser. It can 
 
 ## 🚀 Live demo
 
-[Open Local Video Compressor on GitHub Pages](https://ttomohisa.github.io/htmlapps-video-compressor/)
+- [Single-thread / portable demo (GitHub Pages)](https://ttomohisa.github.io/htmlapps-video-compressor/)
+- [Multi-thread / isolated demo (GitHub Pages)](https://ttomohisa.github.io/htmlapps-video-compressor/mt/)
+
+The Multi-thread demo may reload once on first use to enable cross-origin isolation. Only the GitHub Pages `/mt/` entry loads a same-origin Service Worker helper.
 
 > **CSP note:** `script-src` includes the narrow `'wasm-unsafe-eval'` permission required for WebAssembly. The broader JavaScript `'unsafe-eval'` token is not enabled, and `connect-src 'none'` blocks runtime network access.
 
@@ -34,7 +37,7 @@ A single-HTML video compressor that keeps processing inside the browser. It can 
 - Editable next-run output file name with automatic `.mp4` / `.webm` extension handling
 - Rename the completed result before saving or sharing, without recompressing or changing its actual format
 - Japanese and English UI
-- No runtime network access
+- No media upload or runtime media-data network access (GitHub Pages /mt/ loads a same-origin isolation helper during startup)
 - Responsive desktop/mobile UI
 - Mobile bottom action bar for Video, Settings, Estimate, and Compress
 
@@ -135,7 +138,9 @@ Key files:
 - `build-standalone.ps1`: Release download, checksum verification, and embedding
 - `build-with-local-ffmpeg.bat`: development build using a local Builder `dist/video-compressor` output
 - `update-ffmpeg.bat`: Builder version update helper
-- `scripts/check-repository.ps1`: end-to-end source/build verification
+- `scripts/check-repository.ps1`: source, standalone, and Pages distribution verification
+- `scripts/prepare-pages.ps1`: builds the GitHub Pages ST/MT staging directory
+- `coi-serviceworker.lock.json`: SHA-256 pin for the Pages-only MT isolation helper
 - `THIRD_PARTY_NOTICES.md`: third-party licensing and corresponding-source details
 
 ```powershell
@@ -158,4 +163,6 @@ The tests execute the actual inline app with controlled DOM/media events, Worker
 
 The default build produces both ST (`index.html` / `video-compressor.html`) and MT (`index.mt.html` / `video-compressor.mt.html`), plus matching self-extracting files and separate manifests. Both retain MP4 and WebM. ST supports direct disk use; MT requires an isolated HTTP(S) host and SharedArrayBuffer.
 
-GitHub Pages keeps its ST root demo. Its raw MT file is provided for import/download; Browser Kitty supplies the required isolation headers on its Compressor route. No Service Worker is installed and unsupported MT environments fail clearly. See [ST / MT distribution](docs/MULTITHREAD.md).
+GitHub Pages now publishes [Single-thread at `/`](https://ttomohisa.github.io/htmlapps-video-compressor/) and [Multi-thread at `/mt/`](https://ttomohisa.github.io/htmlapps-video-compressor/mt/). Pages cannot set custom COOP/COEP headers, so only the dedicated `/mt/` entry uses a pinned, same-origin `coi-serviceworker` to supply isolation after one reload. The Pages-specific CSP allows same-origin scripts/workers without broadening `connect-src 'none'`; it does not change the raw standalone distribution.
+
+Browser Kitty imports the raw MT HTML and supplies route-specific COOP/COEP headers without installing a Service Worker. Unsupported MT environments show an explanation rather than silently switching to ST. See [ST / MT distribution](docs/MULTITHREAD.md).
