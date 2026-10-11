@@ -69,7 +69,8 @@ test('only staged Pages /mt/ uses the scoped COI fallback and narrow CSP allowan
   assert.match(staged, /worker-src 'self' blob:/);
   assert.match(staged, /connect-src 'none'/);
   assert.doesNotMatch(staged, /script-src[^;]*https:|connect-src[^;]*https:|worker-src[^;]*https:/);
-  assert.match(staged, /const RUNTIME_VARIANT=["']multi-thread["']/);
+  assert.match(staged, /const RUNTIME_VARIANT=BUILD_MANIFEST\.threading\|\|'single-thread'/);
+  assert.match(staged, /"threading"\s*:\s*"multi-thread"/);
 
   // Byte-for-byte application parity after removing the *only* Pages-specific changes.
   const undoCsp = staged
