@@ -29,9 +29,15 @@ The Builder's own scripts/runtime are MIT-licensed, but that does not relicense 
 
 The generated app's Help dialog also reads this build manifest and exposes the exact Builder version and corresponding-source link used by that build.
 
+## coi-serviceworker — GitHub Pages `/mt/` only
+
+GitHub Pages' isolated Multi-thread demo uses **coi-serviceworker v0.1.7**, copyright (c) 2021 Guido Zuidhof and contributors, under the MIT License. The source is vendored at `vendor/coi-serviceworker/coi-serviceworker.js` and pinned to upstream commit `7b1d2a092d0d2dd2b7270b6f12f13605de26f214` and SHA-256 in `coi-serviceworker.lock.json`. License text: `licenses/coi-serviceworker-MIT.txt`.
+
+Only the GitHub Pages `/mt/` entry point references this script, from the same GitHub Pages origin. The worker handles HTTP navigation/resource responses to establish COOP/COEP isolation within the `/mt/` scope. It is not installed by the ordinary ST page, the raw ST/MT standalone HTML, or Browser Kitty's server-header-backed MT deployment. Neither the script nor the FFmpeg encoder uploads selected source videos.
+
 ## Runtime behavior
 
-No third-party asset is fetched at runtime. `ffmpeg.js` and `ffmpeg.wasm` are embedded in the single HTML and executed in a dedicated Worker. Source File/Blob input is exposed through WORKERFS. Runtime network access is blocked by CSP with `connect-src 'none'`.
+FFmpeg's `ffmpeg.js` and `ffmpeg.wasm` are embedded in both standalone HTML variants and run within dedicated Workers. Small input videos are read once to MEMFS; larger inputs use WORKERFS. Video processing runs locally and the application's `connect-src 'none'` CSP blocks media uploads and runtime API calls. The GitHub Pages `/mt/` site must download its initial HTML and local COI helper, and the Service Worker locally mediates page resource requests; it never sends source video data to remote services.
 
 Keep this file, the repository license, and the corresponding-source information with source redistributions of this application.
 
