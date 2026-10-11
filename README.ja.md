@@ -12,7 +12,10 @@
 
 ## 🚀 デモ
 
-[GitHub PagesでLocal Video Compressorを開く](https://ttomohisa.github.io/htmlapps-video-compressor/)
+- [標準版 / Single-thread（GitHub Pages）](https://ttomohisa.github.io/htmlapps-video-compressor/)
+- [高速版 / Multi-thread（GitHub Pages）](https://ttomohisa.github.io/htmlapps-video-compressor/mt/)
+
+高速版は初回起動時に分離設定のためページが一度自動更新される場合があります。GitHub Pagesの `/mt/` に限り、同じ配信元のService Workerを利用します。
 
 > **CSPについて:** WebAssembly実行用に `script-src` へ限定的な `'wasm-unsafe-eval'` を指定しています。JavaScriptの `eval()` を許可する `'unsafe-eval'` は使わず、`connect-src 'none'` で実行時通信を遮断します。
 
@@ -34,7 +37,7 @@
 - 次回の出力ファイル名を編集し、形式に応じて `.mp4` / `.webm` を自動付与
 - 圧縮結果のファイル名を保存・共有前に変更可能（再圧縮せず、実際の形式を保持）
 - 日本語 / English
-- 完全ローカル処理。実行時通信なし
+- 動画データはブラウザ内だけで処理（GitHub PagesのMulti-thread版は起動時に同一originの補助スクリプトを読み込みます）
 - PC / スマートフォン向けレスポンシブUI
 - スマートフォンでは「動画・設定・見積・圧縮」の下部固定アクションで主要操作へすぐ移動
 
@@ -137,7 +140,9 @@ update-ffmpeg.bat 1.10.3
 - `build-standalone.ps1`: Release取得、checksum検証、単一HTML生成
 - `build-with-local-ffmpeg.bat`: Builderのローカル生成物を直接使う開発確認用ビルド
 - `update-ffmpeg.bat`: Builderバージョン更新用
-- `scripts/check-repository.ps1`: ソース確認からビルド検証までを実行
+- `scripts/check-repository.ps1`: ソース・単一HTML・GitHub Pages配信構成まで検証
+- `scripts/prepare-pages.ps1`: STとMTのPages専用配布ディレクトリを生成
+- `coi-serviceworker.lock.json`: Pages /mt/限定の補助スクリプトの固定ハッシュ
 - `THIRD_PARTY_NOTICES.md`: FFmpeg/x264/libvpx/Opus/Emscriptenの配布情報
 
 ```powershell
@@ -160,6 +165,8 @@ PowerShellに加えてNode.js 22以降を用意してください。`node script
 
 通常のビルドは両方を生成します。`dist/index.html` / `video-compressor.html` は、保存したファイルを直接開けるSingle-thread版です。`dist/index.mt.html` / `video-compressor.mt.html` は、HTTP(S)、COOP `same-origin`、COEP `require-corp` とSharedArrayBufferが必要なMulti-thread版です。どちらもMP4・WebMへ出力できます。自己展開版と依存関係マニフェストも版ごとに生成します。
 
-Browser KittyではMulti-thread版を配信し、動画圧縮のURLだけにCOOP / COEPを設定します。GitHub Pagesの通常デモはSingle-thread版のままです。Pages上の `index.mt.html` は取り込み・ダウンロード用で、Pages自体には必要なヘッダーを設定できません。Service Workerは追加しません。非対応環境では理由を表示して停止し、Single-thread版へ黙って切り替えません。
+Browser Kitty本番ではMulti-thread単一HTMLに対応するCOOP / COEPヘッダーを動画圧縮ページだけで提供します。GitHub Pagesでは `/` が標準版、[`/mt/`](https://ttomohisa.github.io/htmlapps-video-compressor/mt/) がMulti-thread版です。GitHub Pagesは必要なヘッダーを個別指定できないため、`/mt/` 専用HTMLのみ、同一originの `coi-serviceworker` でレスポンスヘッダーを補います。元の `dist/index.mt.html` / `video-compressor.mt.html` は外部スクリプト不要の単一HTMLのままです。
+
+Pages版の補助スクリプトは `/mt/` の範囲内に限定し、ユーザー動画を送信しません。Pages版Multi-threadだけCSPへ `script-src 'self'` と `worker-src 'self'` を追加して補助スクリプトを許可します。`connect-src 'none'` は維持します。ブラウザがService Workerに対応していない場合はMulti-threadが動かない理由を表示し、Single-threadへ黙って切り替えません。実装とライセンスは [ST / MT配信仕様](docs/MULTITHREAD.md) を参照してください。
 
 詳細は [ST / MT配信仕様](docs/MULTITHREAD.md) を参照してください。
