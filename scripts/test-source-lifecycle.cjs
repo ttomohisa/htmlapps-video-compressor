@@ -526,3 +526,80 @@ test('MT transfers its mode and embedded core source for nested pthread workers'
   assert.equal(e.workers[0].message.payload.threading, 'multi-thread');
   assert.equal(typeof e.workers[0].message.payload.coreJsText, 'string');
 });
+
+ 
+test('small input is copied once and reused for inspection and compression without FileReaderSync', async () => {
+  const e = environment();
+  let reads = 0;
+  const file = { ...e.fixture('cloud-video.mp4'), size: 5 * 1024 * 1024,
+    arrayBuffer: async () => { ++reads; return Uint8Array.from([10, 20, 30, 40]).buffer; } };
+  e.core.resolve(new Uint8Array([0]));
+  const loading = e.api.selectFile(file); e.metadata(); await flush();
+  const inspected = e.workers.at(-1).message.payload;
+  assert.equal(inspected.inputFile, null);
+  assert.deepEqual([...new Uint8Array(inspected.inputBytes)], [10, 20, 30, 40]);
+  e.workers.at(-1).reply(e.inspection()); await loading;
+  const compression = e.api.compress(); await flush();
+  const compressed = e.workers.at(-1).message.payload;
+  assert.equal(compressed.inputFile, null);
+  assert.deepEqual([...new Uint8Array(compressed.inputBytes)], [10, 20, 30, 40]);
+  assert.notEqual(compressed.inputBytes, e.api.state.inputBytes);
+  assert.equal(reads, 1, 'source File must not be reread when compression begins');
+  e.workers.at(-1).reply(new Uint8Array([4, 5]).buffer); await compression;
+  assert.equal(e.api.state.outputFile.size, 2); noWorkerResources(e);
+});
+
+test('large files keep WORKERFS instead of copying their contents', async () => {
+  const e = environment();
+  const file = { ...e.fixture('large.mp4'), size: 33 * 1024 * 1024,
+    arrayBuffer: () => { throw new Error('large input must not be copied'); } };
+  e.core.resolve(new Uint8Array([0]));
+  const loading = e.api.selectFile(file); e.metadata(); await flush();
+  assert.equal(e.workers.at(-1).message.payload.inputFile, file);
+  assert.equal(e.workers.at(-1).message.payload.inputBytes, null);
+  e.workers.at(-1).reply(e.inspection()); await loading;
+  const compress = e.api.compress(); await flush();
+  assert.equal(e.workers.at(-1).message.payload.inputFile, file);
+  e.workers.at(-1).reply(new Uint8Array([1]).buffer); await compress;
+  noWorkerResources(e);
+});
+
+test('failed snapshot falls back to WORKERFS without blocking video selection', async () => {
+  const e = environment();
+  const file = { ...e.fixture('unavailable.mp4'), arrayBuffer: async () => { throw new Error('permission denied'); } };
+  e.core.resolve(new Uint8Array([0]));
+  const loading = e.api.selectFile(file); e.metadata(); await flush();
+  assert.equal(e.api.state.inputBytes, null);
+  assert.equal(e.workers.at(-1).message.payload.inputFile, file);
+  e.workers.at(-1).reply(e.inspection()); await loading; noWorkerResources(e);
+});
+
+test('replacing or clearing a source retires its memory-backed snapshot', async () => {
+  const e = environment();
+  e.core.resolve(new Uint8Array([0]));
+  const first = { ...e.fixture('first.mp4'), arrayBuffer: async () => Uint8Array.from([1]).buffer };
+  let loading = e.api.selectFile(first); e.metadata(); await flush();
+  e.workers.at(-1).reply(e.inspection()); await loading;
+  assert.deepEqual([...new Uint8Array(e.api.state.inputBytes)], [1]);
+  const second = { ...e.fixture('second.mp4'), arrayBuffer: async () => Uint8Array.from([2]).buffer };
+  loading = e.api.selectFile(second); e.metadata(); await flush();
+  assert.deepEqual([...new Uint8Array(e.workers.at(-1).message.payload.inputBytes)], [2]);
+  e.workers.at(-1).reply(e.inspection()); await loading;
+  e.api.clearFile();
+  assert.equal(e.api.state.inputBytes, null); noWorkerResources(e);
+});
+
+test('NotReadableError shows a local-file retry hint without losing the technical log', async () => {
+  const e = environment(); await e.ready(); e.api.state.language = 'ja';
+  const compression = e.api.compress(); await flush();
+  e.workers.at(-1).fail("NotReadableError: Failed to execute 'readAsArrayBuffer' on 'FileReaderSync'");
+  await compression;
+  assert.equal(e.el('progressDetail').textContent, e.api.t('sourceUnreadable'));
+  assert.equal(e.el('toastRegion').children.at(-1).textContent, e.api.t('sourceUnreadable'));
+  assert.match(e.el('logBox').textContent, /NotReadableError/);
+  assert.equal(e.api.state.processing, false); noWorkerResources(e);
+});
+
+test('MEMFS path is implemented in embedded worker without requiring FileReaderSync', () => {
+  assert.match(html, /if\(payload\.inputBytes\)\{[\s\S]*?ffmpeg\.FS\.writeFile\(payload\.inputName,new Uint8Array\(payload\.inputBytes\)\)/);
+});
