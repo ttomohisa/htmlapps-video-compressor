@@ -33,6 +33,11 @@ $required = @(
   "scripts\check-source.ps1",
   "scripts\verify-standalone.ps1",
   "scripts\verify-self-extract.ps1",
+  "scripts\prepare-pages.ps1",
+  "tests\pages-deployment.test.cjs",
+  "coi-serviceworker.lock.json",
+  "vendor\coi-serviceworker\coi-serviceworker.js",
+  "licenses\coi-serviceworker-MIT.txt",
   "README.md",
   "README.ja.md",
   "LICENSE",
@@ -142,4 +147,8 @@ if ([string]$mtResolved[0].archiveSha256 -notmatch '^[0-9a-f]{64}$' -or [string]
 if ([string]$mtResolved[0].releaseAsset -notmatch '-multi-thread-' -or [string]$resolved[0].releaseAsset -notmatch '-single-thread-') { throw "ST/MT assets mismatched." }
 & $node.Source --test (Join-Path $Root "tests\icon-brand.test.cjs")
 if ($LASTEXITCODE -ne 0) { throw "Icon/brand regression checks failed." }
+& (Join-Path $Root "scripts\prepare-pages.ps1")
+& $node.Source --test (Join-Path $Root "tests\pages-deployment.test.cjs")
+if ($LASTEXITCODE -ne 0) { throw "GitHub Pages ST/MT staging regression checks failed." }
+
 Write-Host "[OK] Repository check passed." -ForegroundColor Green
