@@ -54,6 +54,7 @@ Provide a simple, fully self-contained browser video compressor. A non-expert sh
 - Retire cached input bytes on source replacement/reset; never persist source bytes.
 - Inspection invokes the compact runner with `--inspect-output /inspect.json`; parse measured bitrate, fps, display dimensions, and rotation.
 - Compression invokes the same runner with `--codec h264|vp9`, output settings, and `/output.mp4` or `/output.webm`.
+- Both Compress actions become available when initial source metadata and the small-video snapshot (if needed) are ready. A video-bitrate inspection in progress must not block them. Starting compression retires inspection, uses the currently displayed settings, and ignores late results. Cancellation restores both actions.
 - Output remains in MEMFS and is transferred back to the main thread as an ArrayBuffer.
 - Parse `__FFMPEG_WASM_PROGRESS__` messages for progress.
 - Cancellation terminates the Worker.
@@ -81,7 +82,7 @@ Use the template-aligned card and control language on narrow screens. Keep the s
 ## Smartphone navigation
 
 - The fixed bottom bar is visible from the initial empty state and provides Video, Settings, Estimate, and Compress actions.
-- Compress remains disabled until a usable video is ready; the other actions may navigate to their sections at any time.
+- Compress remains disabled until initial source information/input preparation is ready, but must not wait for video-bitrate inspection to complete. The other actions may navigate to their sections at any time.
 - Mobile navigation must stop with the target card border visible below the sticky header.
 - The estimated-size card keeps its own “Compress with these settings” button even when the fixed bottom Compress action is present.
 
