@@ -33,7 +33,15 @@ Provide a simple, fully self-contained browser video compressor. A non-expert sh
 - `dist/index.html`: readable standalone build and GitHub Pages entry point.
 - `dist/index.self-extract.html`: gzip/Base64 self-extracting one-file build.
 - `video-compressor.html`: root copy of `dist/index.html` for direct consumers such as Browser Kitty.
-- Both variants must work from `file://` and require no runtime network access.
+- The ST standalone must work from `file://`; MT requires an isolated HTTP(S) context. Both original standalone artifacts embed the complete runtime and need no runtime asset fetch. The GitHub Pages-only MT staging copy is allowed a same-origin COI helper.
+
+## GitHub Pages delivery
+- Publish the original ST `dist/index.html` at the Pages root while keeping other existing `dist/` URLs available.
+- Publish a separate `/mt/` entry generated from the raw `dist/index.mt.html` with a pinned same-origin COI Service Worker fallback, never adding it to the raw standalone artifacts.
+- The `/mt/` worker is scoped to that directory only. The Pages-specific MT CSP may add `'self'` to script/worker directives while preserving `connect-src 'none'`.
+- The Pages staging step must verify the vendor's SHA-256 and preserve the original ST and MT files byte-for-byte.
+- Browser Kitty continues to serve raw MT with server-side COOP/COEP; it must not receive the Pages-only bootstrap.
+- When browser Service Workers are unavailable, MT retains its explicit unsupported-host behavior without silent ST fallback.
 
 ## Settings
 - Codec/container: H.264 / MP4 (default) or VP9 / WebM.
@@ -69,7 +77,7 @@ Use the template-aligned card and control language on narrow screens. Keep the s
 
 ## Acceptance criteria
 - `scripts/check-source.ps1` passes.
-- `scripts/check-repository.ps1` builds and verifies both standalone variants using the checksum-verified Builder release.
+- `scripts/check-repository.ps1` builds and verifies both standalone variants using the checksum-verified Builder release, and validates staged GitHub Pages ST / MT outputs.
 - Release archive checksum is verified before embedding.
 - No unresolved placeholders or external runtime asset references remain.
 - CSP includes `connect-src 'none'` and `'wasm-unsafe-eval'`, but not broad `'unsafe-eval'`.
