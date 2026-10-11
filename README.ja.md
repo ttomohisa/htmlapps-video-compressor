@@ -26,7 +26,8 @@
 - 出力フレームレート、圧縮速度、音声ビットレート
 - オーディオ削除
 - 選択した出力ビットレートと動画時間から圧縮後サイズを概算
-- WORKERFSで入力File/Blobを参照し、大きな元動画を丸ごとMEMFSへ複製しない構成
+- 32 MiB以下の動画は選択直後に一度読み込み、MEMFS経由で処理（後から元ファイルを読み直すことによる権限エラーを回避）
+- 大きな動画はWORKERFSで参照し、元動画を丸ごとMEMFSへ複製しない構成を維持
 - 圧縮中の進捗、ログ、キャンセル
 - 圧縮後のプレビュー・保存・共有
 - 次回の出力ファイル名を編集し、形式に応じて `.mp4` / `.webm` を自動付与
@@ -119,7 +120,7 @@ update-ffmpeg.bat 1.10.3
 - 選択動画と圧縮結果を永続保存しない
 - `ffmpeg.js` と `ffmpeg.wasm` を単一HTMLへ内包
 - FFmpeg処理は専用Workerで実行
-- 元動画のFile/BlobはWORKERFS経由で参照し、入力全体をMEMFSへ複製しない
+- 32 MiB以下の動画は選択時にメモリへ一時保存してMEMFSで処理し、大きな動画はWORKERFS経由で参照して全体コピーを避ける。動画は外部送信・永続保存しない
 - WASMバイトを `instantiateWasm` へ直接渡し、`file://` でもWASMのURL解決を不要にする
 - Workerソースも1つのBlobへまとめ、ネストした `importScripts()` を使わない
 - Single-thread版はSharedArrayBuffer / COOP / COEP不要。Multi-thread版にはSharedArrayBufferとcross-origin isolationが必要
