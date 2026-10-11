@@ -526,3 +526,200 @@ test('MT transfers its mode and embedded core source for nested pthread workers'
   assert.equal(e.workers[0].message.payload.threading, 'multi-thread');
   assert.equal(typeof e.workers[0].message.payload.coreJsText, 'string');
 });
+
+ 
+test('small input is copied once and reused for inspection and compression without FileReaderSync', async () => {
+  const e = environment();
+  let reads = 0;
+  const file = { ...e.fixture('cloud-video.mp4'), size: 5 * 1024 * 1024,
+    arrayBuffer: async () => { ++reads; return Uint8Array.from([10, 20, 30, 40]).buffer; } };
+  e.core.resolve(new Uint8Array([0]));
+  const loading = e.api.selectFile(file); e.metadata(); await flush();
+  const inspected = e.workers.at(-1).message.payload;
+  assert.equal(inspected.inputFile, null);
+  assert.deepEqual([...new Uint8Array(inspected.inputBytes)], [10, 20, 30, 40]);
+  e.workers.at(-1).reply(e.inspection()); await loading;
+  const compression = e.api.compress(); await flush();
+  const compressed = e.workers.at(-1).message.payload;
+  assert.equal(compressed.inputFile, null);
+  assert.deepEqual([...new Uint8Array(compressed.inputBytes)], [10, 20, 30, 40]);
+  assert.notEqual(compressed.inputBytes, e.api.state.inputBytes);
+  assert.equal(reads, 1, 'source File must not be reread when compression begins');
+  e.workers.at(-1).reply(new Uint8Array([4, 5]).buffer); await compression;
+  assert.equal(e.api.state.outputFile.size, 2); noWorkerResources(e);
+});
+
+test('large files keep WORKERFS instead of copying their contents', async () => {
+  const e = environment();
+  const file = { ...e.fixture('large.mp4'), size: 33 * 1024 * 1024,
+    arrayBuffer: () => { throw new Error('large input must not be copied'); } };
+  e.core.resolve(new Uint8Array([0]));
+  const loading = e.api.selectFile(file); e.metadata(); await flush();
+  assert.equal(e.workers.at(-1).message.payload.inputFile, file);
+  assert.equal(e.workers.at(-1).message.payload.inputBytes, null);
+  e.workers.at(-1).reply(e.inspection()); await loading;
+  const compress = e.api.compress(); await flush();
+  assert.equal(e.workers.at(-1).message.payload.inputFile, file);
+  e.workers.at(-1).reply(new Uint8Array([1]).buffer); await compress;
+  noWorkerResources(e);
+});
+
+test('failed snapshot falls back to WORKERFS without blocking video selection', async () => {
+  const e = environment();
+  const file = { ...e.fixture('unavailable.mp4'), arrayBuffer: async () => { throw new Error('permission denied'); } };
+  e.core.resolve(new Uint8Array([0]));
+  const loading = e.api.selectFile(file); e.metadata(); await flush();
+  assert.equal(e.api.state.inputBytes, null);
+  assert.equal(e.workers.at(-1).message.payload.inputFile, file);
+  e.workers.at(-1).reply(e.inspection()); await loading; noWorkerResources(e);
+});
+
+test('replacing or clearing a source retires its memory-backed snapshot', async () => {
+  const e = environment();
+  e.core.resolve(new Uint8Array([0]));
+  const first = { ...e.fixture('first.mp4'), arrayBuffer: async () => Uint8Array.from([1]).buffer };
+  let loading = e.api.selectFile(first); e.metadata(); await flush();
+  e.workers.at(-1).reply(e.inspection()); await loading;
+  assert.deepEqual([...new Uint8Array(e.api.state.inputBytes)], [1]);
+  const second = { ...e.fixture('second.mp4'), arrayBuffer: async () => Uint8Array.from([2]).buffer };
+  loading = e.api.selectFile(second); e.metadata(); await flush();
+  assert.deepEqual([...new Uint8Array(e.workers.at(-1).message.payload.inputBytes)], [2]);
+  e.workers.at(-1).reply(e.inspection()); await loading;
+  e.api.clearFile();
+  assert.equal(e.api.state.inputBytes, null); noWorkerResources(e);
+});
+
+test('NotReadableError shows a local-file retry hint without losing the technical log', async () => {
+  const e = environment(); await e.ready(); e.api.state.language = 'ja';
+  const compression = e.api.compress(); await flush();
+  e.workers.at(-1).fail("NotReadableError: Failed to execute 'readAsArrayBuffer' on 'FileReaderSync'");
+  await compression;
+  assert.equal(e.el('progressDetail').textContent, e.api.t('sourceUnreadable'));
+  assert.equal(e.el('toastRegion').children.at(-1).textContent, e.api.t('sourceUnreadable'));
+  assert.match(e.el('logBox').textContent, /NotReadableError/);
+  assert.equal(e.api.state.processing, false); noWorkerResources(e);
+});
+
+test('MEMFS path is implemented in embedded worker without requiring FileReaderSync', () => {
+  assert.match(html, /if\(payload\.inputBytes\)\{[\s\S]*?ffmpeg\.FS\.writeFile\(payload\.inputName,new Uint8Array\(payload\.inputBytes\)\)/);
+});
+
+
+test('compression starts before bitrate inspection finishes on both ST and MT', async () => {
+  for (const threading of ['single-thread', 'multi-thread']) {
+    const e = environment({ threading }); e.core.resolve(new Uint8Array([0]));
+    const selection = e.api.selectFile(e.fixture()); e.metadata(); await flush();
+    const inspectionWorker = e.workers.at(-1);
+    assert.equal(e.api.state.inspecting, true);
+    assert.equal(e.api.state.compressReady, true);
+    assert.equal(e.el('bitrateNote').textContent, 'Analyzing…');
+    assert.equal(e.el('compressButton').disabled, false, threading + ': estimate-card Compress');
+    assert.equal(e.el('mobileCompressButton').disabled, false, threading + ': mobile Compress');
+
+    e.el('bitrateInput').value = '555'; e.el('bitrateInput').dispatch('change');
+    const compression = e.api.compress(); await flush();
+    const encoder = e.workers.at(-1);
+    assert.notEqual(encoder, inspectionWorker);
+    assert.equal(inspectionWorker.terminated, true);
+    assert.equal(e.api.state.inspecting, false);
+    assert.equal(e.api.state.inspectionSkipped, true);
+    assert.equal(e.el('bitrateNote').textContent, 'Not measured');
+    assert.equal(e.el('compressButton').disabled, true);
+    assert.equal(e.el('mobileCompressButton').disabled, true);
+    const args = Array.from(encoder.message.payload.args);
+    assert.equal(args[args.indexOf('--video-bitrate') + 1], '555');
+    assert.equal(encoder.message.payload.threading, threading);
+
+    // A late inspection reply must not overwrite the chosen encoding settings.
+    inspectionWorker.reply(e.inspection(60, 20, 1920, 1080));
+    inspectionWorker.onerror({message:'late inspection failure'});
+    await flush();
+    assert.equal(e.api.state.source.bitrateMeasured, false);
+    assert.equal(e.el('bitrateInput').value, 555);
+    assert.equal(e.api.state.processing, true);
+    encoder.reply(new Uint8Array([1, 2, 3]).buffer);
+    await Promise.all([selection, compression]);
+    assert.equal(e.api.state.outputFile.size, 3);
+    assert.equal(e.api.state.compressReady, true);
+    assert.equal(e.el('compressButton').disabled, false);
+    assert.equal(e.el('mobileCompressButton').disabled, false);
+    noWorkerResources(e);
+  }
+});
+
+test('compression is guarded until metadata and the small-file snapshot are ready', async () => {
+  const e = environment(), snapshot = deferred();
+  const file = { ...e.fixture(), arrayBuffer: () => snapshot.promise };
+  e.core.resolve(new Uint8Array([0]));
+  const selection = e.api.selectFile(file);
+  assert.equal(e.el('compressButton').disabled, true);
+  assert.equal(e.el('mobileCompressButton').disabled, true);
+  await e.api.compress();
+  assert.equal(e.workers.length, 0, 'must not encode before metadata is ready');
+  e.metadata(); await flush();
+  assert.equal(e.api.state.compressReady, false);
+  await e.api.compress();
+  assert.equal(e.workers.length, 0, 'must not encode before input snapshot settles');
+  snapshot.resolve(Uint8Array.from([7, 8, 9]).buffer); await flush();
+  const inspectionWorker = e.workers.at(-1);
+  assert.equal(e.el('compressButton').disabled, false);
+  assert.equal(e.el('mobileCompressButton').disabled, false);
+  assert.deepEqual([...new Uint8Array(inspectionWorker.message.payload.inputBytes)], [7, 8, 9]);
+  const compression = e.api.compress(); await flush();
+  assert.equal(inspectionWorker.terminated, true);
+  assert.deepEqual([...new Uint8Array(e.workers.at(-1).message.payload.inputBytes)], [7, 8, 9]);
+  e.workers.at(-1).reply(new Uint8Array([4]).buffer);
+  await Promise.all([selection, compression]);
+  noWorkerResources(e);
+});
+
+test('Cancel after skipping inspection restores both Compress actions for retry', async () => {
+  const e = environment(); e.core.resolve(new Uint8Array([0]));
+  const selection = e.api.selectFile(e.fixture()); e.metadata(); await flush();
+  const inspectionWorker = e.workers.at(-1);
+  const firstCompression = e.api.compress(); await flush();
+  const cancelledEncoder = e.workers.at(-1);
+  assert.equal(inspectionWorker.terminated, true);
+  e.api.cancel(); await Promise.all([selection, firstCompression]);
+  assert.equal(cancelledEncoder.terminated, true);
+  assert.equal(e.api.state.processing, false);
+  assert.equal(e.api.state.inspecting, false);
+  assert.equal(e.el('compressButton').disabled, false);
+  assert.equal(e.el('mobileCompressButton').disabled, false);
+  const retry = e.api.compress(); await flush();
+  e.workers.at(-1).reply(new Uint8Array([2]).buffer); await retry;
+  assert.equal(e.api.state.outputFile.size, 1);
+  noWorkerResources(e);
+});
+
+test('starting compression during frame-rate fallback retires its callbacks', async () => {
+  const e = environment(), callbacks = frameFallback(e);
+  const { loading } = await failedInspection(e);
+  assert.equal(e.api.state.inspecting, true);
+  assert.equal(e.el('compressButton').disabled, false);
+  const compression = e.api.compress(); await flush();
+  assert.equal(callbacks.size, 0);
+  assert.equal(e.api.state.inspecting, false);
+  assert.equal(e.el('bitrateNote').textContent, 'Not measured');
+  e.workers.at(-1).reply(new Uint8Array([1]).buffer);
+  await Promise.all([loading, compression]);
+  assert.equal(e.api.state.outputFile.size, 1);
+  noWorkerResources(e);
+});
+
+test('normal completed inspection still applies measured bitrate recommendations', async () => {
+  const e = environment(); await e.ready();
+  assert.equal(e.api.state.inspecting, false);
+  assert.equal(e.api.state.compressReady, true);
+  assert.equal(e.api.state.inspectionSkipped, false);
+  assert.equal(e.api.state.source.bitrateMeasured, true);
+  assert.equal(e.el('bitrateNote').textContent, 'Measured');
+  assert.equal(e.el('compressButton').disabled, false);
+  assert.equal(e.el('mobileCompressButton').disabled, false);
+  e.api.clearFile();
+  assert.equal(e.api.state.compressReady, false);
+  assert.equal(e.api.state.inspectionSkipped, false);
+  assert.equal(e.el('compressButton').disabled, true);
+  assert.equal(e.el('mobileCompressButton').disabled, true);
+  noWorkerResources(e);
+});

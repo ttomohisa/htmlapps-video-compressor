@@ -21,7 +21,7 @@ Provide a simple, fully self-contained browser video compressor. A non-expert sh
 ## Engine
 - Engine source: `ttomohisa/htmlapps-ffmpeg-wasm-builder` GitHub Release.
 - Version is pinned once in `dependencies.json`.
-- Builder `1.10.3` / FFmpeg `n9.0.1` is pinned for app v1.3.3.
+- Builder `1.10.3` / FFmpeg `n9.0.1` is pinned in `dependencies.json`.
 - Output A: H.264 (`libx264`) video + optional AAC audio in MP4.
 - Output B: VP9 (`libvpx-vp9`) video + optional Opus audio in WebM.
 - Separate ST/MT compact public-libav runners. ST has no SharedArrayBuffer/COOP/COEP requirement; MT requires cross-origin isolation and preserves MP4/WebM output.
@@ -49,9 +49,12 @@ Provide a simple, fully self-contained browser video compressor. A non-expert sh
 - Decode embedded `ffmpeg.js`/`ffmpeg.wasm` from the build bundle.
 - Cache decompressed WASM bytes on the main thread; transfer a fresh byte copy to each Worker invocation.
 - Concatenate generated Emscripten JavaScript and the app Worker body into one Blob Worker.
-- Mount the selected browser File through Emscripten WORKERFS under `/workerfs`; do not create a full input ArrayBuffer/MEMFS copy.
+- Snapshot selected inputs up to 32 MiB immediately after selection and supply a fresh transferable byte copy to MEMFS for inspection/compression. This avoids later permission-sensitive Worker FileReaderSync reads.
+- Keep larger inputs and small inputs that cannot be snapshotted on Emscripten WORKERFS under `/workerfs`, without a full input ArrayBuffer/MEMFS copy.
+- Retire cached input bytes on source replacement/reset; never persist source bytes.
 - Inspection invokes the compact runner with `--inspect-output /inspect.json`; parse measured bitrate, fps, display dimensions, and rotation.
 - Compression invokes the same runner with `--codec h264|vp9`, output settings, and `/output.mp4` or `/output.webm`.
+- Both Compress actions become available when initial source metadata and the small-video snapshot (if needed) are ready. A video-bitrate inspection in progress must not block them. Starting compression retires inspection, uses the currently displayed settings, and ignores late results. Cancellation restores both actions.
 - Output remains in MEMFS and is transferred back to the main thread as an ArrayBuffer.
 - Parse `__FFMPEG_WASM_PROGRESS__` messages for progress.
 - Cancellation terminates the Worker.
@@ -79,7 +82,7 @@ Use the template-aligned card and control language on narrow screens. Keep the s
 ## Smartphone navigation
 
 - The fixed bottom bar is visible from the initial empty state and provides Video, Settings, Estimate, and Compress actions.
-- Compress remains disabled until a usable video is ready; the other actions may navigate to their sections at any time.
+- Compress remains disabled until initial source information/input preparation is ready, but must not wait for video-bitrate inspection to complete. The other actions may navigate to their sections at any time.
 - Mobile navigation must stop with the target card border visible below the sticky header.
 - The estimated-size card keeps its own “Compress with these settings” button even when the fixed bottom Compress action is present.
 
