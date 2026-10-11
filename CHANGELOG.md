@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.7 - 2026-10-11
+
+- Read videos up to 32 MiB once at selection and pass independent transferable bytes through MEMFS during source inspection and compression, avoiding permission-sensitive WORKERFS/FileReaderSync rereads.
+- Preserve WORKERFS streaming behavior for larger inputs and when an upfront snapshot fails.
+- Show a localized, actionable error when the source can no longer be read while retaining the full worker diagnostic log.
+- Add source-selection, snapshot reuse, large-input, reset, and NotReadableError regression tests.
+
+
 ## 1.3.6
 
 - Add separately built Single-thread and Multi-thread Compressor HTML using Builder 1.10.3 with both MP4 and WebM output.
