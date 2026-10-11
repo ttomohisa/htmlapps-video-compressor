@@ -28,6 +28,7 @@ A single-HTML video compressor that keeps processing inside the browser. It can 
 - Estimated output size based on the selected output bitrate and duration
 - Small videos (up to 32 MiB) are read once after selection and supplied through MEMFS, avoiding later FileReaderSync permission failures
 - Larger videos keep WORKERFS input so they are not copied wholesale into MEMFS before processing
+- Compression can start before the video-bitrate inspection completes; the current settings are used and inspection is stopped safely
 - Progress, processing log, and cancellation
 - Preview, save, and share output
 - Editable next-run output file name with automatic `.mp4` / `.webm` extension handling
@@ -103,10 +104,10 @@ The script updates `dependencies.json`, downloads the matching Release, verifies
 ## Usage
 
 1. Choose or drop a video.
-2. Wait for local inspection to finish. The measured source video bitrate is shown as source information, while the recommended output video bitrate is selected by default.
+2. Once basic file information is ready, you can compress immediately. Source bitrate inspection continues separately, and the recommended output bitrate may update when it finishes.
 3. Choose **H.264 / MP4** or **VP9 / WebM**.
 4. Adjust resolution, bitrate, frame rate, encoding speed, audio settings, and the output file name when needed.
-5. Select **Compress with these settings**. On mobile, the bottom **Compress** action is also available.
+5. Select **Compress with these settings**. On mobile, the bottom **Compress** action is also available. If inspection is still running, the app cancels inspection and encodes with your currently displayed settings.
 6. Preview, save, or share the generated MP4/WebM file.
 
 H.264 remains the default because it is generally faster to encode and broadly compatible. VP9 is intended for cases where a smaller file is worth longer browser-side encoding time.
