@@ -5,7 +5,9 @@
 - Read videos up to 32 MiB once at selection and pass independent transferable bytes through MEMFS during source inspection and compression, avoiding permission-sensitive WORKERFS/FileReaderSync rereads.
 - Preserve WORKERFS streaming behavior for larger inputs and when an upfront snapshot fails.
 - Show a localized, actionable error when the source can no longer be read while retaining the full worker diagnostic log.
-- Add source-selection, snapshot reuse, large-input, reset, and NotReadableError regression tests.
+- Allow desktop/mobile Compress as soon as initial file preparation finishes, even while source bitrate analysis is running; starting compression safely cancels analysis and uses the currently selected settings.
+- Mark interrupted source-bitrate measurement as unmeasured instead of a read failure.
+- Add source-selection, snapshot reuse, large-input, reset, NotReadableError and early-compression/preemption regression tests.
 
 
 ## 1.3.6
