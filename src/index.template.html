@@ -56,6 +56,8 @@
     }
     @media(max-width:390px){.privacy-chip{margin-top:0}.file-panel{grid-template-columns:82px minmax(0,1fr);gap:10px}.thumb{width:82px}.bitrate-row{grid-template-columns:minmax(0,1fr) 94px}.summary-list{grid-template-columns:1fr}.mobile-bar{grid-template-columns:1fr 1fr 1fr 1.22fr;padding-inline:5px}.mobile-action{font-size:8px}.mobile-action.primary{font-size:9px}.result-actions{grid-template-columns:1fr}.result-actions #resetButton{grid-column:auto}}
     @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+    .help-build{margin:16px 0 0;color:var(--muted);font-size:10px}
+    @media (max-width: 640px) { main > .footer { display: none; } }
   </style>
 </head>
 <body>
@@ -147,7 +149,7 @@
       <aside><section class="estimate-card" id="estimateCard" aria-labelledby="estimateHeading"><div class="eyebrow" id="estimateHeading" data-i18n="estimatedSize">圧縮後サイズの概算</div><div class="estimate-size" id="estimateSize">—</div><div class="estimate-copy" id="estimateCopy" data-i18n="estimateBeforeFile">動画を選ぶと、長さと設定から概算します。</div><div class="estimate-saving" id="estimateSavings">—</div><div class="estimate-bars"><div class="bar-row"><span data-i18n="before">圧縮前</span><div class="bar-track"><div class="bar-fill" id="originalBar" style="width:100%"></div></div><strong id="originalBarSize">—</strong></div><div class="bar-row"><span data-i18n="after">圧縮後</span><div class="bar-track"><div class="bar-fill" id="estimateBar" style="width:0%"></div></div><strong id="estimateBarSize">—</strong></div></div><div class="summary-list"><div class="summary-item"><span data-i18n="outputResolution">出力解像度</span><strong id="summaryResolution">—</strong></div><div class="summary-item"><span data-i18n="formatCodec">形式 / コーデック</span><strong id="summaryCodec">MP4 / H.264</strong></div><div class="summary-item"><span data-i18n="audio">オーディオ</span><strong id="summaryAudio">96 kbps</strong></div><div class="summary-item"><span data-i18n="outputFps">出力fps</span><strong id="summaryFps">元のまま</strong></div></div><button class="btn btn-primary" id="compressButton" type="button" disabled><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M7 4v6M17 4v6M6 13h12v7H6z"/><path d="M9 16h6"/></svg><span data-i18n="compress">この設定で圧縮</span></button><div class="engine-note"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><span data-i18n="engineNote">処理中はこのタブを閉じないでください。大きな動画はメモリ不足で失敗する場合があります。</span></div></section></aside>
     </div>
 
-    <footer class="footer"><span data-i18n="footerPrivacy">動画データはブラウザ内だけで処理されます。</span><span id="versionText">Local Video Compressor</span></footer>
+    <footer class="footer"><span data-i18n="footerPrivacy">動画データはブラウザ内だけで処理されます。</span></footer>
   </main>
 
   <nav class="mobile-bar" id="mobileBar" aria-label="Mobile actions">
@@ -165,7 +167,7 @@
     <section class="help-section"><h3 data-i18n="helpShareTitle">共有ボタン</h3><p data-i18n="helpShareCopy">端末とブラウザがファイル共有に対応している場合は共有画面を開きます。非対応の場合は自動的に保存します。</p></section>
     <section class="help-section full"><h3 data-i18n="helpTroubleTitle">うまくいかないとき</h3><ul><li data-i18n="helpTrouble1">まず解像度やビットレートを下げてください。</li><li data-i18n="helpTrouble2">長い動画や大きな動画は端末メモリ不足になることがあります。</li><li data-i18n="helpTrouble3">入力形式によって失敗する場合は、短い動画や一般的なMP4/MOVで動作を確認してください。</li><li data-i18n="helpTrouble4">圧縮中はタブを閉じたり、端末をスリープさせたりしないでください。</li></ul></section>
     <section class="help-section full"><h3 data-i18n="helpLicenseTitle">ライセンスとFFmpeg</h3><p><span data-i18n="helpLicenseCopy">このアプリにはGPL-2.0-or-laterのFFmpeg/x264 WebAssemblyコアと、libvpx、Opusが含まれます。</span> <span id="ffmpegVersionText"></span> <a class="text-btn" id="ffmpegSourceLink" target="_blank" rel="noopener noreferrer" data-i18n="helpSourceLink">対応ソースを見る</a></p></section>
-  </div></div></dialog>
+  </div><p class="help-build"><span id="versionText">Local Video Compressor</span></p></div></dialog>
 
   <dialog class="compact-dialog" id="settingInfoDialog" aria-labelledby="settingInfoTitle"><div class="help-head"><h2 id="settingInfoTitle">設定の説明</h2><button class="close-btn" id="settingInfoCloseButton" type="button" aria-label="閉じる"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div class="help-body"><p class="dialog-copy" id="settingInfoCopy"></p></div></dialog>
 
