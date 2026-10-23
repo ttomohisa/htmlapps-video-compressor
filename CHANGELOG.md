@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Hide the informational footer on smartphones and move its existing app version to the end of Help, preserving the header version and functional bottom action bar.
+
 ## 1.3.7 - 2026-10-11
 
 - Read videos up to 32 MiB once at selection and pass independent transferable bytes through MEMFS during source inspection and compression, avoiding permission-sensitive WORKERFS/FileReaderSync rereads.

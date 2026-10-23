@@ -101,3 +101,7 @@ Lock document/body scrolling only while a native modal is open. Preserve the exi
 ## Approved MT extension
 
 See [ST / MT distribution](docs/MULTITHREAD.md). Maintain separate artifacts, explicit capability gating, no runtime network dependencies, and the existing ST portable/offline contract. Both drop area and output estimate use solid backgrounds.
+
+## Smartphone footer and build information
+
+Hide only the informational main footer at the existing 640 px bottom-action-bar breakpoint. Preserve the fixed Video / Settings / Estimate / Compress bar and its bottom clearance. Keep the populated app version span at the end of Help after the existing licensing and corresponding-source notes, in quiet text; the header version, local-processing badge, dependency pins, ST/MT behavior and processing controls stay unchanged.
