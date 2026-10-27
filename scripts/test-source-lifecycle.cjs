@@ -52,7 +52,7 @@ function environment(options = {}) {
     focus() { this.focused = true; } select() { this.selected = true; }
     click() { this.dispatch('click'); }
   }
-  const elements = new Map();
+  const elements = new Map(), storageWrites=[], historyUrls=[];
   const el = id => { if (!elements.has(id)) elements.set(id, new Element(id)); return elements.get(id); };
   for (const [id, value] of Object.entries({ resolutionSelect: '1920', codecSelect: 'h264',
     bitrateInput: '3200', bitrateRange: '3200', fpsSelect: 'original', speedSelect: 'fast', audioBitrateSelect: '96' })) el(id).value = value;
@@ -72,11 +72,11 @@ function environment(options = {}) {
       ? [...elements.values()].filter(e => /Input$|Select$|Range$|removeAudio|recommendButton/.test(e.id)) : []
   };
   const sandbox = {
-    document, navigator: { language: 'en' }, localStorage: { getItem() { return null; }, setItem() {} },
+    document, navigator: { language: 'en', languages:['en'] }, location:{href:options.url||'https://example.test/'}, history:{replaceState(state,title,url){historyUrls.push(url);}}, localStorage: { getItem(key) { return options.storage?.[key]??null; }, setItem(key,value) {storageWrites.push([key,value]);} }, requestAnimationFrame:fn=>fn(),
     console: { error() {}, warn() {} }, Blob, File, TextEncoder, TextDecoder, Uint8Array, ArrayBuffer, Map, Set,
     Promise, Date, Math, Number, String, Error, performance: { now: () => 1000 },
     atob: x => Buffer.from(x, 'base64').toString('binary'),
-    URL: { createObjectURL: x => { const url = 'blob:test/' + ++urlId; urls.set(url, x); return url; }, revokeObjectURL: x => urls.delete(x) },
+    URL: Object.assign(function(value,base){return new URL(value,base);}, { createObjectURL: x => { const url = 'blob:test/' + ++urlId; urls.set(url, x); return url; }, revokeObjectURL: x => urls.delete(x) }),
     Worker: WorkerDouble, crossOriginIsolated: options.isolated !== false, SharedArrayBuffer: options.shared === false ? undefined : SharedArrayBuffer,
     setTimeout: (fn, ms) => { const id = ++timerId; timers.set(id, { fn, ms }); return id; },
     clearTimeout: id => timers.delete(id), setInterval: () => ++timerId, clearInterval() {}
@@ -84,7 +84,7 @@ function environment(options = {}) {
   sandbox.window = { addEventListener() {}, scrollTo() {}, scrollY: 0 };
   const context = vm.createContext(sandbox);
   let script = html.match(/<script>\s*([\s\S]*?)<\/script>/)[1]
-    .replace('__APP_CONFIG_JSON__', '{}').replace('__BUILD_MANIFEST_JSON__', '{}').replace('__EMBEDDED_ASSET_BUNDLE_JSON__', '{}');
+    .replace('__BK_UI_JS__',fs.readFileSync(path.join(__dirname,'../components/ui-conventions.js'),'utf8')).replace('__APP_CONFIG_JSON__', '{}').replace('__BUILD_MANIFEST_JSON__', '{}').replace('__EMBEDDED_ASSET_BUNDLE_JSON__', '{}');
   if (options.threading) script = script.replace(/const RUNTIME_VARIANT=[^;]+;/, `const RUNTIME_VARIANT=${JSON.stringify(options.threading)};`);
   script = script.replace(/\}\)\(\);\s*$/, 'globalThis.api={state,els,selectFile,clearFile,compress,cancel,buildArgs,targetDimensions,download,share,t,runtimeAllowed:typeof runtimeAllowed==="function"?runtimeAllowed:()=>true};})();');
   vm.runInContext(script, context, { filename: sourcePath });
@@ -103,7 +103,7 @@ function environment(options = {}) {
     const loading = api.selectFile(fixture(name)); metadata(); await flush();
     workers.at(-1).reply(inspection()); await loading;
   }
-  return { api, el, workers, timers, urls, core, fixture, metadata, inspection, ready, context };
+  return { api, el, workers, timers, urls, core, fixture, metadata, inspection, ready, context, storageWrites, historyUrls };
 }
 function frameFallback(e) {
   const callbacks = new Map(); let next = 0;
@@ -722,4 +722,49 @@ test('normal completed inspection still applies measured bitrate recommendations
   assert.equal(e.el('compressButton').disabled, true);
   assert.equal(e.el('mobileCompressButton').disabled, true);
   noWorkerResources(e);
+});
+
+// Common UI pilot: real application actions, media transport stays doubled above.
+test('startup honors URL then shared then legacy language without writing',()=>{
+  for(const [url,values,expected] of [
+    ['https://example.test/?lang=ja',{'browser-kitty:ui-language:v1':'en','lvc-language':'en'},'ja'],
+    ['https://example.test/',{'browser-kitty:ui-language:v1':'en','lvc-language':'ja'},'en'],
+    ['https://example.test/',{'lvc-language':'ja'},'ja']
+  ]){const e=environment({url,storage:values});assert.equal(e.api.state.language,expected);assert.equal(e.storageWrites.length,0);}
+});
+test('language switching during compression keeps operation, source, bitrate and old output',async()=>{
+  const e=environment({url:'https://example.test/?lang=en'});await finishOutput(e);e.el('bitrateInput').value='777';const old=e.api.state.outputFile;
+  const pending=e.api.compress();await flush();const operation=e.api.state.operation,worker=e.workers.at(-1);e.el('languageButton').click();
+  assert.equal(e.api.state.operation,operation);assert.equal(worker.terminated,false);assert.equal(e.el('bitrateInput').value,777);assert.equal(e.api.state.outputFile,old);
+  assert.deepEqual(e.storageWrites,[['browser-kitty:ui-language:v1','ja']]);assert.match(e.historyUrls[0],/lang=ja/);
+  e.api.cancel();await pending;
+});
+for(const ending of ['cancel','failure']) test(`recompression ${ending} retains previous downloadable output and labels it`,async()=>{
+  const e=environment();await finishOutput(e);const old=e.api.state.outputFile,url=e.api.state.outputUrl;
+  const pending=e.api.compress();await flush();if(ending==='cancel')e.api.cancel();else e.workers.at(-1).fail('Synthetic encoding failure');await pending;
+  assert.equal(e.api.state.outputFile,old);assert.equal(e.api.state.outputUrl,url);assert.match(e.el('previousResultNotice').textContent,/Previous result/);assert.equal(e.el('previousResultNotice').hidden,false);assert.equal(e.el('compressButton').disabled,false);
+});
+test('common button states agree with native disabled while processing and after cancellation',async()=>{
+  const e=environment();assert.equal(e.el('compressButton').getAttribute('data-bk-state'),'unavailable');await e.ready();
+  const pending=e.api.compress();await flush();assert.equal(e.el('compressButton').disabled,true);assert.equal(e.el('compressButton').getAttribute('data-bk-state'),'busy');
+  e.api.cancel();await pending;assert.equal(e.el('compressButton').disabled,false);assert.equal(e.el('compressButton').getAttribute('data-bk-state'),'ready');
+});
+test('clear UI confirmation starts on cancel and cancellation preserves source and result',async()=>{
+  const e=environment();await finishOutput(e);const before=resultSnapshot(e),file=e.api.state.file;
+  e.el('clearFileButton').click();assert.equal(e.el('resetConfirmDialog').open,true);assert.equal(e.el('resetConfirmCancelButton').focused,true);
+  e.el('resetConfirmDialog').dispatch('cancel');await flush();assert.equal(e.el('resetConfirmDialog').open,false);assert.equal(e.api.state.file,file);assertOutputUnchanged(e,before);
+});
+test('save labels name the encoded target rather than next-run codec',async()=>{
+  const e=environment();await finishOutput(e);e.el('codecSelect').value='vp9';e.el('codecSelect').dispatch('change');
+  assert.equal(e.el('downloadLabel').textContent,'Save MP4');assert.match(html,/id="sessionSaveStatus"/);
+});
+
+test('cancelling the next-file picker keeps the current source, name and result',async()=>{
+  const e=environment();await finishOutput(e);const before=resultSnapshot(e),file=e.api.state.file,name=e.el('outputNameInput').value;
+  e.el('resetButton').click();await flush();assert.equal(e.api.state.file,file);assert.equal(e.el('outputNameInput').value,name);assertOutputUnchanged(e,before);
+});
+test('completed regeneration replaces only the old result URL and clears previous label',async()=>{
+  const e=environment();await finishOutput(e);const url=e.api.state.outputUrl;e.el('codecSelect').value='vp9';e.el('codecSelect').dispatch('change');
+  const pending=e.api.compress();await flush();assert.equal(e.api.state.outputUrl,url);e.workers.at(-1).reply(new Uint8Array([7,6]).buffer);await pending;
+  assert.equal(e.urls.has(url),false);assert.equal(e.el('previousResultNotice').hidden,true);assert.equal(e.el('downloadLabel').textContent,'Save WebM');assert.equal(e.el('renameButton').disabled,false);
 });

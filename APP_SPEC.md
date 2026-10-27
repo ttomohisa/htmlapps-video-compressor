@@ -1,5 +1,13 @@
 # Application specification
 
+## Common UI pilot (2026-10-27)
+
+- Embed pinned BrowserKittyUI 1.0.0 in both ST/MT artifacts. Resolve URL, shared preference, legacy language, browser languages, then English. Explicit switches alone persist shared preference, preserve current inputs/results and do not abort active work.
+- Show session-only retention at the top. Keep output generation separate from target-specific Save MP4 / Save WebM and existing download-start notices.
+- Preserve the previous result through failed/cancelled recompression, mark it as previous when settings change, and replace its URL only on successful encoding.
+- Use common native disabled/busy/stopping styling, visible prerequisites and scoped cancel-first AppConfirm adapters for UI source/result removal and replacement. Cancelling a file picker preserves work.
+- Preserve pinned FFmpeg release, ST file:// / MT isolation requirements, Worker termination and output formats.
+
 ## v1.3.3 media timing requirements
 
 - MP4 preserves a positive final-frame duration and a complete video edit interval, with or without audio.

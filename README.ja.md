@@ -1,5 +1,9 @@
 # Local Video Compressor
 
+共通UIの試行版では、作業領域の上部にタブ内だけの保持条件を表示します。言語はURL、サイト共通設定、従来設定、ブラウザーの順に決まり、切替時も入力や処理を維持します。保存は実際のMP4/WebMを対象とし、通知はダウンロード開始を示します。再圧縮の失敗・中止時は前回の結果を残します。動画と結果の除去・置換は範囲を示して確認し、元ファイルは削除しません。
+
+共通UI 1.0.0を `components/` でハッシュ固定し、ST/MT双方へビルド時に埋め込みます。実行時の通信は追加しません。
+
 [![GitHub Pages](https://github.com/ttomohisa/htmlapps-video-compressor/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/ttomohisa/htmlapps-video-compressor/actions/workflows/deploy-pages.yml)
 [![License: GPL-3.0-or-later](https://img.shields.io/badge/License-GPL--3.0--or--later-blue.svg)](LICENSE)
 [![Single HTML](https://img.shields.io/badge/distribution-single%20HTML-0ea5e9)](https://ttomohisa.github.io/htmlapps-video-compressor/)

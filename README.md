@@ -1,5 +1,9 @@
 # Local Video Compressor
 
+The common UI pilot displays session-only retention above the workspace. Language follows URL, shared preference, legacy preference and browser languages. Switching preserves inputs and processing. Save names the actual MP4/WebM result and reports download started. Previous output remains available during failed/cancelled recompression; source/result removal requires a scoped, cancel-first confirmation. Original files are kept.
+
+BrowserKittyUI 1.0.0 is hash-pinned under `components/` and embedded at build time in both variants; no runtime request is added.
+
 [![GitHub Pages](https://github.com/ttomohisa/htmlapps-video-compressor/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/ttomohisa/htmlapps-video-compressor/actions/workflows/deploy-pages.yml)
 [![License: GPL-3.0-or-later](https://img.shields.io/badge/License-GPL--3.0--or--later-blue.svg)](LICENSE)
 [![Single HTML](https://img.shields.io/badge/distribution-single%20HTML-0ea5e9)](https://ttomohisa.github.io/htmlapps-video-compressor/)

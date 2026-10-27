@@ -91,6 +91,8 @@ if ([string]$ffmpegDependency[0].sourceAsset -notmatch '\{version\}') { throw "s
 
 $node = Get-Command node -ErrorAction SilentlyContinue
 if ($null -eq $node) { throw "Node.js 22 or newer is required for application regression checks." }
+& $node.Source --test (Join-Path $Root "tests\shared-ui.test.cjs")
+if ($LASTEXITCODE -ne 0) { throw "Shared UI regression checks failed." }
 $regressionScript = Join-Path $Root "scripts\test-source-lifecycle.cjs"
 & $node.Source $regressionScript
 if ($LASTEXITCODE -ne 0) { throw "Application source lifecycle regression checks failed." }

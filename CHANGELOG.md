@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased — common UI pilot (2026-10-27)
+
+- Embed shared UI 1.0.0 in ST/MT with session retention, shared language preference and native button states.
+- Keep input/settings/worker and previous output across language switches; retain old MP4/WebM through failed or cancelled recompression and label stale results.
+- Name actual saved output format, show prerequisites, and use cancel-first scoped confirmation for source/result removal/replacement. Cancelling the next-file picker keeps current work.
+- Preserve FFmpeg Builder 1.10.3, ST file:// and isolated MT processing architecture and formats.
+
 ## Unreleased
 
 - Hide the informational footer on smartphones and move its existing app version to the end of Help, preserving the header version and functional bottom action bar.
