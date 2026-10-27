@@ -3,7 +3,9 @@
 [data-bk-button][data-bk-variant="primary"] { background: #16624F; border-color: #16624F; color: #FFFFFF; }
 [data-bk-button][data-bk-variant="primary"]:hover:not(:disabled) { background: #0E503F; border-color: #0E503F; }
 [data-bk-button][data-bk-variant="secondary"] { background: #FFFFFF; color: #202823; border-color: #BFC1BA; }
+[data-bk-button][data-bk-variant="secondary"]:hover:not(:disabled) { background: #FFFFFF; color: #202823; border-color: #BFC1BA; }
 [data-bk-button][data-bk-variant="danger"] { background: #B3261E; border-color: #B3261E; color: #FFFFFF; }
+[data-bk-button][data-bk-variant="danger"]:hover:not(:disabled) { background: #8C1D18; border-color: #8C1D18; color: #FFFFFF; }
 [data-bk-button]:focus-visible, [data-bk-header-action]:focus-visible { outline: 2px solid #16624F; outline-offset: 2px; }
 [data-bk-button]:disabled, [data-bk-button]:disabled:hover, [data-bk-button]:disabled:active { background: #E7EBE7; color: #59635C; border-color: #E7EBE7; cursor: not-allowed; opacity: 1; transform: none; }
 [data-bk-button][data-bk-state="busy"], [data-bk-button][data-bk-state="stopping"], [data-bk-button][data-bk-state="busy"]:hover, [data-bk-button][data-bk-state="stopping"]:hover { background: #E1F0EA; color: #16624F; border-color: #E1F0EA; cursor: wait; opacity: 1; }

@@ -768,3 +768,17 @@ test('completed regeneration replaces only the old result URL and clears previou
   const pending=e.api.compress();await flush();assert.equal(e.api.state.outputUrl,url);e.workers.at(-1).reply(new Uint8Array([7,6]).buffer);await pending;
   assert.equal(e.urls.has(url),false);assert.equal(e.el('previousResultNotice').hidden,true);assert.equal(e.el('downloadLabel').textContent,'Save WebM');assert.equal(e.el('renameButton').disabled,false);
 });
+
+for(const invalid of ['unsupported','oversized'])test(`invalid ${invalid} selection keeps a persistent localized recovery beside the source`,async()=>{
+  const e=environment();await finishOutput(e);const before=resultSnapshot(e),file=e.api.state.file;
+  const bad=invalid==='unsupported'?{name:'notes.txt',type:'text/plain',size:12}:{name:'huge.mp4',type:'video/mp4',size:2*1024**3};
+  await e.api.selectFile(bad);assert.equal(e.api.state.file,file);assertOutputUnchanged(e,before);
+  assert.equal(e.el('sourceError').hidden,false);assert.match(e.el('sourceError').textContent,/Choose another|Select another/);
+  for(const timer of [...e.timers.values()])if(timer.ms===4200)timer.fn();
+  assert.equal(e.el('sourceError').hidden,false);e.el('languageButton').click();assert.match(e.el('sourceError').textContent,/別の動画|別の対応/);assert.equal(e.api.state.outputFile,before.file);assert.equal(e.api.state.outputBlob,before.blob);assert.equal(e.api.state.outputUrl,before.url);
+  const next=e.api.selectFile(e.fixture('next.mp4'));e.metadata();await flush();e.workers.at(-1).reply(e.inspection());await next;assert.equal(e.el('sourceError').hidden,true);
+});
+
+test('bitrate controls and mobile navigation use current-language accessible names',()=>{
+  const e=environment();for(const language of ['ja','en']){if(e.api.state.language!==language)e.el('languageButton').click();const name=language==='ja'?'映像ビットレート':'Video bitrate';assert.equal(e.el('bitrateRange').getAttribute('aria-label'),name);assert.equal(e.el('bitrateRange').getAttribute('title'),name);assert.equal(e.el('bitrateInput').getAttribute('aria-labelledby'),'bitrateLabel');assert.equal(e.el('bitrateLabel').textContent,name);assert.equal(e.el('mobileBar').getAttribute('aria-label'),language==='ja'?'画面と圧縮の操作':'Video and compression actions');}
+});

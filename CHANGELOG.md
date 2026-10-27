@@ -2,6 +2,9 @@
 
 ## Unreleased — common UI pilot (2026-10-27)
 
+- Keep invalid-source reasons and recovery visible beside the picker; localize bitrate and mobile-navigation accessible names.
+- Refresh the canonical disabled-hover CSS pin and embed UI/rules version metadata in both ST/MT outputs.
+
 - Embed shared UI 1.0.0 in ST/MT with session retention, shared language preference and native button states.
 - Keep input/settings/worker and previous output across language switches; retain old MP4/WebM through failed or cancelled recompression and label stale results.
 - Name actual saved output format, show prerequisites, and use cancel-first scoped confirmation for source/result removal/replacement. Cancelling the next-file picker keeps current work.
