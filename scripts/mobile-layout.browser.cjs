@@ -5,6 +5,34 @@ const {pathToFileURL}=require('node:url'),{chromium}=require('playwright');
 const cfg={"slug": "video-compressor", "file": "dist/index.html", "bp": 640, "badge": "privacyShort", "footer": "main > .footer", "nav": "#mobileBar", "body": ".help-body", "header": ".help-head", "end": "#versionText", "close": "#helpCloseButton"};
 const evidence=path.resolve('test-results/mobile-layout');
 async function bounds(locator,width,height,label,vertical=true){const r=await locator.boundingBox();assert.ok(r&&r.x>=-1&&r.x+r.width<=width+1&&(!vertical||(r.y>=-1&&r.y+r.height<=height+1)),label+': visible controls fit '+JSON.stringify(r));}
+async function checkSizeToSave(page) {
+ const target=page.locator('#targetSizeInput');
+ const preset=page.getByRole('button',{name:'25 MB',exact:true});
+ await preset.focus();
+ await page.keyboard.press('Space');
+ assert.equal(await target.inputValue(),'25');
+ assert.equal(await preset.getAttribute('aria-pressed'),'true');
+ await target.fill('15');
+ assert.equal(await preset.getAttribute('aria-pressed'),'false');
+ await page.locator('#clearTargetButton').click();
+ assert.equal(await target.inputValue(),'');
+
+ await page.locator('#fileInput').setInputFiles(path.join(__dirname,'timing-fixtures','timing-audio-rotated.mp4'));
+ await preset.click();
+ assert.equal(await page.locator('#settingsDetails').getAttribute('open'),null);
+ await page.locator('#mobileCompressButton').click();
+ await page.locator('#resultCard').waitFor();
+ assert.match(await page.locator('#resultTarget').innerText(),/25 MB/);
+ const [download]=await Promise.all([
+  page.waitForEvent('download'),page.locator('#mobileCompressButton').click()
+ ]);
+ assert.match(download.suggestedFilename(),/\.mp4$/);
+ assert.ok(fs.statSync(await download.path()).size>0);
+ await page.locator('#sourceToggle').click();
+ assert.equal(await page.locator('#sourcePreview').isVisible(),true);
+ await page.locator('#resultToggle').click();
+ assert.equal(await page.locator('#resultPreview').isVisible(),true);
+}
 async function main(){
  fs.mkdirSync(evidence,{recursive:true});const browser=await chromium.launch();
  try{
@@ -17,6 +45,7 @@ async function main(){
    try{
     await page.goto(pathToFileURL(path.resolve(file)).href);await page.locator('#helpButton').waitFor();
     if(await page.locator('html').getAttribute('lang')!==language)await page.locator('#languageButton').click();
+    if(file===cfg.file&&language==='ja'&&width===320)await checkSizeToSave(page);
     const badge=page.locator('[data-i18n="'+cfg.badge+'"]');assert.equal((await badge.textContent()).trim(),language==='ja'?'完全ローカル処理':'Fully local processing');
     if(await badge.isVisible())await bounds(badge,width,height,label,false);
     assert.equal(await page.locator(cfg.footer).isVisible(),width>cfg.bp,label+': informational footer');
@@ -27,7 +56,7 @@ async function main(){
      if(width<=cfg.bp){
       await bounds(bar,width,height,label);
       if(cfg.slug==='pdf-pipeline-builder'){await page.locator('#mobileAddButton').click();assert.equal(await page.locator('.palette').isVisible(),true);await page.keyboard.press('Escape');assert.equal(await page.locator('.palette').isVisible(),false);}
-      else{assert.equal(await page.locator('#mobileCompressButton').isDisabled(),true);await page.locator('#mobileSettingsButton').click();await page.locator('#mobileFileButton').click();}
+      else{assert.equal(await page.locator('#mobileCompressButton').isDisabled(),!await page.locator('#resultCard').isVisible());await page.locator('#mobileSettingsButton').click();await page.locator('#mobileFileButton').click();}
      }
     }
     for(const w of [cfg.bp+1,cfg.bp,width]){await page.setViewportSize({width:w,height});assert.equal(await page.locator(cfg.footer).isVisible(),w>cfg.bp,label+': footer resize');}

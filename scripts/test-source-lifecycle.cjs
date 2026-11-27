@@ -800,7 +800,7 @@ test('an inspected silent source has no audio budget or editable audio settings'
   report.audio = null;
   e.workers.at(-1).reply(new TextEncoder().encode(JSON.stringify(report)).buffer);
   await selection;
-  assert.equal(e.el('summaryAudio').textContent, 'No audio track');
+  assert.equal(e.el('removeAudioHint').textContent, 'No audio track');
   assert.equal(e.el('removeAudio').disabled, true);
   const before = e.el('estimateSize').textContent;
   e.el('removeAudio').checked = true;
@@ -849,4 +849,31 @@ test('target MB budgets for audio, handles unachievable limits and compares actu
   assert.equal(e.el('resultTarget').textContent, comparison);
   setTarget('');
   assert.equal(e.el('bitrateInput').disabled, false);
+});
+
+test('preview switches between original and compressed files and resets with a new source', async () => {
+  const e = environment();
+  await finishOutput(e);
+  assert.equal(e.el('sourceView').hidden, true);
+  assert.equal(e.el('resultToggle').getAttribute('aria-pressed'), 'true');
+  e.el('sourceToggle').click();
+  assert.equal(e.el('sourceView').hidden, false);
+  assert.equal(e.el('resultCard').hidden, true);
+  assert.ok(e.api.state.outputFile);
+  e.el('resultToggle').click();
+  assert.equal(e.el('resultCard').hidden, false);
+  e.api.clearFile();
+  assert.equal(e.el('sourceView').hidden, false);
+  assert.equal(e.el('resultToggle').disabled, true);
+});
+
+test('opening detailed settings works from the mobile dock and the result', async () => {
+  const e = environment();
+  e.el('mobileSettingsButton').click();
+  assert.equal(e.el('settingsDetails').open, true);
+  e.el('settingsDetails').open = false;
+  await finishOutput(e);
+  e.el('editSettingsButton').click();
+  assert.equal(e.el('settingsDetails').open, true);
+  assert.equal(e.el('resolutionSelect').focused, true);
 });

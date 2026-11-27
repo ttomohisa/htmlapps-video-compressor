@@ -13,7 +13,7 @@
 - The Help icon must render its question-mark dot reliably at all supported sizes.
 - Help content must remain fully scrollable without clipping on desktop or mobile.
 - Users can edit the output base file name; `.mp4` / `.webm` is appended from the selected codec.
-- Mobile uses a fixed bottom action bar for Video / Settings / Estimate / Compress, while estimate details remain normal scroll content.
+- Mobile uses a fixed bottom action bar for Video / Size / Settings / Compress, while estimate details remain normal scroll content.
 
 ## Product goal
 Provide a simple, fully self-contained browser video compressor. A non-expert should be able to choose a local video, accept sensible initial settings, choose a compatible or higher-compression output, compress it, preview the result, and save/share it without uploading the video.
@@ -42,6 +42,11 @@ Provide a simple, fully self-contained browser video compressor. A non-expert sh
 - The Pages staging step must verify the vendor's SHA-256 and preserve the original ST and MT files byte-for-byte.
 - Browser Kitty continues to serve raw MT with server-side COOP/COEP; it must not receive the Pages-only bootstrap.
 - When browser Service Workers are unavailable, MT retains its explicit unsupported-host behavior without silent ST fallback.
+
+## Compression workspace
+
+The original and encoded videos use the same preview area. Switch between them without discarding the last output. After encoding, show the actual size, target comparison, and Save together. Desktop places export controls beside the video. Mobile stacks them and keeps the main action in reach.
+The target field accepts a custom decimal MB value or a 10, 25 or 50 MB shortcut. Choosing a shortcut and typing its value have the same effect. Keep the output format visible and the bitrate, resolution, audio, and naming controls accessible under Advanced settings.
 
 ## Settings
 - Codec/container: H.264 / MP4 (default) or VP9 / WebM.
@@ -77,7 +82,7 @@ Provide a simple, fully self-contained browser video compressor. A non-expert sh
 - Video content is never stored in localStorage/IndexedDB; only UI language preference may persist.
 
 ## Mobile UX
-Use the template-aligned card and control language on narrow screens. Keep the safe-area-aware bottom action bar with Video / Settings / Estimate / Compress actions, compact file/result cards, large touch targets, and bottom-sheet dialogs. Estimate details remain in normal document flow so the fixed bar never covers them.
+Place the preview above the size and export controls on narrow screens. Keep advanced options in a disclosure. Keep the safe-area-aware bottom action bar with Video / Size / Settings / Compress actions, compact file/result cards, large touch targets, and bottom-sheet dialogs. Estimate details remain in normal document flow so the fixed bar never covers them.
 
 ## Acceptance criteria
 - `scripts/check-source.ps1` passes.
@@ -93,7 +98,7 @@ Use the template-aligned card and control language on narrow screens. Keep the s
 
 ## Smartphone navigation
 
-- The fixed bottom bar is visible from the initial empty state and provides Video, Settings, Estimate, and Compress actions.
+- The fixed bottom bar is visible from the initial empty state and provides Video, Size, Settings, and Compress actions.
 - Compress remains disabled until initial source information/input preparation is ready, but must not wait for video-bitrate inspection to complete. The other actions may navigate to their sections at any time.
 - Mobile navigation must stop with the target card border visible below the sticky header.
 - The estimate card keeps its own compression action. Once an output exists, the fixed primary action saves it. The result card links back to settings for a new encode.
@@ -108,4 +113,4 @@ See [ST / MT distribution](docs/MULTITHREAD.md). Maintain separate artifacts, ex
 
 ## Smartphone footer and build information
 
-Hide only the informational main footer at the existing 640 px bottom-action-bar breakpoint. Preserve the fixed Video / Settings / Estimate / Compress bar and its bottom clearance. Keep the populated app version span at the end of Help after the existing licensing and corresponding-source notes, in quiet text; the header version, local-processing badge, dependency pins, ST/MT behavior and processing controls stay unchanged.
+Hide only the informational main footer at the existing 640 px bottom-action-bar breakpoint. Preserve the fixed Video / Size / Settings / Compress bar and its bottom clearance. Keep the populated app version span at the end of Help after the existing licensing and corresponding-source notes, in quiet text; the header version, local-processing badge, dependency pins, ST/MT behavior and processing controls stay unchanged.

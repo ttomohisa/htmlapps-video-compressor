@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Redesign the compression workspace around a shared before/after video preview, one-tap target sizes and a mobile Save action. Keep manual encoding controls in Advanced settings.
+
 - Keep the last completed output available through a cancelled or failed recompression. The mobile primary action saves the result, with a separate route back to settings.
 - Preserve manual resolution, FPS and bitrate during source inspection. Report empty inputs and encode failures with recovery actions, and link unsupported multi-thread environments to the standard version.
 - Add optional target sizes in decimal MB, account for silent inputs and show the actual difference from the requested limit after encoding.
