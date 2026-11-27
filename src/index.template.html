@@ -12,7 +12,7 @@
   <style>
     :root{
       color-scheme:light;
-      --bg:#f5f5f2;--surface:#fff;--surface-muted:#f0f0ed;--surface-hover:#e9e9e5;
+      --bg:#fafaf7;--surface:#fafaf7;--surface-muted:#ecefe9;--surface-hover:#e9e9e5;
       --text:#20211f;--muted:#666963;--line:#dadbd6;--line-strong:#bfc1ba;
       --accent:#16624f;--accent-hover:#0e503f;--accent-soft:#e1f0ea;
       --danger:#b3261e;--danger-soft:#fbe9e7;--warning:#8a5d00;--warning-soft:#fff5d6;--success:#087443;
@@ -23,40 +23,145 @@
     *{box-sizing:border-box}html{scroll-behavior:smooth;background:var(--bg)}body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP","Yu Gothic UI","Hiragino Kaku Gothic ProN",Meiryo,sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
     button,input,select{font:inherit}button{color:inherit}button,select,input[type="checkbox"],input[type="range"]{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.48}[hidden]{display:none!important}
     button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline:3px solid color-mix(in srgb,var(--focus) 55%,transparent);outline-offset:2px}
-    .app-header{position:sticky;z-index:30;top:0;min-height:var(--header-height);border-bottom:1px solid color-mix(in srgb,var(--line) 82%,transparent);background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(16px) saturate(1.2)}
+    .app-header{position:sticky;z-index:30;top:0;min-height:var(--header-height);border-bottom:1px solid color-mix(in srgb,var(--line) 82%,transparent);background:var(--surface)}
     .header-inner{width:min(1180px,100%);min-height:var(--header-height);margin:0 auto;padding:10px clamp(14px,2.8vw,30px);display:flex;align-items:center;gap:14px}
     .brand{display:flex;align-items:center;gap:10px;min-width:0}.brand-mark{display:grid;place-items:center;width:38px;height:38px;flex:none}.brand-mark svg{display:block;width:100%;height:100%}.brand-copy{min-width:0}.brand h1{margin:0;font-size:17px;line-height:1.2;letter-spacing:.01em}.version-badge{display:inline-flex;align-items:center;margin-left:7px;padding:1px 6px;border:1px solid var(--line);border-radius:999px;color:var(--muted);background:var(--surface-muted);font-size:11px;font-weight:650;vertical-align:2px}.brand p{margin:2px 0 0;color:var(--muted);font-size:12px;white-space:nowrap}
     .header-actions{margin-left:auto;display:flex;align-items:center;gap:12px}.header-btn{width:38px;height:38px;min-width:38px;min-height:38px;padding:0;border:0;border-radius:0;background:transparent;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:750;box-shadow:none;transition:color .16s ease,opacity .16s ease}.header-btn:hover{background:transparent;color:var(--text)}.header-btn:active{opacity:.65}.language-button{width:auto;min-width:30px;padding:5px 1px;color:var(--muted)}
-    .main{width:min(1180px,100%);margin:0 auto;padding:22px clamp(14px,2.8vw,30px) 54px}.intro{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding:0 2px 18px}.intro-main{min-width:0}.intro-title{margin:0;font-size:clamp(21px,3vw,26px);line-height:1.3;letter-spacing:-.025em}.intro-copy{max-width:760px;margin:5px 0 0;color:var(--muted);font-size:13px;line-height:1.65}.privacy-chip{flex:none;display:inline-flex;align-items:center;gap:7px;margin-top:3px;padding:7px 0;border:0;border-radius:0;background:transparent;color:var(--accent);font-size:12px;font-weight:500;white-space:nowrap}.privacy-chip svg{color:currentColor}
-    .workspace{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:18px;align-items:start}.main-column{display:grid;gap:18px}.card,.estimate-card{border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:var(--shadow-sm);overflow:hidden}.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:20px 22px 0}.step-label{display:flex;align-items:flex-start;gap:10px}.step{display:grid;place-items:center;width:27px;height:27px;flex:none;border-radius:8px;background:var(--accent-soft);color:var(--accent);font-size:12px;font-weight:850}.card h3{margin:2px 0 0;font-size:18px}.card-sub{margin:4px 0 0;color:var(--muted);font-size:12px}.card-body{padding:18px 22px 22px}
-    .file-fallback-button{display:none;width:100%;margin-top:10px;min-height:44px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--text);font-size:13px;font-weight:600;cursor:pointer}@media (max-width:767px),(pointer:coarse) and (max-height:600px){.file-fallback-button{display:block}}.drop-zone{position:relative;min-height:166px;display:grid;place-items:center;padding:26px 20px;overflow:hidden;border:1.5px dashed var(--line-strong);border-radius:16px;background:var(--surface);text-align:center;transition:.18s ease}.drop-zone:hover,.drop-zone.is-dragging{border-color:var(--accent);background:color-mix(in srgb,var(--accent-soft) 55%,var(--surface));transform:translateY(-1px)}.drop-zone input{position:absolute;inset:0;width:100%;height:100%;opacity:0}.drop-content{position:relative;max-width:560px}.drop-icon{width:48px;height:48px;display:grid;place-items:center;margin:0 auto 12px;border-radius:14px;background:var(--accent-soft);color:var(--accent)}.drop-zone strong{display:block;font-size:17px}.drop-zone span{display:block;margin-top:6px;color:var(--muted);font-size:12px}
-    .file-panel{display:none;grid-template-columns:180px minmax(0,1fr);gap:18px;align-items:start}.file-panel.is-visible{display:grid}.thumb{position:relative;aspect-ratio:16/10;border-radius:14px;background:#101210;overflow:hidden}.thumb video{width:100%;height:100%;object-fit:cover}.thumb::after{content:"";position:absolute;inset:0;border:1px solid rgba(255,255,255,.14);border-radius:inherit;pointer-events:none}.file-name-row{display:flex;align-items:flex-start;gap:10px}.file-name{min-width:0;font-weight:800;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.format-badge{flex:none;padding:2px 7px;border-radius:999px;background:var(--surface-muted);color:var(--muted);font-size:10px;font-weight:750;text-transform:uppercase}.file-info-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}.file-info{min-width:0;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface-muted)}.file-info span{display:block;color:var(--muted);font-size:10px}.file-info strong{display:block;margin-top:2px;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.file-info small{font-size:9px;color:var(--muted);font-weight:600}.file-actions{display:flex;gap:16px;margin-top:12px}.text-btn{border:0;background:transparent;color:var(--accent);font-weight:750;padding:3px 0}.text-btn:hover{text-decoration:underline}
-    .settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:17px}.field{display:grid;gap:7px}.field.full{grid-column:1/-1}.field label,.field-label{font-size:13px;font-weight:750}.hint{font-size:11px;color:var(--muted);line-height:1.5}.select-wrap{position:relative}.select-wrap select{width:100%;height:44px;appearance:none;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--text);padding:0 38px 0 12px}.select-wrap svg{position:absolute;right:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--muted)}.fixed-value{height:44px;display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface-muted);font-size:13px;font-weight:750}.bitrate-label-row{display:flex;align-items:center;justify-content:space-between;gap:12px}.recommend-btn{border:0;background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:4px 9px;font-size:10px;font-weight:800}.bitrate-row{display:grid;grid-template-columns:minmax(0,1fr) 112px;gap:12px;align-items:center}.range{width:100%;accent-color:var(--accent)}.number-wrap{position:relative}.number-wrap input{width:100%;height:44px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--text);padding:0 42px 0 11px}.number-wrap span{position:absolute;right:9px;top:50%;transform:translateY(-50%);font-size:10px;color:var(--muted)}.check-row{display:flex;align-items:flex-start;gap:10px;padding:13px;border:1px solid var(--line);border-radius:11px;background:var(--surface-muted)}.check-row input{width:18px;height:18px;margin:1px 0 0;accent-color:var(--accent)}.check-row strong{display:block;font-size:13px}.check-copy span{display:block;margin-top:2px;color:var(--muted);font-size:11px;line-height:1.45}.check-copy{cursor:pointer}
-    .field-title-row{display:flex;align-items:center;gap:6px;min-height:20px}.field-title-row label,.field-title-row .field-label{min-width:0}.info-button{display:inline-grid;place-items:center;width:20px;height:20px;flex:none;padding:0;border:0;border-radius:50%;background:transparent;color:var(--muted);font-size:12px;font-weight:850;line-height:1}.info-button:hover{color:var(--accent);background:var(--accent-soft)}.info-button svg{pointer-events:none}.check-copy{min-width:0;flex:1}.check-row>.info-button{margin-left:auto}.settings-note{display:inline-flex;align-items:center;gap:5px;flex:none;padding:4px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:10px;font-weight:800;white-space:nowrap}.dialog-copy{margin:0;color:var(--muted);font-size:13px;line-height:1.75}.dialog-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:20px}.dialog-actions .btn-primary{width:auto}.compact-dialog{width:min(480px,calc(100% - 24px))}.compact-dialog .help-body{padding:20px}.progress-meta{display:flex;align-items:center;gap:12px}.progress-elapsed{font:11px/1 var(--mono);color:var(--muted);white-space:nowrap}.estimate-saving{margin-top:7px;font-size:11px;font-weight:750;color:var(--success)}.estimate-saving.increase{color:var(--danger)}
-    details.advanced{margin-top:18px;border-top:1px solid var(--line)}details.advanced summary{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 0 0;list-style:none;cursor:pointer;font-weight:800;font-size:13px}details.advanced summary::-webkit-details-marker{display:none}.summary-left{display:flex;align-items:center;gap:8px}.chevron{transition:.18s ease}details[open] .chevron{transform:rotate(180deg)}.advanced-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;padding-top:16px}
-    .estimate-card{position:sticky;top:calc(var(--header-height) + 14px);padding:21px;background:var(--surface)}.eyebrow{font-size:11px;letter-spacing:.08em;color:var(--muted);font-weight:800}.estimate-size{margin:10px 0 7px;font-size:40px;line-height:1;font-weight:900;letter-spacing:-.04em}.estimate-copy{color:var(--muted);font-size:11px;line-height:1.55}.estimate-bars{display:grid;gap:9px;margin:20px 0}.bar-row{display:grid;grid-template-columns:54px 1fr auto;gap:8px;align-items:center;color:var(--muted);font-size:10px}.bar-track{height:7px;background:rgba(127,127,127,.16);border-radius:99px;overflow:hidden}.bar-fill{height:100%;border-radius:inherit;background:var(--accent);transition:width .25s ease}.summary-list{margin-top:16px}.summary-item{display:flex;justify-content:space-between;gap:14px;padding:10px 0;border-top:1px solid var(--line);font-size:11px}.summary-item span{color:var(--muted)}.summary-item strong{text-align:right}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 15px;border:1px solid transparent;border-radius:11px;font-weight:800;transition:.16s ease}.btn:hover:not(:disabled){transform:translateY(-1px)}.btn-primary{width:100%;background:var(--accent);color:#fff;box-shadow:0 8px 18px rgba(22,98,79,.16)}.btn-primary:hover:not(:disabled){background:var(--accent-hover)}.btn-secondary{background:var(--surface);border-color:var(--line)}.btn-secondary:hover:not(:disabled){background:var(--surface-hover)}.btn-danger{background:var(--danger-soft);color:var(--danger)}.button-row{display:flex;flex-wrap:wrap;gap:9px}.engine-note{display:flex;gap:7px;margin-top:11px;color:var(--muted);font-size:10px;line-height:1.45}
-    .progress-card,.result-card{display:none}.progress-card.is-visible,.result-card.is-visible{display:block}.progress-top{display:flex;align-items:center;justify-content:space-between;gap:16px}.progress-title{font-weight:800}.progress-percent{font-family:var(--mono);font-weight:800}.progress-track{height:10px;margin:14px 0 9px;border-radius:99px;background:rgba(127,127,127,.17);overflow:hidden}.progress-fill{height:100%;width:0;border-radius:inherit;background:var(--accent);transition:width .16s linear}.progress-fill.indeterminate{width:38%;animation:slide 1.1s infinite ease-in-out}@keyframes slide{0%{transform:translateX(-110%)}100%{transform:translateX(360%)}}.progress-detail{font:10px/1.45 var(--mono);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.log-box{max-height:160px;overflow:auto;margin-top:12px;padding:11px;border-radius:10px;background:#111;color:#d7ddd8;font:10px/1.55 var(--mono);white-space:pre-wrap}.progress-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:14px}
-    .result-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(240px,.9fr);gap:18px}.preview{aspect-ratio:16/10;display:grid;place-items:center;border-radius:14px;background:#101210;overflow:hidden}.preview video{width:100%;height:100%;object-fit:contain}.result-stats{display:grid;gap:8px}.stat{padding:12px;border:1px solid var(--line);border-radius:11px;background:var(--surface-muted)}.stat span{display:block;color:var(--muted);font-size:10px}.stat strong{display:block;margin-top:2px;font-size:19px}.savings{color:var(--success)}.increase{color:var(--danger)}.result-actions{margin-top:16px}.result-actions .btn{flex:1}.result-name{margin-top:10px;color:var(--muted);font-size:11px;overflow-wrap:anywhere}.filename-input{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;overflow:hidden;border:1px solid var(--line);border-radius:10px;background:var(--surface)}.filename-input:focus-within{border-color:color-mix(in srgb,var(--focus) 70%,var(--line));box-shadow:0 0 0 2px color-mix(in srgb,var(--focus) 18%,transparent)}.filename-input input{min-width:0;height:44px;padding:0 11px;border:0;outline:0;background:transparent;color:var(--text);cursor:text}.filename-input span{align-self:stretch;display:flex;align-items:center;padding:0 11px;border-left:1px solid var(--line);background:var(--surface-muted);color:var(--muted);font:11px/1 var(--mono);white-space:nowrap}.mobile-bar{display:none}
+    .main{width:min(1196px,100%);margin:0 auto;padding:40px clamp(16px,3.5vw,40px) 32px}
+    .workspace{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,352px);gap:clamp(26px,4vw,58px);align-items:start}
+    .media-column,.output-column,.field,.select-wrap,.number-wrap{min-width:0}
+    .section-head{min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+    .section-head h2{margin:0;font-size:22px;line-height:1.25;letter-spacing:-.035em;font-weight:680}
+    .privacy-chip{display:inline-flex;align-items:center;gap:6px;color:var(--accent);font-size:12px;font-weight:550}
+    .output-column{border-left:1px solid var(--line);padding-left:clamp(20px,2.4vw,32px)}
+    .estimate-card{background:var(--surface)}
+    .estimate-card>.section-head{border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:18px}
+    .runtime-advice{margin:0 0 22px;padding:12px 16px;background:var(--warning-soft);border:1px solid #d9c797;border-radius:6px}
+    .runtime-advice p{margin:0}.runtime-advice a{display:inline-block;color:var(--accent);font-weight:650;padding:6px 0}
+    .view-switch{display:flex;gap:4px;width:max-content;border:1px solid var(--line);border-radius:5px;padding:2px;margin:0 0 10px;background:var(--surface-muted)}
+    .view-switch button{border:0;border-radius:3px;background:transparent;color:var(--muted);min-height:32px;padding:2px 16px;font-size:13px}
+    .view-switch button[aria-pressed=true]{background:var(--surface);color:var(--text);font-weight:650;box-shadow:0 1px 3px #15201a23}
+    .drop-zone,.monitor{position:relative;display:grid;place-items:center;width:100%;aspect-ratio:16/9;overflow:hidden;border-radius:6px;background:#26302e}
+    .drop-zone{color:#fff;isolation:isolate;cursor:pointer}
+    .drop-zone:hover,.drop-zone.is-dragging{background:#2e3936}
+    .drop-zone.is-dragging,.drop-zone:focus-within{outline:3px solid var(--focus);outline-offset:3px}
+    .drop-zone input{position:absolute;z-index:2;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
+    .drop-content{display:grid;justify-items:center;gap:9px;pointer-events:none}
+    .frame-marks{position:absolute;inset:19px;pointer-events:none}
+    .frame-marks i{position:absolute;width:16px;height:16px;border-style:solid;border-color:#62706b;border-width:0}
+    .frame-marks i:nth-child(1){top:0;left:0;border-width:1px 0 0 1px}.frame-marks i:nth-child(2){top:0;right:0;border-width:1px 1px 0 0}
+    .frame-marks i:nth-child(3){bottom:0;left:0;border-width:0 0 1px 1px}.frame-marks i:nth-child(4){bottom:0;right:0;border-width:0 1px 1px 0}
+    .film-frame{position:relative;display:grid;place-items:center;width:52px;height:39px;border:2px solid #adc0b7;border-radius:3px;margin-bottom:9px}
+    .film-frame::before,.film-frame::after{content:"";position:absolute;top:0;bottom:0;width:5px;border-block:5px dotted #adc0b7}
+    .film-frame::before{left:3px;border-right:1px solid #adc0b7}.film-frame::after{right:3px;border-left:1px solid #adc0b7}
+    .film-frame i{width:0;height:0;border-style:solid;border-width:6px 0 6px 9px;border-color:transparent transparent transparent #adc0b7}
+    .file-cta{display:inline-flex;align-items:center;gap:9px;min-height:44px;padding:9px 23px;border-radius:4px;background:#f3f4ef;color:#1f3029;font-size:16px;font-weight:650}
+    .drop-hint{color:#c2ccc6;font-size:13px}
+    .import-caption,.file-caption,.media-tools,.result-tools,.save-row,.result-summary{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .import-caption{min-height:40px;color:var(--muted);font:12px/1.4 var(--mono)}
+    .file-fallback-button,.text-btn,.result-tools button,#renameButton{border:0;background:transparent;color:var(--accent);font-family:inherit;line-height:1.4;font-size:13px;font-weight:600;padding:5px 0;cursor:pointer}
+    .file-fallback-button:hover,.text-btn:hover,.result-tools button:hover,#renameButton:hover{text-decoration:underline}
+    .file-fallback-button{display:none}
+    @media(max-width:767px),(pointer:coarse) and (max-height:600px){.file-fallback-button{display:inline-block;min-height:36px}}
+    .has-file .import-caption{display:none}
+    .file-panel{display:none}.file-panel.is-visible{display:block}
+    .monitor{background:#171c1a}.monitor video{display:block;width:100%;height:100%;min-height:0;object-fit:contain}
+    .file-caption{padding:13px 0;border-bottom:1px solid var(--line)}
+    .file-caption strong{min-width:0;overflow-wrap:anywhere;font-size:15px;font-weight:640}
+    #renameButton{flex:none;white-space:nowrap}.format-badge{color:var(--muted);font:12px/1.4 var(--mono);text-transform:uppercase}
+    .file-info-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:12px 0}
+    .file-info span,.stat span,.result-summary>div>span,.estimate-readout>div>span{display:block;color:var(--muted);font-size:12px}
+    .file-info strong{display:block;font-weight:600;font-size:15px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+    .file-info small{display:block;color:var(--muted);font-size:11px}
+    .media-tools{border-top:1px solid var(--line);align-items:flex-start;flex-wrap:wrap}
+    .source-details{flex:1;min-width:0}.source-details[open]{flex-basis:100%}
+    .source-details summary,.file-actions button{padding:10px 0;font-size:13px}
+    .source-details summary{cursor:pointer;color:var(--muted)}.file-actions{display:flex;gap:16px}
+    .field{display:grid;gap:6px}.field label,.field-label{font-size:14px;font-weight:620}
+    .field-title-row,.bitrate-label-row,.size-presets,.save-actions{display:flex;align-items:center;gap:8px}
+    .bitrate-label-row{justify-content:space-between}.field-title-row{min-height:25px}
+    .info-button{display:inline-grid;place-items:center;width:26px;height:26px;flex:none;border:0;border-radius:4px;background:transparent;color:var(--muted);padding:0}
+    .info-button:hover{background:var(--surface-muted);color:var(--text)}
+    .hint,.estimate-readout p,.engine-note{font-size:12px;line-height:1.5;color:var(--muted)}
+    .target-field{margin-bottom:18px}.size-presets{gap:0;flex-wrap:wrap;margin:3px 0}
+    .size-presets button[data-size]{border:1px solid var(--line-strong);background:var(--surface);color:var(--text);border-radius:0;min-height:36px;padding:4px 12px;font:500 13px/1.4 var(--mono)}
+    .size-presets button[data-size]+button[data-size]{border-left:0}
+    .size-presets button[data-size]:first-child{border-radius:4px 0 0 4px}
+    .size-presets button[data-size]:nth-child(3){border-radius:0 4px 4px 0}
+    .size-presets button[data-size]:hover{background:var(--surface-muted)}
+    .size-presets button[data-size][aria-pressed=true]{background:var(--accent);color:white}
+    #clearTargetButton{margin-left:auto}
+    .select-wrap,.number-wrap{position:relative}
+    .select-wrap select,.number-wrap input,.filename-input{width:100%;height:44px;border:1px solid var(--line-strong);border-radius:4px;background:var(--surface);color:var(--text)}
+    .select-wrap select{appearance:none;padding:0 36px 0 12px}.select-wrap svg,.number-wrap>span{position:absolute;right:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--muted)}
+    .number-wrap input{padding:0 43px 0 12px;font-variant-numeric:tabular-nums}
+    .number-wrap>span,.filename-input span{font:13px/1.4 var(--mono)}
+    .size-input input{height:50px;font-weight:600;font-size:22px}.size-input input::placeholder{color:var(--muted);font-size:15px;font-weight:400}
+    input[aria-invalid=true]{border-color:var(--danger)}.hint.target-warning,.target-over,.increase{color:var(--danger)}
+    .estimate-readout{display:none}.has-file .estimate-readout{display:grid;grid-template-columns:auto 1fr auto;align-items:center;margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
+    .estimate-readout strong{display:block;font-size:20px;font-variant-numeric:tabular-nums;letter-spacing:-.035em}
+    .estimate-readout>div:nth-of-type(2){text-align:right}.size-arrow{color:var(--muted);justify-self:center}
+    .estimate-readout p{grid-column:1/-1;margin:4px 0 0}.estimate-readout p:empty{display:none}
+    #estimateSavings,.savings{color:var(--accent)}#estimateSavings.increase{color:var(--danger)}
+    .btn{border:1px solid var(--line-strong);border-radius:4px;display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--surface);color:var(--text);font-size:15px;font-weight:620;min-height:44px;padding:8px 15px;cursor:pointer}
+    .btn:hover{background:var(--surface-muted)}.btn-primary{border-color:var(--accent);background:var(--accent);color:white}.btn-primary:hover{background:var(--accent-hover)}.btn-danger{color:var(--danger)}
+    #compressButton{width:100%;margin-top:18px}.has-output #compressButton{background:var(--surface);border-color:var(--accent);color:var(--accent)}
+    .settings-sheet{border-top:1px solid var(--line);margin-top:20px}.settings-sheet>summary{display:flex;align-items:center;justify-content:space-between;cursor:pointer;list-style:none;padding:14px 0;font-weight:620}
+    .settings-sheet>summary::-webkit-details-marker{display:none}.disclosure{width:9px;height:9px;border:solid var(--muted);border-width:0 1.5px 1.5px 0;transform:rotate(45deg);margin:0 6px 4px}
+    .settings-sheet[open] .disclosure{transform:rotate(225deg);margin:4px 6px 0}
+    .settings-grid{display:grid;gap:17px;padding:4px 0 16px}
+    .bitrate-row,.filename-input{display:grid;grid-template-columns:minmax(0,1fr) 93px;align-items:center;gap:10px}
+    .recommend-btn{border:0;background:transparent;color:var(--accent);font-size:12px;text-decoration:underline;cursor:pointer}
+    .range{width:100%;accent-color:var(--accent)}.check-row{display:flex;align-items:flex-start;gap:8px}.check-row input{width:18px;height:18px;margin:3px 0;accent-color:var(--accent)}
+    .check-copy{flex:1;cursor:pointer}.check-copy strong{display:block;font-weight:600}.check-copy span{display:block;color:var(--muted);font-size:12px}
+    .filename-input{grid-template-columns:minmax(0,1fr) auto;gap:0;overflow:hidden}.filename-input:focus-within{outline:2px solid var(--focus)}
+    .filename-input input{min-width:0;height:100%;padding:0 10px;border:0;background:transparent;color:inherit}.filename-input span{color:var(--muted);padding:0 10px}
+    .result-summary{justify-content:flex-start;gap:22px;padding:14px 0 8px}.result-summary>div:first-child strong{font-size:27px;font-weight:680;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+    .result-delta strong{font-size:14px}.result-delta b,.result-tools b{font-weight:520;font-variant-numeric:tabular-nums}
+    .save-row{align-items:center;flex-wrap:wrap;padding:4px 0 16px}.result-target{font-weight:620;font-size:14px;margin:0}
+    .save-actions{margin-left:auto}.save-actions .btn-primary{min-width:106px}
+    .result-tools{border-top:1px solid var(--line);flex-wrap:wrap;font-size:12px;color:var(--muted);padding:7px 0}
+    .result-tools>div{display:flex;gap:15px;flex-wrap:wrap}.result-tools .btn,#renameButton{background:transparent;border:0;min-height:32px;padding:2px 0}
+    .progress-card{display:none;border-top:2px solid var(--accent);margin-top:15px;padding:12px 0}.progress-card.is-visible{display:block}
+    .progress-top,.progress-meta,.progress-actions{display:flex;align-items:center;justify-content:space-between;gap:10px}.progress-title{font-weight:650}
+    .progress-meta,.progress-detail,.log-box{font:12px/1.5 var(--mono)}.card-sub,.progress-detail{color:var(--muted);font-size:12px}.progress-detail{overflow-wrap:anywhere;margin:7px 0}
+    .progress-track{height:6px;background:var(--line);margin:10px 0;overflow:hidden}.progress-fill{height:100%;background:var(--accent)}.progress-fill.indeterminate{animation:slide 1.1s infinite ease-in-out}
+    @keyframes slide{from{transform:translateX(-110%)}to{transform:translateX(360%)}}
+    .log-box{max-height:170px;overflow:auto;background:#202724;color:#f0f4ef;padding:10px;white-space:pre-wrap}
+    .progress-actions{justify-content:flex-end}.progress-card.has-error{border-color:var(--danger)}.progress-card.has-error .progress-track,.progress-card.has-error .progress-meta{display:none}
+    .mobile-bar{display:none}.footer{margin-top:36px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+    :is(#fileCard,#estimateCard,#settingsCard,#resultCard,#progressCard){scroll-margin-top:calc(var(--header-height) + 14px)}
+    .toast-region{position:fixed;z-index:60;right:16px;bottom:16px;display:grid;gap:6px;width:min(340px,calc(100% - 32px));pointer-events:none}
+    .toast{padding:10px 13px;border:1px solid var(--line);border-radius:4px;background:var(--surface);box-shadow:var(--shadow-sm);font-size:13px}.toast:not(:last-child){display:none}.toast.error{color:var(--danger);border-color:var(--danger)}
+    .dialog-copy{color:var(--muted);font-size:14px}.dialog-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}.compact-dialog{width:min(480px,calc(100% - 24px))}
+    .help-build{margin:16px 0 0;color:var(--muted);font-size:12px}
     html:has(dialog:modal),body:has(dialog:modal){overflow:hidden}
     dialog{width:min(720px,calc(100% - 24px));max-height:min(84dvh,760px);padding:0;border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--text);box-shadow:var(--shadow-md);overflow:hidden}dialog[open]{display:flex;flex-direction:column}dialog::backdrop{background:rgba(28,31,27,.42);backdrop-filter:blur(3px)}.help-head{position:relative;flex:none;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:17px 20px;border-bottom:1px solid var(--line);background:var(--surface);z-index:1}.help-head h2{min-width:0;margin:0;font-size:18px;overflow-wrap:anywhere}.close-btn{width:36px;height:36px;flex:none;display:grid;place-items:center;border:1px solid var(--line);border-radius:10px;background:var(--surface-muted)}.dialog-close{display:grid;place-items:center;width:34px;height:34px;padding:0;border:0;border-radius:9px;background:transparent;cursor:pointer}.dialog-close svg{width:18px;height:18px}.help-body{min-height:0;flex:1;padding:20px;overflow:auto;overscroll-behavior:contain}.help-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.help-section{min-width:0;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--surface-muted);overflow-wrap:anywhere}.help-section.full{grid-column:1/-1}.help-section h3{display:flex;align-items:center;gap:7px;margin:0 0 7px;font-size:13px}.help-section p,.help-section li{margin:0;color:var(--muted);font-size:11px;line-height:1.65}.help-section ol,.help-section ul{margin:0;padding-left:19px}.help-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:11px}.help-table th,.help-table td{padding:7px 8px;border-top:1px solid var(--line);text-align:left;vertical-align:top;overflow-wrap:anywhere}.help-table th{width:30%;color:var(--muted);font-weight:650}.help-table tr:first-child th,.help-table tr:first-child td{border-top:0}
-    .toast-region{position:fixed;z-index:60;right:16px;bottom:16px;display:grid;gap:8px;width:min(350px,calc(100% - 32px))}.toast{padding:12px 14px;border:1px solid var(--line);border-radius:11px;background:var(--surface);box-shadow:var(--shadow-md);font-size:11px;animation:toast-in .18s ease}.toast.error{border-color:var(--danger);color:var(--danger)}@keyframes toast-in{from{opacity:0;transform:translateY(7px)}}.footer{display:flex;justify-content:flex-start;gap:16px;margin-top:23px;color:var(--muted);font-size:12px;text-align:left}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-    @media(max-width:900px){.intro{align-items:flex-start}.workspace{grid-template-columns:1fr}.estimate-card{position:static}.result-grid{grid-template-columns:1fr}}
-    @media(max-width:640px){
-      :root{--header-height:58px}
-      .header-inner{padding:8px 12px;gap:10px}.brand{gap:9px}.brand-mark{width:34px;height:34px}.brand h1{font-size:15px}.brand p{display:none}.version-badge{margin-left:5px;padding-inline:5px;font-size:9px}.header-actions{gap:11px}.header-btn{width:38px;height:38px;min-width:38px;min-height:38px}.language-button{width:auto;font-size:12px}
-      .main{padding:18px 12px calc(104px + env(safe-area-inset-bottom))}.intro{display:flex;flex-direction:column;align-items:stretch;gap:10px;padding:0 2px 14px}.intro-title{font-size:21px}.intro-copy{font-size:12px;line-height:1.58}.privacy-chip{align-self:flex-start;margin:0;padding:7px 9px;gap:5px;font-size:10px}.privacy-chip svg{width:13px;height:13px}
-      .workspace,.main-column{gap:14px}.card,.estimate-card{border-radius:14px}.card-head{padding:14px 14px 0;gap:10px}.card h3{font-size:16px}.card-sub{margin-top:2px;font-size:11px}.step{width:25px;height:25px;border-radius:7px}.settings-note{padding:3px 7px;font-size:9px}.card-body{padding:14px}
-      .drop-zone{min-height:132px;padding:21px 14px;border-radius:13px}.drop-icon{width:42px;height:42px;margin-bottom:9px;border-radius:12px}.drop-zone strong{font-size:15px;line-height:1.45}.drop-zone span{margin-top:4px;font-size:11px}
-      .file-panel{grid-template-columns:104px minmax(0,1fr);gap:12px}.thumb{width:104px;max-width:none;aspect-ratio:1/1;border-radius:12px}.file-name-row{gap:6px}.file-name{font-size:14px}.format-badge{padding:2px 5px;font-size:9px}.file-info-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:9px}.file-info{padding:7px 8px;border-radius:9px}.file-info span{font-size:9px}.file-info strong{font-size:11px}.file-info small{font-size:8px}.file-actions{gap:14px;margin-top:9px}.text-btn{font-size:12px;min-height:34px}
-      .settings-grid,.advanced-grid{grid-template-columns:1fr;gap:14px}.field.full{grid-column:auto}.field{gap:6px}.field-title-row{min-height:28px}.info-button{width:28px;height:28px}.select-wrap select,.number-wrap input{height:48px}.bitrate-row{grid-template-columns:minmax(0,1fr) 108px;gap:9px}.recommend-btn{min-height:30px;padding:4px 9px}.check-row{padding:11px 12px}.check-row input{width:20px;height:20px}.check-row>.info-button{margin-top:-4px;margin-right:-3px}details.advanced{margin-top:15px}details.advanced summary{min-height:46px;padding-top:13px}.advanced-grid{padding-top:13px}
-      .progress-card .card-body{padding-top:16px}.progress-top{align-items:flex-start}.progress-meta{gap:8px}.progress-title{font-size:14px}.progress-actions .btn{min-height:46px}.result-grid{gap:13px}.result-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.stat{padding:10px}.stat strong{font-size:16px}.result-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.result-actions .btn{width:100%;min-height:48px}.result-actions #resetButton{grid-column:1/-1}.result-name{margin-top:8px}
-      .workspace aside{position:static;padding:0;opacity:1;transform:none;pointer-events:auto}.estimate-card{padding:14px;border-radius:14px}.estimate-size{font-size:32px}.estimate-bars{margin:14px 0}.summary-list{display:grid;grid-template-columns:1fr 1fr;column-gap:12px;margin-top:12px}.summary-item{min-width:0;padding:9px 0}.summary-item strong{min-width:0;overflow-wrap:anywhere}.estimate-card>.btn-primary{display:inline-flex}.engine-note{margin-top:10px}#fileCard,#settingsCard,#estimateCard{scroll-margin-top:calc(var(--header-height) + 12px)}.mobile-bar{display:grid;position:fixed;left:0;right:0;bottom:0;z-index:60;grid-template-columns:1fr 1fr 1fr 1.28fr;padding:7px 7px calc(7px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:color-mix(in srgb,var(--surface) 95%,transparent);backdrop-filter:blur(18px) saturate(1.2);box-shadow:0 -8px 28px rgba(25,28,24,.08)}.mobile-action{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:0;min-height:56px;padding:5px 3px;border:0;border-radius:10px;background:transparent;color:var(--muted);font-size:9px;font-weight:800;line-height:1.15}.mobile-action svg{width:22px;height:22px;flex:none}.mobile-action.active{background:var(--surface-muted);color:var(--accent)}.mobile-action.primary{background:var(--accent);color:#fff;font-size:10px}.mobile-action.primary:disabled{opacity:.38}.mobile-action.primary:not(:disabled):active{background:var(--accent-hover)}
-      .help-grid{grid-template-columns:1fr}.help-section.full{grid-column:auto}.help-table th{width:34%}.footer{display:grid;gap:5px;margin-top:18px}.toast-region{right:10px;bottom:calc(82px + env(safe-area-inset-bottom));width:calc(100% - 20px)}
-      dialog{width:100%;max-width:none;max-height:calc(100dvh - max(12px,env(safe-area-inset-top)));margin:auto 0 0;border-width:1px 0 0;border-radius:22px 22px 0 0}.help-head{padding:14px 15px 12px}.help-head h2{font-size:16px}.close-btn{width:40px;height:40px;border:0;background:transparent}.help-body{padding:14px 15px calc(env(safe-area-inset-bottom) + 22px)}.help-section{padding:12px}.compact-dialog .help-body{padding:14px 15px calc(env(safe-area-inset-bottom) + 22px)}.dialog-actions{display:grid;grid-template-columns:1fr;gap:9px;margin-top:16px}.dialog-actions .btn,.dialog-actions .btn-primary{width:100%;min-height:48px}
+    @media(max-width:830px){
+      .main{padding-top:20px}.workspace{grid-template-columns:minmax(0,1fr);gap:24px;max-width:640px;margin:auto}
+      .output-column{border:0;padding:0}.estimate-card>.section-head{margin-bottom:12px}.section-head{min-height:30px;margin:0 0 10px}
+      .section-head h2{font-size:20px}.drop-zone,.monitor{max-height:370px}.footer{margin-top:22px}
     }
-    @media(max-width:390px){.privacy-chip{margin-top:0}.file-panel{grid-template-columns:82px minmax(0,1fr);gap:10px}.thumb{width:82px}.bitrate-row{grid-template-columns:minmax(0,1fr) 94px}.summary-list{grid-template-columns:1fr}.mobile-bar{grid-template-columns:1fr 1fr 1fr 1.22fr;padding-inline:5px}.mobile-action{font-size:8px}.mobile-action.primary{font-size:9px}.result-actions{grid-template-columns:1fr}.result-actions #resetButton{grid-column:auto}}
+    @media(max-width:640px){
+      :root{--header-height:56px}.header-inner{padding:7px 15px}.brand-mark{width:32px;height:32px}.brand h1{font-size:15px}.brand p{display:none}
+      .version-badge{font-size:10px}.header-actions{gap:5px}.header-btn{min-width:40px;min-height:40px}
+      .main{padding:18px 16px calc(90px + env(safe-area-inset-bottom))}.workspace{gap:15px}
+      .privacy-chip{font-size:11px}.section-head{min-height:26px}.section-head h2{font-size:19px}
+      .drop-zone,.monitor{min-height:160px}.frame-marks{inset:11px}.frame-marks i{width:12px;height:12px}
+      .film-frame{width:40px;height:30px;margin-bottom:3px}.drop-content{gap:6px}
+      .file-cta{min-height:42px;padding:8px 20px}.drop-hint{font-size:12px}.import-caption{min-height:32px}
+      .size-presets button[data-size]{min-height:40px}.size-input input{height:46px}.field{gap:4px}.target-field{margin-bottom:12px}
+      .save-row{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}.save-actions{margin:0}.save-actions .btn{flex:1}
+      .result-tools{align-items:flex-start}.file-info-grid{gap:8px}.file-info strong{font-size:14px}
+      .mobile-bar{position:fixed;z-index:35;bottom:0;left:0;right:0;display:grid;grid-template-columns:1fr 1fr 1fr 1.45fr;gap:4px;padding:5px max(8px,env(safe-area-inset-right)) calc(5px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));border-top:1px solid var(--line);background:var(--surface)}
+      .mobile-action{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:0;min-height:46px;border:0;border-radius:4px;background:transparent;color:var(--muted);font-size:11px;font-weight:600}
+      .mobile-action svg{width:18px;height:18px}.mobile-action.active{background:var(--surface-muted);color:var(--text)}.mobile-action.primary{flex-direction:row;gap:6px;color:#fff;background:var(--accent);font-size:14px}
+      .toast-region{bottom:calc(66px + env(safe-area-inset-bottom))}
+      dialog{width:100%;max-width:none;max-height:calc(100dvh - max(12px,env(safe-area-inset-top)));margin:auto 0 0;border-radius:12px 12px 0 0}.help-grid{grid-template-columns:1fr}.help-body{padding:15px 16px calc(env(safe-area-inset-bottom) + 20px)}
+      .dialog-actions{flex-wrap:wrap}.help-table{font-size:12px}
+    }
+    @media(max-width:360px){.header-inner{gap:5px;padding-inline:10px}.brand{gap:5px}.version-badge{margin-left:3px}.header-actions{gap:0}.main{padding-inline:12px}.file-actions{gap:9px}}
     @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
-    .help-build{margin:16px 0 0;color:var(--muted);font-size:10px}
     @media (max-width: 640px) { main > .footer { display: none; } }
   </style>
 </head>
@@ -85,80 +190,103 @@
   </header>
 
   <main class="main">
-    <p id="runtimeNotice" class="engine-note" role="status"></p>
-    <section class="intro" aria-labelledby="introTitle">
-      <div class="intro-main">
-        <h2 class="intro-title" id="introTitle" data-i18n="introTitle">動画をブラウザ内で圧縮</h2>
-        <p class="intro-copy" data-i18n="heroCopy">動画を選ぶとおすすめ設定を自動で提案します。必要なところだけ調整して圧縮できます。</p>
-      </div>
-      <div class="privacy-chip"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5c0 4.6 2.8 8 7 10 4.2-2 7-5.4 7-10V6z"/><path d="m9 12 2 2 4-5"/></svg><span data-i18n="privacyShort">完全ローカル処理</span></div>
-    </section>
 
+    <div class="runtime-advice" id="runtimeAdvice" hidden><p id="runtimeNotice" class="engine-note" role="status"></p><a id="portableLink" href="../" data-i18n="openPortable" hidden>標準版で開く</a></div>
     <div class="workspace">
-      <div class="main-column">
-        <section class="card file-card" id="fileCard" aria-labelledby="fileHeading">
-          <div class="card-head"><div class="step-label"><span class="step">1</span><div><h3 id="fileHeading" data-i18n="selectTitle">動画を選ぶ</h3><p class="card-sub" data-i18n="selectSub">MP4・MOV・WebMなどの動画ファイル</p></div></div></div>
-          <div class="card-body">
-            <label class="drop-zone" id="dropZone" tabindex="0">
-              <input id="fileInput" type="file" accept="video/*,.mkv,.avi,.m4v,.mts,.m2ts">
-              <span class="drop-content"><span class="drop-icon"><svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M5 20h14a2 2 0 0 0 2-2v-3M3 15v3a2 2 0 0 0 2 2"/></svg></span><strong data-i18n="dropTitle">動画をドロップ、またはクリックして選択</strong><span data-i18n="dropSub">ファイルはアップロードされません</span></span>
-            </label>
-            <button class="file-fallback-button" id="fileFallbackButton" type="button" data-i18n="fileFallback">ファイルから選択</button>
-            <input id="fileFallbackInput" type="file" hidden>
-            <div class="file-panel" id="filePanel">
-              <div class="thumb"><video id="sourcePreview" muted playsinline preload="metadata"></video></div>
-              <div>
-                <div class="file-name-row"><div class="file-name" id="fileName"></div><span class="format-badge" id="fileFormat">—</span></div>
-                <div class="file-info-grid">
-                  <div class="file-info"><span data-i18n="infoSize">ファイルサイズ</span><strong id="fileSize">—</strong></div>
-                  <div class="file-info"><span data-i18n="infoDuration">再生時間</span><strong id="fileDuration">—</strong></div>
-                  <div class="file-info"><span data-i18n="infoResolution">解像度</span><strong id="fileResolution">—</strong></div>
-                  <div class="file-info"><span data-i18n="infoBitrate">映像ビットレート</span><strong id="fileBitrate">—</strong><small id="bitrateNote" data-i18n="analysisPending">解析待ち</small></div>
-                  <div class="file-info"><span data-i18n="infoFps">フレームレート</span><strong id="fileFps">—</strong><small id="fpsNote"></small></div>
-                  <div class="file-info"><span data-i18n="infoType">ファイル形式</span><strong id="fileType">—</strong></div>
-                </div>
-                <div class="file-actions"><button class="text-btn" id="changeFileButton" type="button" data-i18n="changeFile">別の動画を選ぶ</button><button class="text-btn" id="clearFileButton" type="button" data-i18n="removeFile">削除</button></div>
-              </div>
+      <section class="media-column" id="fileCard" aria-labelledby="previewHeading">
+        <div class="section-head">
+          <h2 id="previewHeading" data-i18n="previewHeading">プレビュー</h2>
+          <div class="privacy-chip"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5c0 4.6 2.8 8 7 10 4.2-2 7-5.4 7-10V6z"/><path d="m9 12 2 2 4-5"/></svg><span data-i18n="privacyShort">完全ローカル処理</span></div>
+        </div>
+        <div class="view-switch" id="viewSwitch" role="group" aria-labelledby="previewHeading" hidden>
+          <button type="button" id="sourceToggle" aria-controls="sourceView" aria-pressed="true" data-i18n="sourceViewLabel">元動画</button>
+          <button type="button" id="resultToggle" aria-controls="resultCard" aria-pressed="false" data-i18n="resultViewLabel" disabled>圧縮後</button>
+        </div>
+        <div id="sourceView">
+          <label class="drop-zone" id="dropZone">
+            <input id="fileInput" type="file" accept="video/*,.mkv,.avi,.m4v,.mts,.m2ts" aria-labelledby="chooseVideoText">
+            <span class="frame-marks" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+            <span class="drop-content">
+              <span class="film-frame" aria-hidden="true"><i></i></span>
+              <span class="file-cta" id="chooseVideoText" data-i18n="chooseVideo">動画を選ぶ</span>
+              <span class="drop-hint" data-i18n="dropHint">または、ここにドロップ</span>
+            </span>
+          </label>
+          <div class="import-caption"><span>MP4 / MOV / WebM</span><button class="file-fallback-button" id="fileFallbackButton" type="button" data-i18n="fileFallback">ファイルから選択</button></div>
+          <input id="fileFallbackInput" type="file" hidden>
+          <div class="file-panel" id="filePanel">
+            <div class="monitor"><video id="sourcePreview" controls muted playsinline preload="metadata"></video></div>
+            <div class="file-caption"><strong id="fileName"></strong><span class="format-badge" id="fileFormat"></span></div>
+            <div class="file-info-grid"><div class="file-info"><span data-i18n="infoSize">ファイルサイズ</span><strong id="fileSize">—</strong></div><div class="file-info"><span data-i18n="infoDuration">再生時間</span><strong id="fileDuration">—</strong></div><div class="file-info"><span data-i18n="infoResolution">解像度</span><strong id="fileResolution">—</strong></div></div>
+            <div class="media-tools">
+              <details class="source-details"><summary data-i18n="streamDetails">動画の詳細</summary><div class="file-info-grid"><div class="file-info"><span data-i18n="infoBitrate">映像ビットレート</span><strong id="fileBitrate">—</strong><small id="bitrateNote" data-i18n="analysisPending">解析待ち</small></div><div class="file-info"><span data-i18n="infoFps">フレームレート</span><strong id="fileFps">—</strong><small id="fpsNote"></small></div><div class="file-info"><span data-i18n="infoType">ファイル形式</span><strong id="fileType">—</strong></div></div></details>
+              <div class="file-actions"><button class="text-btn" id="changeFileButton" type="button" data-i18n="changeFile">別の動画を選ぶ</button><button class="text-btn" id="clearFileButton" type="button" data-i18n="removeFile">削除</button></div>
             </div>
           </div>
-        </section>
-
-        <section class="card settings-card" id="settingsCard" aria-labelledby="settingsHeading">
-          <div class="card-head"><div class="step-label"><span class="step">2</span><div><h3 id="settingsHeading" data-i18n="settingsTitle">圧縮設定</h3><p class="card-sub" data-i18n="settingsSub">動画に合わせたおすすめ値を自動設定します</p></div></div><span class="settings-note" data-i18n="autoConfigured">自動設定</span></div>
-          <div class="card-body">
-            <div class="settings-grid">
-              <div class="field"><div class="field-title-row"><label for="resolutionSelect" data-i18n="resolution">解像度</label><button class="info-button" type="button" data-setting-info="resolution" aria-label="解像度の説明"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></button></div><div class="select-wrap"><select id="resolutionSelect"><option value="original" data-i18n="resolutionOriginal">元のまま</option><option value="3840" data-i18n="resolution4k">4K（最大3840px）</option><option value="2560" data-i18n="resolution1440">1440p（最大2560px）</option><option value="1920" selected data-i18n="resolution1080">1080p（最大1920px）</option><option value="1280" data-i18n="resolution720">720p（最大1280px）</option><option value="854" data-i18n="resolution480">480p（最大854px）</option><option value="640" data-i18n="resolution360">360p（最大640px）</option></select><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div><span class="hint" data-i18n="resolutionHint">縦横比を保ち、元動画より大きくしません</span></div>
-              <div class="field"><div class="field-title-row"><label for="codecSelect" data-i18n="codec">コーデック</label><button class="info-button" type="button" data-setting-info="codec" aria-label="コーデックの説明"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></button></div><div class="select-wrap"><select id="codecSelect"><option value="h264" selected data-i18n="codecH264">H.264 / MP4</option><option value="vp9" data-i18n="codecVp9">VP9 / WebM</option></select><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div><span class="hint" id="codecHint">H.264: 互換性と処理速度を優先</span></div>
-              <div class="field full"><div class="bitrate-label-row"><div class="field-title-row"><div class="field-label" data-i18n="bitrate">映像ビットレート</div><button class="info-button" type="button" data-setting-info="bitrate" aria-label="映像ビットレートの説明"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></button></div><button class="recommend-btn" id="recommendButton" type="button" data-i18n="recommended">おすすめに戻す</button></div><div class="bitrate-row"><input class="range" id="bitrateRange" type="range" min="50" max="8000" step="1" value="3200" aria-label="Video bitrate"><div class="number-wrap"><input id="bitrateInput" type="number" min="50" max="8000" step="1" value="3200" inputmode="numeric"><span>kbps</span></div></div><span class="hint" id="bitrateHint">おすすめ 3,200 kbps・設定可能 50〜8,000 kbps</span></div>
-              <div class="check-row field full"><input id="removeAudio" type="checkbox"><label class="check-copy" for="removeAudio"><strong data-i18n="removeAudio">オーディオを削除</strong><span data-i18n="removeAudioHint">映像だけを書き出し、さらに容量を減らします</span></label><button class="info-button" type="button" data-setting-info="removeAudio" aria-label="オーディオ削除の説明"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></button></div><div class="field full output-name-field"><div class="field-title-row"><label for="outputNameInput" data-i18n="outputFileName">保存ファイル名</label></div><div class="filename-input"><input id="outputNameInput" type="text" maxlength="180" autocomplete="off" spellcheck="false" aria-describedby="outputNameHint"><span id="outputExtension">.mp4</span></div><span class="hint" id="outputNameHint" data-i18n="outputFileNameHint">拡張子は選んだ形式に合わせて自動で付きます</span></div>
-            </div>
-            <details class="advanced" id="advancedDetails"><summary><span class="summary-left"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.56V21h-4v-.09A1.7 1.7 0 0 0 9 19.36a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.63 15 1.7 1.7 0 0 0 3.07 14H3v-4h.09A1.7 1.7 0 0 0 4.64 9a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.63h.01A1.7 1.7 0 0 0 10 3.07V3h4v.09A1.7 1.7 0 0 0 15 4.64a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.37 9v.01A1.7 1.7 0 0 0 20.93 10H21v4h-.09A1.7 1.7 0 0 0 19.4 15Z"/></svg><span data-i18n="advanced">アドバンス設定</span></span><svg class="chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></summary>
-              <div class="advanced-grid">
-                <div class="field"><div class="field-title-row"><label for="fpsSelect" data-i18n="fps">出力フレームレート</label><button class="info-button" type="button" data-setting-info="fps" aria-label="フレームレートの説明"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></button></div><div class="select-wrap"><select id="fpsSelect"><option value="original" selected data-i18n="keepOriginal">元のまま</option><option value="60">60 fps</option><option value="30">30 fps</option><option value="24">24 fps</option></select><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div></div>
-                <div class="field"><div class="field-title-row"><label for="speedSelect" data-i18n="speed">圧縮速度</label><button class="info-button" type="button" data-setting-info="speed" aria-label="圧縮速度の説明"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></button></div><div class="select-wrap"><select id="speedSelect"><option value="fastest" data-i18n="speedFastest">最速（容量は大きめ）</option><option value="fast" selected data-i18n="speedFast">速い・おすすめ</option><option value="balanced" data-i18n="speedBalanced">バランス</option><option value="quality" data-i18n="speedQuality">高圧縮（時間がかかる）</option></select><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div></div>
-                <div class="field"><div class="field-title-row"><label for="audioBitrateSelect" data-i18n="audioBitrate">音声ビットレート</label><button class="info-button" type="button" data-setting-info="audioBitrate" aria-label="音声ビットレートの説明"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></button></div><div class="select-wrap"><select id="audioBitrateSelect"><option value="64">64 kbps</option><option value="96" selected>96 kbps</option><option value="128">128 kbps</option><option value="192">192 kbps</option></select><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div></div>
-                
-              </div>
-            </details>
+        </div>
+        <section class="result-card" id="resultCard" aria-labelledby="resultName" hidden>
+          <div class="monitor"><video id="resultPreview" controls playsinline preload="metadata"></video></div>
+          <div class="file-caption"><strong id="resultName"></strong><button class="btn btn-secondary" id="renameButton" type="button" data-i18n="renameResult" disabled>名前を変更</button></div>
+          <div class="result-summary">
+            <div><span data-i18n="compressedSize">圧縮後</span><strong id="resultOutputSize">—</strong></div>
+            <div class="result-delta"><strong id="resultSavings">—</strong><span><span data-i18n="originalSize">元のサイズ</span> <b id="resultOriginalSize">—</b></span></div>
+          </div>
+          <div class="save-row"><p id="resultTarget" class="result-target" hidden></p>
+            <div class="save-actions"><button class="btn btn-primary" id="downloadButton" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 5-5m-5 5-5-5"/><path d="M5 21h14a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2"/></svg><span data-i18n="download">保存</span></button><button class="btn btn-secondary" id="shareButton" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.5 6.8-4M8.6 13.5l6.8 4"/></svg><span data-i18n="share">共有</span></button></div>
+          </div>
+          <div class="result-tools"><span><span data-i18n="processingTime">処理時間</span> <b id="resultElapsed">—</b></span>
+            <div><button class="btn btn-secondary" id="editSettingsButton" type="button" data-i18n="editSettings">圧縮設定を変更</button><button class="btn btn-secondary" id="resetButton" type="button" data-i18n="compressAnother">別の動画を圧縮</button></div>
           </div>
         </section>
+        <section class="card progress-card" id="progressCard" aria-live="polite"><div class="card-body"><div class="progress-top"><div><div class="progress-title" id="progressTitle">圧縮エンジンを準備しています</div><div class="card-sub" id="progressStage">FFmpeg 9 compact WASMを準備しています</div></div><div class="progress-meta"><span class="progress-elapsed" id="progressElapsed">0:00</span><div class="progress-percent" id="progressPercent">0%</div></div></div><div class="progress-track"><div class="progress-fill indeterminate" id="progressFill"></div></div><div class="progress-detail" id="progressDetail">FFmpeg 9 compact WASM</div><details><summary class="text-btn" data-i18n="showLog">処理ログを表示</summary><div class="log-box" id="logBox"></div></details><div class="progress-actions"><button class="btn btn-danger" id="cancelButton" type="button" data-i18n="cancel">キャンセル</button><button class="btn btn-secondary" id="chooseAfterError" type="button" data-i18n="changeFile" hidden>別の動画を選ぶ</button></div></div></section>
+      </section>
 
-        <section class="card progress-card" id="progressCard" aria-live="polite"><div class="card-body"><div class="progress-top"><div><div class="progress-title" id="progressTitle">圧縮エンジンを準備しています</div><div class="card-sub" id="progressStage">FFmpeg 9 compact WASMを準備しています</div></div><div class="progress-meta"><span class="progress-elapsed" id="progressElapsed">0:00</span><div class="progress-percent" id="progressPercent">0%</div></div></div><div class="progress-track"><div class="progress-fill indeterminate" id="progressFill"></div></div><div class="progress-detail" id="progressDetail">FFmpeg 9 compact WASM</div><details><summary class="text-btn" data-i18n="showLog">処理ログを表示</summary><div class="log-box" id="logBox"></div></details><div class="progress-actions"><button class="btn btn-danger" id="cancelButton" type="button" data-i18n="cancel">キャンセル</button></div></div></section>
+      <aside class="output-column" aria-labelledby="outputHeading">
+        <section class="estimate-card" id="estimateCard">
+          <div class="section-head"><h2 id="outputHeading" data-i18n="exportHeading">書き出し</h2></div>
+          <div class="field target-field">
+            <label id="targetSizeLabel" for="targetSizeInput" data-i18n="targetLabel">目標ファイルサイズ</label>
+            <div class="number-wrap size-input"><input id="targetSizeInput" type="number" inputmode="decimal" min="0" step="any" placeholder="指定なし" aria-describedby="targetUnit targetHint"><span id="targetUnit">MB</span></div>
+            <div class="size-presets" role="group" aria-labelledby="targetSizeLabel">
+              <button type="button" data-size="10" aria-pressed="false">10 MB</button>
+              <button type="button" data-size="25" aria-pressed="false">25 MB</button>
+              <button type="button" data-size="50" aria-pressed="false">50 MB</button>
+              <button type="button" id="clearTargetButton" class="text-btn" data-i18n="clearTarget" hidden>解除</button>
+            </div>
+            <span class="hint" id="targetHint" aria-live="polite"></span>
+          </div>
+          <div class="field"><div class="field-title-row"><label for="codecSelect" data-i18n="codec">コーデック</label><button class="info-button" type="button" data-setting-info="codec" aria-label="コーデックの説明"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></button></div><div class="select-wrap"><select id="codecSelect"><option value="h264" selected data-i18n="codecH264">H.264 / MP4</option><option value="vp9" data-i18n="codecVp9">VP9 / WebM</option></select><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div><span class="hint" id="codecHint">H.264: 互換性と処理速度を優先</span></div>
+          <div class="estimate-readout">
+            <div><span data-i18n="originalSize">元のサイズ</span><strong id="originalBarSize">—</strong></div>
+            <span class="size-arrow" aria-hidden="true">→</span>
+            <div><span data-i18n="estimatedSize">圧縮後の目安</span><strong id="estimateSize">—</strong></div>
+            <p id="estimateSavings">—</p><p class="hint" id="estimateCopy"></p>
+          </div>
+          <button class="btn btn-primary" id="compressButton" type="button" disabled><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M7 4v6M17 4v6M6 13h12v7H6z"/><path d="M9 16h6"/></svg><span id="compressLabel" data-i18n="compress">この設定で圧縮</span></button>
+        </section>
 
-        <section class="card result-card" id="resultCard" aria-labelledby="resultHeading"><div class="card-head"><div class="step-label"><span class="step">3</span><div><h3 id="resultHeading" data-i18n="resultTitle">圧縮できました</h3><p class="card-sub" data-i18n="resultSub">プレビューして、保存または共有できます</p></div></div></div><div class="card-body"><div class="result-grid"><div><div class="preview"><video id="resultPreview" controls playsinline preload="metadata"></video></div></div><div><div class="result-stats"><div class="stat"><span data-i18n="originalSize">元のサイズ</span><strong id="resultOriginalSize">—</strong></div><div class="stat"><span data-i18n="compressedSize">圧縮後</span><strong id="resultOutputSize">—</strong></div><div class="stat"><span data-i18n="reduction">削減率</span><strong class="savings" id="resultSavings">—</strong></div><div class="stat"><span data-i18n="processingTime">処理時間</span><strong id="resultElapsed">—</strong></div></div><div class="result-name" id="resultName"></div></div></div><div class="button-row result-actions"><button class="btn btn-primary" id="downloadButton" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 5-5m-5 5-5-5"/><path d="M5 21h14a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2"/></svg><span data-i18n="download">保存</span></button><button class="btn btn-secondary" id="shareButton" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.5 6.8-4M8.6 13.5l6.8 4"/></svg><span data-i18n="share">共有</span></button><button class="btn btn-secondary" id="renameButton" type="button" data-i18n="renameResult" disabled>ファイル名を変更</button><button class="btn btn-secondary" id="resetButton" type="button" data-i18n="compressAnother">別の動画を圧縮</button></div></div></section>
-      </div>
-
-      <aside><section class="estimate-card" id="estimateCard" aria-labelledby="estimateHeading"><div class="eyebrow" id="estimateHeading" data-i18n="estimatedSize">圧縮後サイズの概算</div><div class="estimate-size" id="estimateSize">—</div><div class="estimate-copy" id="estimateCopy" data-i18n="estimateBeforeFile">動画を選ぶと、長さと設定から概算します。</div><div class="estimate-saving" id="estimateSavings">—</div><div class="estimate-bars"><div class="bar-row"><span data-i18n="before">圧縮前</span><div class="bar-track"><div class="bar-fill" id="originalBar" style="width:100%"></div></div><strong id="originalBarSize">—</strong></div><div class="bar-row"><span data-i18n="after">圧縮後</span><div class="bar-track"><div class="bar-fill" id="estimateBar" style="width:0%"></div></div><strong id="estimateBarSize">—</strong></div></div><div class="summary-list"><div class="summary-item"><span data-i18n="outputResolution">出力解像度</span><strong id="summaryResolution">—</strong></div><div class="summary-item"><span data-i18n="formatCodec">形式 / コーデック</span><strong id="summaryCodec">MP4 / H.264</strong></div><div class="summary-item"><span data-i18n="audio">オーディオ</span><strong id="summaryAudio">96 kbps</strong></div><div class="summary-item"><span data-i18n="outputFps">出力fps</span><strong id="summaryFps">元のまま</strong></div></div><button class="btn btn-primary" id="compressButton" type="button" disabled><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M7 4v6M17 4v6M6 13h12v7H6z"/><path d="M9 16h6"/></svg><span data-i18n="compress">この設定で圧縮</span></button><div class="engine-note"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><span data-i18n="engineNote">処理中はこのタブを閉じないでください。大きな動画はメモリ不足で失敗する場合があります。</span></div></section></aside>
+        <details class="settings-sheet" id="settingsDetails">
+          <summary id="settingsCard"><span data-i18n="fineSettings">詳細設定</span><span class="disclosure" aria-hidden="true"></span></summary>
+          <div class="settings-grid">
+            <div class="field"><div class="field-title-row"><label for="resolutionSelect" data-i18n="resolution">解像度</label><button class="info-button" type="button" data-setting-info="resolution" aria-label="解像度の説明"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></button></div><div class="select-wrap"><select id="resolutionSelect"><option value="original" data-i18n="resolutionOriginal">元のまま</option><option value="3840" data-i18n="resolution4k">4K（最大3840px）</option><option value="2560" data-i18n="resolution1440">1440p（最大2560px）</option><option value="1920" selected data-i18n="resolution1080">1080p（最大1920px）</option><option value="1280" data-i18n="resolution720">720p（最大1280px）</option><option value="854" data-i18n="resolution480">480p（最大854px）</option><option value="640" data-i18n="resolution360">360p（最大640px）</option></select><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div><span class="hint" data-i18n="resolutionHint">縦横比を保ち、元動画より大きくしません</span></div>
+            <div class="field full"><div class="bitrate-label-row"><div class="field-title-row"><label id="bitrateLabel" for="bitrateInput" data-i18n="bitrate">映像ビットレート</label><button class="info-button" type="button" data-setting-info="bitrate" aria-label="映像ビットレートの説明"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></button></div><button class="recommend-btn" id="recommendButton" type="button" data-i18n="recommended">おすすめに戻す</button></div><div class="bitrate-row"><input class="range" id="bitrateRange" type="range" min="50" max="8000" step="1" value="3200" aria-labelledby="bitrateLabel"><div class="number-wrap"><input id="bitrateInput" type="number" min="50" max="8000" step="1" value="3200" inputmode="numeric"><span>kbps</span></div></div><span class="hint" id="bitrateHint">おすすめ 3,200 kbps・設定可能 50〜8,000 kbps</span></div>
+            <div class="field"><div class="field-title-row"><label for="fpsSelect" data-i18n="fps">出力フレームレート</label><button class="info-button" type="button" data-setting-info="fps" aria-label="フレームレートの説明"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></button></div><div class="select-wrap"><select id="fpsSelect"><option value="original" selected data-i18n="keepOriginal">元のまま</option><option value="60">60 fps</option><option value="30">30 fps</option><option value="24">24 fps</option></select><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div></div>
+<div class="field"><div class="field-title-row"><label for="speedSelect" data-i18n="speed">圧縮速度</label><button class="info-button" type="button" data-setting-info="speed" aria-label="圧縮速度の説明"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></button></div><div class="select-wrap"><select id="speedSelect"><option value="fastest" data-i18n="speedFastest">最速（容量は大きめ）</option><option value="fast" selected data-i18n="speedFast">速い・おすすめ</option><option value="balanced" data-i18n="speedBalanced">バランス</option><option value="quality" data-i18n="speedQuality">高圧縮（時間がかかる）</option></select><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div></div>
+<div class="field"><div class="field-title-row"><label for="audioBitrateSelect" data-i18n="audioBitrate">音声ビットレート</label><button class="info-button" type="button" data-setting-info="audioBitrate" aria-label="音声ビットレートの説明"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></button></div><div class="select-wrap"><select id="audioBitrateSelect"><option value="64">64 kbps</option><option value="96" selected>96 kbps</option><option value="128">128 kbps</option><option value="192">192 kbps</option></select><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></div></div>
+            <div class="check-row field full"><input id="removeAudio" type="checkbox"><label class="check-copy" for="removeAudio"><strong data-i18n="removeAudio">オーディオを削除</strong><span id="removeAudioHint" data-i18n="removeAudioHint">映像だけを書き出し、さらに容量を減らします</span></label><button class="info-button" type="button" data-setting-info="removeAudio" aria-label="オーディオ削除の説明"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></button></div>
+            <div class="field full output-name-field"><div class="field-title-row"><label for="outputNameInput" data-i18n="outputFileName">保存ファイル名</label></div><div class="filename-input"><input id="outputNameInput" type="text" maxlength="180" autocomplete="off" spellcheck="false" aria-describedby="outputNameHint"><span id="outputExtension">.mp4</span></div><span class="hint" id="outputNameHint" data-i18n="outputFileNameHint">拡張子は選んだ形式に合わせて自動で付きます</span></div>
+          </div>
+        </details>
+      </aside>
     </div>
-
-    <footer class="footer"><span><span id="footerName" data-i18n="appName">ローカル動画圧縮</span> · MIT License · <span data-i18n="footerPrivacy">動画の圧縮はブラウザー内で完結</span></span></footer>
+    <footer class="footer"><span><span id="footerName" data-i18n="appName">ローカル動画圧縮</span> · <span data-i18n="footerPrivacy">動画の圧縮はブラウザー内で完結</span></span></footer>
   </main>
 
   <nav class="mobile-bar" id="mobileBar" aria-label="Mobile actions">
     <button class="mobile-action" id="mobileFileButton" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m9 9 6 3-6 3V9Z"/></svg><span data-i18n="mobileVideo">動画</span></button>
+    <button class="mobile-action" id="mobileEstimateButton" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg><span data-i18n="mobileEstimate">容量</span></button>
     <button class="mobile-action" id="mobileSettingsButton" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg><span data-i18n="mobileSettings">設定</span></button>
-    <button class="mobile-action" id="mobileEstimateButton" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg><span data-i18n="mobileEstimate">見積</span></button>
-    <button class="mobile-action primary" id="mobileCompressButton" type="button" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M7 4v6M17 4v6M6 13h12v7H6z"/><path d="M9 16h6"/></svg><span data-i18n="mobileCompress">圧縮</span></button>
+    <button class="mobile-action primary" id="mobileCompressButton" type="button" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path id="mobilePrimaryIcon" d="M4 7h16M7 4v6M17 4v6M6 13h12v7H6z M9 16h6"/></svg><span id="mobilePrimaryLabel" data-i18n="mobileCompress">圧縮</span></button>
   </nav>
 
   <dialog id="helpDialog" aria-labelledby="helpTitle"><div class="help-head"><h2 id="helpTitle" data-i18n="helpTitle">使い方と設定の目安</h2><button class="dialog-close" id="helpCloseButton" type="button" aria-label="閉じる"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m6 6 12 12"/><path d="M18 6 6 18"/></svg></button></div><div class="help-body"><div class="help-grid">
@@ -169,7 +297,7 @@
     <section class="help-section"><h3 data-i18n="helpShareTitle">共有ボタン</h3><p data-i18n="helpShareCopy">端末とブラウザがファイル共有に対応している場合は共有画面を開きます。非対応の場合は自動的に保存します。</p></section>
     <section class="help-section full"><h3 data-i18n="helpTroubleTitle">うまくいかないとき</h3><ul><li data-i18n="helpTrouble1">まず解像度やビットレートを下げてください。</li><li data-i18n="helpTrouble2">長い動画や大きな動画は端末メモリ不足になることがあります。</li><li data-i18n="helpTrouble3">入力形式によって失敗する場合は、短い動画や一般的なMP4/MOVで動作を確認してください。</li><li data-i18n="helpTrouble4">圧縮中はタブを閉じたり、端末をスリープさせたりしないでください。</li></ul></section>
     <section class="help-section full"><h3 data-i18n="helpLicenseTitle">ライセンスとFFmpeg</h3><p><span data-i18n="helpLicenseCopy">このアプリにはGPL-2.0-or-laterのFFmpeg/x264 WebAssemblyコアと、libvpx、Opusが含まれます。</span> <span id="ffmpegVersionText"></span> <a class="text-btn" id="ffmpegSourceLink" target="_blank" rel="noopener noreferrer" data-i18n="helpSourceLink">対応ソースを見る</a></p></section>
-  </div><p class="help-build"><span id="versionText">Local Video Compressor</span></p></div></dialog>
+  </div><p id="runtimeInfo" class="help-build"></p><p class="help-build"><span id="versionText">Local Video Compressor</span></p></div></dialog>
 
   <dialog class="compact-dialog" id="settingInfoDialog" aria-labelledby="settingInfoTitle"><div class="help-head"><h2 id="settingInfoTitle">設定の説明</h2><button class="dialog-close" id="settingInfoCloseButton" type="button" aria-label="閉じる"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m6 6 12 12"/><path d="M18 6 6 18"/></svg></button></div><div class="help-body"><p class="dialog-copy" id="settingInfoCopy"></p></div></dialog>
 
@@ -197,8 +325,8 @@
     });
 
     const I18N={
-      ja:{runtimeBlocked:'Multi-thread版にはHTTP(S)、COOP / COEPとSharedArrayBufferが必要です。Browser Kittyで開くか、直接ファイルを開く場合はSingle-thread版を使ってください。',runtimeSt:'Single-thread版：保存したHTMLを直接開けます。',runtimeMt:'Multi-thread版：HTTP(S)とcross-origin isolationが必要です。',appName:'ローカル動画圧縮',introTitle:'動画をブラウザ内で圧縮',appTagline:'動画をアップロードせず、ブラウザ内で圧縮',help:'ヘルプ',heroCopy:'動画を選ぶとおすすめ設定を自動で提案します。必要なところだけ調整して圧縮できます。',privacyShort:'完全ローカル処理',selectTitle:'動画を選ぶ',selectSub:'MP4・MOV・WebMなどの動画ファイル',dropTitle:'動画をドロップ、またはクリックして選択',fileFallback:'ファイルから選択',dropSub:'ファイルはアップロードされません',infoSize:'ファイルサイズ',infoDuration:'再生時間',infoResolution:'解像度',infoBitrate:'映像ビットレート',infoFps:'フレームレート',infoType:'ファイル形式',estimated:'推定',measured:'測定',unavailable:'取得不可',analyzing:'解析中…',analysisPending:'解析待ち',codecH264:'H.264 / MP4',codecVp9:'VP9 / WebM',vp9:'VP9: より小さい容量を優先（処理は遅め）',changeFile:'別の動画を選ぶ',removeFile:'削除',settingsTitle:'圧縮設定',settingsSub:'動画に合わせたおすすめ値を自動設定します',resolution:'解像度',resolutionOriginal:'元のまま',resolution4k:'4K（最大3840px）',resolution1440:'1440p（最大2560px）',resolution1080:'1080p（最大1920px）',resolution720:'720p（最大1280px）',resolution480:'480p（最大854px）',resolution360:'360p（最大640px）',resolutionHint:'縦横比を保ち、元動画より大きくしません',codec:'コーデック',bitrate:'映像ビットレート',recommended:'おすすめに戻す',removeAudio:'オーディオを削除',removeAudioHint:'映像だけを書き出し、さらに容量を減らします',advanced:'アドバンス設定',fps:'出力フレームレート',keepOriginal:'元のまま',speed:'圧縮速度',speedFastest:'最速（容量は大きめ）',speedFast:'速い・おすすめ',speedBalanced:'バランス',speedQuality:'高圧縮（時間がかかる）',audioBitrate:'音声ビットレート',showLog:'処理ログを表示',cancel:'キャンセル',resultTitle:'圧縮できました',resultSub:'プレビューして、保存または共有できます',originalSize:'元のサイズ',compressedSize:'圧縮後',reduction:'削減率',download:'保存',share:'共有',compressAnother:'別の動画を圧縮',estimatedSize:'圧縮後サイズの概算',estimateBeforeFile:'動画を選ぶと、長さと設定から概算します。',before:'圧縮前',after:'圧縮後',outputResolution:'出力解像度',formatCodec:'形式 / コーデック',audio:'オーディオ',outputFps:'出力fps',compress:'この設定で圧縮',engineNote:'処理中はこのタブを閉じないでください。大きな動画はメモリ不足で失敗する場合があります。',footerPrivacy:'動画の圧縮はブラウザー内で完結',helpTitle:'使い方と設定の目安',helpHowTitle:'基本の使い方',helpStep1:'動画を選びます。',helpStep2:'自動提案された設定を確認します。',helpStep3:'「この設定で圧縮」を押します。',helpStep4:'結果をプレビューし、保存または共有します。',helpPrivacyTitle:'プライバシー',helpPrivacyCopy:'選択した動画はサーバーへ送信されません。圧縮処理はこのブラウザ内だけで行います。',helpSettingsTitle:'設定の選び方',helpResolution:'小さくすると大幅に容量を減らせます。迷ったら自動設定のままで問題ありません。',helpBitrate:'低いほど小さくなります。動きが多い動画は少し高めが向いています。',helpCodec:'H.264 / MP4とVP9 / WebMを選べます。H.264は互換性と速度を、VP9はより小さい容量を優先するときに向いています。',helpSpeed:'「速い・おすすめ」が通常用途向けです。高圧縮は処理時間が長くなります。',helpInfoTitle:'動画情報について',helpInfoCopy:'映像ビットレートはFFmpegで動画ストリームを解析して測定します。フレームレートを「元のまま」にすると元のフレーム時刻を保持し、MP4の最終フレームも本来の表示時間を保ちます。',helpShareTitle:'共有ボタン',helpShareCopy:'端末とブラウザがファイル共有に対応している場合は共有画面を開きます。非対応の場合は自動的に保存します。',helpTroubleTitle:'うまくいかないとき',helpLicenseTitle:'ライセンスとFFmpeg',helpLicenseCopy:'このアプリにはGPL-2.0-or-laterのFFmpeg/x264 WebAssemblyコアと、BSD系ライセンスのlibvpx、3-clause BSDのOpusが含まれます。',helpSourceLink:'対応ソースを見る',helpTrouble1:'まず解像度やビットレートを下げてください。',helpTrouble2:'長い動画や大きな動画は端末メモリ不足になることがあります。',helpTrouble3:'入力形式によって失敗する場合は、短い動画や一般的なMP4/MOVで動作を確認してください。',helpTrouble4:'圧縮中はタブを閉じたり、端末をスリープさせたりしないでください。',estimateNote:'動画の長さと設定値から計算した概算です。実際のサイズは映像内容により変わります。',unknownDuration:'動画の長さを取得できないため概算できません。',engineLoading:'圧縮エンジンを展開中',readingFile:'動画を準備中',compressing:'動画を圧縮中',finishing:'圧縮結果を準備中',cancelled:'圧縮をキャンセルしました。',failed:'圧縮に失敗しました。設定を下げるか、短い動画でお試しください。',wasmCspFailed:'WebAssemblyの実行がCSPで拒否されました。最新のHTMLを開き直し、古いキャッシュが残っている場合は再読み込みしてください。',complete:'圧縮が完了しました。',shared:'共有画面を開きました。',shareUnsupported:'このブラウザではファイル共有が使えないため、保存を開始しました。',downloaded:'保存を開始しました。',fileTooLarge:'1.5GBを超える動画はメモリ不足になりやすいため選択できません。',invalidFile:'動画ファイルを選択してください。',metadataFailed:'動画情報の一部を取得できませんでしたが、圧縮は試せます。',h264:'H.264: 互換性と処理速度を優先',resultReduction:'{value}% 小さく',resultIncrease:'{value}% 大きく',noAudio:'削除',keep:'保持',original:'元のまま',less:'小さく',larger:'大きく',recommendedHint:'おすすめ {recommended} kbps・設定可能 {min}〜{max} kbps'},
-      en:{runtimeBlocked:'The multi-thread build requires HTTP(S), COOP / COEP and SharedArrayBuffer. Open it on Browser Kitty, or use the single-thread build for a file opened directly from disk.',runtimeSt:'Single-thread build: the saved HTML can open directly from disk.',runtimeMt:'Multi-thread build: requires HTTP(S) and cross-origin isolation.',appName:'Local Video Compressor',introTitle:'Compress video in your browser',appTagline:'Compress locally without uploading',help:'Help',heroCopy:'Choose a video and the app suggests sensible defaults. Adjust only what you need.',privacyShort:'Fully local processing',selectTitle:'Choose a video',selectSub:'MP4, MOV, WebM, and other video files',dropTitle:'Drop a video here, or click to choose',fileFallback:'Choose from files',dropSub:'Your file is never uploaded',infoSize:'File size',infoDuration:'Duration',infoResolution:'Resolution',infoBitrate:'Video bitrate',infoFps:'Frame rate',infoType:'File type',estimated:'Estimated',measured:'Measured',unavailable:'Unavailable',analyzing:'Analyzing…',analysisPending:'Pending',codecH264:'H.264 / MP4',codecVp9:'VP9 / WebM',vp9:'VP9: smaller files, but slower encoding',changeFile:'Choose another',removeFile:'Remove',settingsTitle:'Compression settings',settingsSub:'Recommended values are selected for your video',resolution:'Resolution',resolutionOriginal:'Keep original',resolution4k:'4K (max 3840px)',resolution1440:'1440p (max 2560px)',resolution1080:'1080p (max 1920px)',resolution720:'720p (max 1280px)',resolution480:'480p (max 854px)',resolution360:'360p (max 640px)',resolutionHint:'Keeps aspect ratio and never upscales',codec:'Codec',bitrate:'Video bitrate',recommended:'Use recommended',removeAudio:'Remove audio',removeAudioHint:'Export video only to reduce the file further',advanced:'Advanced settings',fps:'Output frame rate',keepOriginal:'Keep original',speed:'Encoding speed',speedFastest:'Fastest (larger file)',speedFast:'Fast · recommended',speedBalanced:'Balanced',speedQuality:'Higher compression (slower)',audioBitrate:'Audio bitrate',showLog:'Show processing log',cancel:'Cancel',resultTitle:'Compression complete',resultSub:'Preview, save, or share the result',originalSize:'Original size',compressedSize:'Compressed size',reduction:'Reduction',download:'Save',share:'Share',compressAnother:'Compress another',estimatedSize:'Estimated output size',estimateBeforeFile:'Choose a video to estimate from duration and settings.',before:'Before',after:'After',outputResolution:'Output resolution',formatCodec:'Format / codec',audio:'Audio',outputFps:'Output fps',compress:'Compress with these settings',engineNote:'Keep this tab open while processing. Large videos can fail if the device runs out of memory.',footerPrivacy:'Video compression stays in the browser',helpTitle:'How to use and settings guide',helpHowTitle:'Basic steps',helpStep1:'Choose a video.',helpStep2:'Review the suggested settings.',helpStep3:'Select “Compress with these settings.”',helpStep4:'Preview, save, or share the result.',helpPrivacyTitle:'Privacy',helpPrivacyCopy:'Selected videos are never sent to a server. Compression runs entirely in this browser.',helpSettingsTitle:'Choosing settings',helpResolution:'Reducing resolution has the biggest effect. The automatic choice is a good default.',helpBitrate:'Lower values create smaller files. Fast-moving footage may need a little more.',helpCodec:'Choose H.264 / MP4 for broad compatibility and practical speed, or VP9 / WebM when a smaller file is more important.',helpSpeed:'“Fast · recommended” suits most uses. Higher compression takes longer.',helpInfoTitle:'Video information',helpInfoCopy:'Video bitrate is measured by inspecting the video stream with FFmpeg. Original FPS preserves source frame timestamps, including variable timing; MP4 retains the complete display interval of the final frame. Rotation metadata is also inspected and applied to the output.',helpShareTitle:'Share button',helpShareCopy:'The system share sheet opens when supported. Otherwise, the file is saved instead.',helpTroubleTitle:'Troubleshooting',helpLicenseTitle:'Licensing and FFmpeg',helpLicenseCopy:'This app includes the FFmpeg/x264 WebAssembly core under GPL-2.0-or-later, libvpx under its BSD-style license, and Opus under the 3-clause BSD license.',helpSourceLink:'View corresponding source',helpTrouble1:'Lower the resolution or bitrate first.',helpTrouble2:'Long or large videos may exceed device memory.',helpTrouble3:'If a source format fails, try a shorter clip or a common MP4/MOV file to confirm compatibility.',helpTrouble4:'Keep the tab open and prevent the device from sleeping.',estimateNote:'Estimated from duration and target bitrates. Actual size depends on the video content.',unknownDuration:'Duration is unavailable, so the output size cannot be estimated.',engineLoading:'Unpacking compression engine',readingFile:'Preparing video',compressing:'Compressing video',finishing:'Preparing output',cancelled:'Compression cancelled.',failed:'Compression failed. Try a lower resolution or a shorter video.',wasmCspFailed:'WebAssembly was blocked by CSP. Reopen the latest HTML and reload if an older cached copy remains.',complete:'Compression complete.',shared:'Share sheet opened.',shareUnsupported:'File sharing is unavailable, so the download was started.',downloaded:'Download started.',fileTooLarge:'Videos over 1.5 GB are likely to exceed browser memory and cannot be selected.',invalidFile:'Please choose a video file.',metadataFailed:'Some video details could not be read, but compression can still be attempted.',h264:'H.264: best compatibility and practical speed',resultReduction:'{value}% smaller',resultIncrease:'{value}% larger',noAudio:'Removed',keep:'Keep',original:'Original',less:'smaller',larger:'larger',recommendedHint:'Recommended {recommended} kbps · range {min}–{max} kbps'}
+      ja:{runtimeBlocked:'Multi-thread版にはHTTP(S)、COOP / COEPとSharedArrayBufferが必要です。Browser Kittyで開くか、直接ファイルを開く場合はSingle-thread版を使ってください。',runtimeSt:'Single-thread版：保存したHTMLを直接開けます。',runtimeMt:'Multi-thread版：HTTP(S)とcross-origin isolationが必要です。',appName:'ローカル動画圧縮',introTitle:'動画をブラウザ内で圧縮',appTagline:'動画をアップロードせず、ブラウザ内で圧縮',help:'ヘルプ',heroCopy:'動画を選ぶとおすすめ設定を自動で提案します。必要なところだけ調整して圧縮できます。',privacyShort:'完全ローカル処理',selectTitle:'動画を選ぶ',selectSub:'MP4・MOV・WebMなどの動画ファイル',dropTitle:'動画をドロップ、またはクリックして選択',fileFallback:'ファイルから選択',dropSub:'ファイルはアップロードされません',infoSize:'ファイルサイズ',infoDuration:'再生時間',infoResolution:'解像度',infoBitrate:'映像ビットレート',infoFps:'フレームレート',infoType:'ファイル形式',estimated:'推定',measured:'測定',unavailable:'取得不可',analyzing:'解析中…',analysisPending:'解析待ち',codecH264:'H.264 / MP4',codecVp9:'VP9 / WebM',vp9:'VP9: より小さい容量を優先（処理は遅め）',changeFile:'別の動画を選ぶ',removeFile:'削除',settingsTitle:'圧縮設定',settingsSub:'動画に合わせたおすすめ値を自動設定します',resolution:'解像度',resolutionOriginal:'元のまま',resolution4k:'4K（最大3840px）',resolution1440:'1440p（最大2560px）',resolution1080:'1080p（最大1920px）',resolution720:'720p（最大1280px）',resolution480:'480p（最大854px）',resolution360:'360p（最大640px）',resolutionHint:'縦横比を保ち、元動画より大きくしません',codec:'コーデック',bitrate:'映像ビットレート',recommended:'おすすめに戻す',removeAudio:'オーディオを削除',removeAudioHint:'映像だけを書き出し、さらに容量を減らします',advanced:'アドバンス設定',fps:'出力フレームレート',keepOriginal:'元のまま',speed:'圧縮速度',speedFastest:'最速（容量は大きめ）',speedFast:'速い・おすすめ',speedBalanced:'バランス',speedQuality:'高圧縮（時間がかかる）',audioBitrate:'音声ビットレート',showLog:'処理ログを表示',cancel:'キャンセル',resultTitle:'圧縮できました',resultSub:'プレビューして、保存または共有できます',originalSize:'元のサイズ',compressedSize:'圧縮後',reduction:'削減率',download:'保存',share:'共有',compressAnother:'別の動画を圧縮',estimatedSize:'圧縮後サイズの概算',estimateBeforeFile:'動画を選ぶと、長さと設定から概算します。',before:'圧縮前',after:'圧縮後',outputResolution:'出力解像度',formatCodec:'形式 / コーデック',audio:'オーディオ',outputFps:'出力fps',compress:'この設定で圧縮',engineNote:'処理中はこのタブを閉じないでください。大きな動画はメモリ不足で失敗する場合があります。',footerPrivacy:'動画の圧縮はブラウザー内で完結',helpTitle:'使い方と設定の目安',helpHowTitle:'基本の使い方',helpStep1:'動画を選びます。',helpStep2:'自動提案された設定を確認します。',helpStep3:'「この設定で圧縮」を押します。',helpStep4:'結果をプレビューし、保存または共有します。',helpPrivacyTitle:'プライバシー',helpPrivacyCopy:'選択した動画はサーバーへ送信されません。圧縮処理はこのブラウザ内だけで行います。',helpSettingsTitle:'設定の選び方',helpResolution:'小さくすると大幅に容量を減らせます。迷ったら自動設定のままで問題ありません。',helpBitrate:'低いほど小さくなります。動きが多い動画は少し高めが向いています。',helpCodec:'H.264 / MP4とVP9 / WebMを選べます。H.264は互換性と速度を、VP9はより小さい容量を優先するときに向いています。',helpSpeed:'「速い・おすすめ」が通常用途向けです。高圧縮は処理時間が長くなります。',helpInfoTitle:'動画情報について',helpInfoCopy:'映像ビットレートはFFmpegで動画ストリームを解析して測定します。フレームレートを「元のまま」にすると元のフレーム時刻を保持し、MP4の最終フレームも本来の表示時間を保ちます。',helpShareTitle:'共有ボタン',helpShareCopy:'端末とブラウザがファイル共有に対応している場合は共有画面を開きます。非対応の場合は自動的に保存します。',helpTroubleTitle:'うまくいかないとき',helpLicenseTitle:'ライセンスとFFmpeg',helpLicenseCopy:'このアプリにはGPL-2.0-or-laterのFFmpeg/x264 WebAssemblyコアと、BSD系ライセンスのlibvpx、3-clause BSDのOpusが含まれます。',helpSourceLink:'対応ソースを見る',helpTrouble1:'まず解像度やビットレートを下げてください。',helpTrouble2:'長い動画や大きな動画は端末メモリ不足になることがあります。',helpTrouble3:'入力形式によって失敗する場合は、短い動画や一般的なMP4/MOVで動作を確認してください。',helpTrouble4:'圧縮中はタブを閉じたり、端末をスリープさせたりしないでください。',estimateNote:'動画の長さと設定値から計算した概算です。実際のサイズは映像内容により変わります。',unknownDuration:'動画の長さを取得できないため概算できません。',engineLoading:'圧縮エンジンを展開中',readingFile:'動画を準備中',compressing:'動画を圧縮中',finishing:'圧縮結果を準備中',cancelled:'圧縮をキャンセルしました。',failed:'圧縮に失敗しました。設定を下げるか、短い動画でお試しください。',wasmCspFailed:'WebAssemblyの実行がCSPで拒否されました。最新のHTMLを開き直し、古いキャッシュが残っている場合は再読み込みしてください。',complete:'圧縮が完了しました。',shared:'共有画面を開きました。',shareUnsupported:'このブラウザではファイル共有が使えないため、保存を開始しました。',downloaded:'保存を開始しました。',fileTooLarge:'1.5 GiBを超える動画はメモリ不足になりやすいため選択できません。',invalidFile:'動画ファイルを選択してください。',metadataFailed:'動画情報の一部を取得できませんでしたが、圧縮は試せます。',h264:'H.264: 互換性と処理速度を優先',resultReduction:'{value}% 小さく',resultIncrease:'{value}% 大きく',noAudio:'削除',keep:'保持',original:'元のまま',less:'小さく',larger:'大きく',recommendedHint:'おすすめ {recommended} kbps・設定可能 {min}〜{max} kbps'},
+      en:{runtimeBlocked:'The multi-thread build requires HTTP(S), COOP / COEP and SharedArrayBuffer. Open it on Browser Kitty, or use the single-thread build for a file opened directly from disk.',runtimeSt:'Single-thread build: the saved HTML can open directly from disk.',runtimeMt:'Multi-thread build: requires HTTP(S) and cross-origin isolation.',appName:'Local Video Compressor',introTitle:'Compress video in your browser',appTagline:'Compress locally without uploading',help:'Help',heroCopy:'Choose a video and the app suggests sensible defaults. Adjust only what you need.',privacyShort:'Fully local processing',selectTitle:'Choose a video',selectSub:'MP4, MOV, WebM, and other video files',dropTitle:'Drop a video here, or click to choose',fileFallback:'Choose from files',dropSub:'Your file is never uploaded',infoSize:'File size',infoDuration:'Duration',infoResolution:'Resolution',infoBitrate:'Video bitrate',infoFps:'Frame rate',infoType:'File type',estimated:'Estimated',measured:'Measured',unavailable:'Unavailable',analyzing:'Analyzing…',analysisPending:'Pending',codecH264:'H.264 / MP4',codecVp9:'VP9 / WebM',vp9:'VP9: smaller files, but slower encoding',changeFile:'Choose another',removeFile:'Remove',settingsTitle:'Compression settings',settingsSub:'Recommended values are selected for your video',resolution:'Resolution',resolutionOriginal:'Keep original',resolution4k:'4K (max 3840px)',resolution1440:'1440p (max 2560px)',resolution1080:'1080p (max 1920px)',resolution720:'720p (max 1280px)',resolution480:'480p (max 854px)',resolution360:'360p (max 640px)',resolutionHint:'Keeps aspect ratio and never upscales',codec:'Codec',bitrate:'Video bitrate',recommended:'Use recommended',removeAudio:'Remove audio',removeAudioHint:'Export video only to reduce the file further',advanced:'Advanced settings',fps:'Output frame rate',keepOriginal:'Keep original',speed:'Encoding speed',speedFastest:'Fastest (larger file)',speedFast:'Fast · recommended',speedBalanced:'Balanced',speedQuality:'Higher compression (slower)',audioBitrate:'Audio bitrate',showLog:'Show processing log',cancel:'Cancel',resultTitle:'Compression complete',resultSub:'Preview, save, or share the result',originalSize:'Original size',compressedSize:'Compressed size',reduction:'Reduction',download:'Save',share:'Share',compressAnother:'Compress another',estimatedSize:'Estimated output size',estimateBeforeFile:'Choose a video to estimate from duration and settings.',before:'Before',after:'After',outputResolution:'Output resolution',formatCodec:'Format / codec',audio:'Audio',outputFps:'Output fps',compress:'Compress with these settings',engineNote:'Keep this tab open while processing. Large videos can fail if the device runs out of memory.',footerPrivacy:'Video compression stays in the browser',helpTitle:'How to use and settings guide',helpHowTitle:'Basic steps',helpStep1:'Choose a video.',helpStep2:'Review the suggested settings.',helpStep3:'Select “Compress with these settings.”',helpStep4:'Preview, save, or share the result.',helpPrivacyTitle:'Privacy',helpPrivacyCopy:'Selected videos are never sent to a server. Compression runs entirely in this browser.',helpSettingsTitle:'Choosing settings',helpResolution:'Reducing resolution has the biggest effect. The automatic choice is a good default.',helpBitrate:'Lower values create smaller files. Fast-moving footage may need a little more.',helpCodec:'Choose H.264 / MP4 for broad compatibility and practical speed, or VP9 / WebM when a smaller file is more important.',helpSpeed:'“Fast · recommended” suits most uses. Higher compression takes longer.',helpInfoTitle:'Video information',helpInfoCopy:'Video bitrate is measured by inspecting the video stream with FFmpeg. Original FPS preserves source frame timestamps, including variable timing; MP4 retains the complete display interval of the final frame. Rotation metadata is also inspected and applied to the output.',helpShareTitle:'Share button',helpShareCopy:'The system share sheet opens when supported. Otherwise, the file is saved instead.',helpTroubleTitle:'Troubleshooting',helpLicenseTitle:'Licensing and FFmpeg',helpLicenseCopy:'This app includes the FFmpeg/x264 WebAssembly core under GPL-2.0-or-later, libvpx under its BSD-style license, and Opus under the 3-clause BSD license.',helpSourceLink:'View corresponding source',helpTrouble1:'Lower the resolution or bitrate first.',helpTrouble2:'Long or large videos may exceed device memory.',helpTrouble3:'If a source format fails, try a shorter clip or a common MP4/MOV file to confirm compatibility.',helpTrouble4:'Keep the tab open and prevent the device from sleeping.',estimateNote:'Estimated from duration and target bitrates. Actual size depends on the video content.',unknownDuration:'Duration is unavailable, so the output size cannot be estimated.',engineLoading:'Unpacking compression engine',readingFile:'Preparing video',compressing:'Compressing video',finishing:'Preparing output',cancelled:'Compression cancelled.',failed:'Compression failed. Try a lower resolution or a shorter video.',wasmCspFailed:'WebAssembly was blocked by CSP. Reopen the latest HTML and reload if an older cached copy remains.',complete:'Compression complete.',shared:'Share sheet opened.',shareUnsupported:'File sharing is unavailable, so the download was started.',downloaded:'Download started.',fileTooLarge:'Videos over 1.5 GiB are likely to exceed browser memory and cannot be selected.',invalidFile:'Please choose a video file.',metadataFailed:'Some video details could not be read, but compression can still be attempted.',h264:'H.264: best compatibility and practical speed',resultReduction:'{value}% smaller',resultIncrease:'{value}% larger',noAudio:'Removed',keep:'Keep',original:'Original',less:'smaller',larger:'larger',recommendedHint:'Recommended {recommended} kbps · range {min}–{max} kbps'}
     };
     Object.assign(I18N.ja,{outputFileName:'保存ファイル名',outputFileNameHint:'拡張子は選んだ形式に合わせて自動で付きます',mobileVideo:'動画',mobileSettings:'設定',mobileEstimate:'見積',mobileCompress:'圧縮',appTagline:'ブラウザだけで動画を圧縮',heroCopy:'動画を選ぶと、内容に合わせたおすすめ設定を自動で提案します。',autoConfigured:'自動設定',processingTime:'処理時間',resetConfirmTitle:'別の動画を圧縮しますか？',resetConfirmCopy:'現在の圧縮結果は画面から消えます。必要であれば先に保存してください。',back:'戻る',continueReset:'別の動画を選ぶ',estimatedReduction:'約 {value}% 小さくなる見込み',estimatedIncrease:'約 {value}% 大きくなる見込み',infoDialogDefault:'設定の説明',infoResolutionTitle:'解像度',infoResolutionCopy:'動画の縦横の細かさです。容量を大きく減らしたい場合は、まず解像度を下げるのが効果的です。縦横比は維持し、元動画より大きくはしません。SNS共有なら720p、PCやテレビでも見るなら1080pが目安です。',infoCodecTitle:'コーデック',infoCodecCopy:'H.264 / MP4は互換性と処理速度を優先するとき、VP9 / WebMは処理時間より容量を小さくしたいときに向いています。VP9は同程度の見た目なら低いビットレートを狙いやすい一方、圧縮にはより時間がかかります。',infoBitrateTitle:'映像ビットレート',infoBitrateCopy:'1秒あたりに映像へ使うデータ量です。低くすると容量は小さくなりますが、動きの多い場面で画質が崩れやすくなります。迷った場合は「おすすめに戻す」を使ってください。',infoRemoveAudioTitle:'オーディオを削除',infoRemoveAudioCopy:'動画から音声を完全に取り除きます。画面録画や無音素材など、音が不要な場合に容量を減らせます。後から音声を戻すことはできません。',infoFpsTitle:'出力フレームレート',infoFpsCopy:'1秒あたりのコマ数です。60fpsを30fpsにすると容量と処理負荷を減らせます。一般的な動画は30fps、映画風の映像は24fpsが目安です。元のままなら不要な変換を避けられます。',infoSpeedTitle:'圧縮速度',infoSpeedCopy:'圧縮にかける時間と効率のバランスです。同じビットレートでも時間をかけるほど画質が安定します。ブラウザ処理では「速い・おすすめ」が使いやすく、高圧縮は短い動画向けです。',infoAudioBitrateTitle:'音声ビットレート',infoAudioBitrateCopy:'音声に使う1秒あたりのデータ量です。会話中心なら64〜96kbps、音楽を含むなら128kbps以上が目安です。動画全体に対する容量の影響は映像より小さめです。',elapsed:'経過 {time}',wasmCspFailed:'WebAssemblyの実行がCSPで拒否されました。最新のHTMLを開き直し、古いキャッシュが残っている場合は再読み込みしてください。'});
     Object.assign(I18N.en,{outputFileName:'Output file name',outputFileNameHint:'The extension is added automatically for the selected format',mobileVideo:'Video',mobileSettings:'Settings',mobileEstimate:'Estimate',mobileCompress:'Compress',appTagline:'Compress video entirely in your browser',heroCopy:'Choose a video and the app automatically suggests settings suited to its content.',autoConfigured:'Auto configured',processingTime:'Processing time',resetConfirmTitle:'Compress another video?',resetConfirmCopy:'The current result will be removed from this page. Save it first if you still need it.',back:'Back',continueReset:'Choose another video',estimatedReduction:'Estimated {value}% smaller',estimatedIncrease:'Estimated {value}% larger',infoDialogDefault:'Setting details',infoResolutionTitle:'Resolution',infoResolutionCopy:'Resolution controls image detail. Lowering it is usually the most effective way to reduce file size. The aspect ratio is preserved and the video is never upscaled. 720p suits casual sharing; 1080p is a good default for larger screens.',infoCodecTitle:'Codec',infoCodecCopy:'Choose H.264 / MP4 for broad compatibility and practical speed, or VP9 / WebM when smaller files matter more than encoding time. VP9 can usually target a lower bitrate for similar visual quality, but takes longer to encode.',infoBitrateTitle:'Video bitrate',infoBitrateCopy:'This is the amount of video data used per second. Lower values produce smaller files but can cause visible artifacts in fast motion. Use “Use recommended” whenever you are unsure.',infoRemoveAudioTitle:'Remove audio',infoRemoveAudioCopy:'Removes the audio track completely. This is useful for silent screen recordings or visual-only clips. Audio cannot be restored from the compressed output.',infoFpsTitle:'Output frame rate',infoFpsCopy:'Frames per second. Changing 60 fps to 30 fps reduces size and processing load. 30 fps suits most video, while 24 fps gives a film-like cadence. Keeping the original avoids unnecessary conversion.',infoSpeedTitle:'Encoding speed',infoSpeedCopy:'Balances processing time against compression efficiency. Slower settings can preserve quality more consistently at the same bitrate. “Fast · recommended” is practical in a browser; higher compression is best for shorter clips.',infoAudioBitrateTitle:'Audio bitrate',infoAudioBitrateCopy:'Audio data used per second. 64–96 kbps is usually enough for speech; use 128 kbps or more when music matters. Audio normally contributes much less to total size than video.',elapsed:'Elapsed {time}',wasmCspFailed:'WebAssembly was blocked by CSP. Reopen the latest HTML and reload if an older cached copy remains.'});
@@ -209,11 +337,52 @@
     Object.assign(I18N.ja,{sourceUnreadable:'元動画を読み込めませんでした。動画を端末内に保存してから、もう一度選択してください。',analysisSkipped:'未解析',settingsSub:'おすすめ値を設定します。解析中でも圧縮できます。'});
     Object.assign(I18N.en,{sourceUnreadable:'The source video could not be read. Save it to your device, then select it again.',analysisSkipped:'Not measured',settingsSub:'Suggested settings are ready before analysis finishes.'});
 
+    Object.assign(I18N.ja,{
+      runtimeBlocked:'この環境では高速版を使えません。標準版で動画を選んでください。',openPortable:'標準版で開く',
+      emptyFile:'この動画は空です。別の動画を選んでください。',failedTitle:'圧縮できませんでした',
+      editSettings:'圧縮設定を変更',recompress:'この設定で再圧縮',noAudioTrack:'元動画に音声なし',
+      targetLabel:'目標ファイルサイズ（任意）',targetOptional:'添付上限などを入力すると、映像ビットレートを自動調整します。',
+      targetActive:'目標に合わせて映像ビットレートを設定しました。実際の容量は圧縮後に確認できます。',
+      targetBitrateHint:'目標ファイルサイズに合わせて自動設定。手動で調整するには目標を空欄にしてください。',
+      targetInvalid:'0より大きい容量をMBで入力してください。',targetWaiting:'動画の長さが分かると、目標容量から計算できます。',
+      targetTooSmall:'最低ビットレートでも目標を超えます。容量を増やすか、目標を空欄にしてください。',
+      targetUnder:'目標 {limit} MB以内（残り {diff}）',targetOver:'目標 {limit} MBを {diff} 超過'
+    });
+    Object.assign(I18N.en,{
+      runtimeBlocked:'The fast version is unavailable here. Open the standard version to choose your video.',openPortable:'Open standard version',
+      emptyFile:'This video is empty. Choose another video.',failedTitle:'Compression failed',
+      editSettings:'Edit settings',recompress:'Recompress with these settings',noAudioTrack:'No audio track',
+      targetLabel:'Target file size (optional)',targetOptional:'Enter a size limit to set the video bitrate automatically.',
+      targetActive:'Video bitrate is set for this limit. Check the actual size after compression.',
+      targetBitrateHint:'Set by the target file size. Clear the target to adjust the bitrate manually.',
+      targetInvalid:'Enter a size greater than zero in MB.',targetWaiting:'The video duration is needed to calculate a bitrate for this limit.',
+      targetTooSmall:'Even the lowest bitrate exceeds this limit. Increase it or clear the target.',
+      targetUnder:'Target {limit} MB · {diff} to spare',targetOver:'Target {limit} MB · {diff} over'
+    });
+
+    Object.assign(I18N.ja,{
+      previewHeading:'プレビュー',sourceViewLabel:'元動画',resultViewLabel:'圧縮後',chooseVideo:'動画を選ぶ',dropHint:'または、ここにドロップ',
+      exportHeading:'書き出し',fineSettings:'詳細設定',mobileEstimate:'容量',renameResult:'名前を変更',targetLabel:'目標ファイルサイズ',sizePlaceholder:'指定なし',clearTarget:'解除',
+      codec:'出力形式',codecH264:'MP4（H.264）',codecVp9:'WebM（VP9）',estimatedSize:'圧縮後の目安',streamDetails:'動画の詳細',
+      targetOptional:'空欄なら、動画に合わせて自動で設定します。',targetActive:'実際の容量は圧縮後に確認できます。',targetWaiting:'動画の長さを読み取ると計算できます。',
+      fileFallback:'ファイルから選ぶ',compress:'圧縮する',recompress:'この設定で再圧縮',editSettings:'設定を変更',
+      h264:'多くの端末で再生できます。',vp9:'容量を抑えたいときに。MP4より時間がかかります。',
+      helpStep2:'必要に応じて目標ファイルサイズを選びます。',helpStep3:'「圧縮する」を押します。'
+    });
+    Object.assign(I18N.en,{
+      previewHeading:'Preview',sourceViewLabel:'Original',resultViewLabel:'Compressed',chooseVideo:'Choose video',dropHint:'or drop it here',
+      exportHeading:'Export',fineSettings:'Advanced settings',mobileEstimate:'Size',targetLabel:'Target file size',sizePlaceholder:'No limit',clearTarget:'Clear',
+      codec:'Output format',codecH264:'MP4 (H.264)',codecVp9:'WebM (VP9)',estimatedSize:'Estimated size',streamDetails:'Video details',
+      targetOptional:'Leave blank to use the recommended bitrate.',targetActive:'The final size is shown after compression.',targetWaiting:'The bitrate can be calculated once the duration is available.',
+      fileFallback:'Browse files',compress:'Compress video',recompress:'Compress again',editSettings:'Edit settings',
+      h264:'Plays on most devices.',vp9:'Smaller files, with a longer encode time.',
+      helpStep2:'Choose a target file size if you have a limit.',helpStep3:'Select “Compress video.”'
+    });
     const $=id=>document.getElementById(id);
-    const ids=['languageButton','languageLabel','helpButton','helpDialog','helpCloseButton','fileInput','dropZone','filePanel','sourcePreview','fileName','fileFormat','fileSize','fileDuration','fileResolution','fileBitrate','bitrateNote','fileFps','fpsNote','fileType','changeFileButton','clearFileButton','resolutionSelect','codecSelect','codecHint','bitrateRange','bitrateInput','bitrateHint','recommendButton','removeAudio','outputNameInput','outputExtension','fpsSelect','speedSelect','audioBitrateSelect','progressCard','progressTitle','progressStage','progressElapsed','progressPercent','progressFill','progressDetail','logBox','cancelButton','resultCard','resultPreview','resultOriginalSize','resultOutputSize','resultSavings','resultElapsed','resultName','renameButton','renameDialog','renameInput','renameExtension','renameForm','renameCloseButton','renameCancelButton','renameApplyButton','downloadButton','shareButton','resetButton','estimateSize','estimateCopy','estimateSavings','originalBar','estimateBar','originalBarSize','estimateBarSize','summaryResolution','summaryCodec','summaryAudio','summaryFps','compressButton','settingInfoDialog','settingInfoTitle','settingInfoCopy','settingInfoCloseButton','resetConfirmDialog','resetConfirmCloseButton','resetConfirmCancelButton','resetConfirmButton','toastRegion','versionText','versionBadge','ffmpegVersionText','ffmpegSourceLink','fileCard','settingsCard','estimateCard','mobileBar','mobileFileButton','mobileSettingsButton','mobileEstimateButton','mobileCompressButton'];
+    const ids=['runtimeAdvice','runtimeInfo','sourceView','viewSwitch','sourceToggle','resultToggle','settingsDetails','clearTargetButton','portableLink','targetSizeInput','targetHint','resultTarget','editSettingsButton','chooseAfterError','mobilePrimaryIcon','mobilePrimaryLabel','compressLabel','removeAudioHint','languageButton','languageLabel','helpButton','helpDialog','helpCloseButton','fileInput','dropZone','filePanel','sourcePreview','fileName','fileFormat','fileSize','fileDuration','fileResolution','fileBitrate','bitrateNote','fileFps','fpsNote','fileType','changeFileButton','clearFileButton','resolutionSelect','codecSelect','codecHint','bitrateRange','bitrateInput','bitrateHint','recommendButton','removeAudio','outputNameInput','outputExtension','fpsSelect','speedSelect','audioBitrateSelect','progressCard','progressTitle','progressStage','progressElapsed','progressPercent','progressFill','progressDetail','logBox','cancelButton','resultCard','resultPreview','resultOriginalSize','resultOutputSize','resultSavings','resultElapsed','resultName','renameButton','renameDialog','renameInput','renameExtension','renameForm','renameCloseButton','renameCancelButton','renameApplyButton','downloadButton','shareButton','resetButton','estimateSize','estimateCopy','estimateSavings','originalBarSize','compressButton','settingInfoDialog','settingInfoTitle','settingInfoCopy','settingInfoCloseButton','resetConfirmDialog','resetConfirmCloseButton','resetConfirmCancelButton','resetConfirmButton','toastRegion','versionText','versionBadge','ffmpegVersionText','ffmpegSourceLink','fileCard','settingsCard','estimateCard','mobileBar','mobileFileButton','mobileSettingsButton','mobileEstimateButton','mobileCompressButton'];
     const els=Object.fromEntries(ids.map(id=>[id,$(id)]));
     const storage={get(key){try{return localStorage.getItem(key);}catch{return null;}},set(key,value){try{localStorage.setItem(key,value);}catch{}}};
-    const state={language:storage.get('lvc-language')||(navigator.language?.toLowerCase().startsWith('ja')?'ja':'en'),file:null,inputBytes:null,compressReady:false,inspectionSkipped:false,sourceUrl:null,source:{duration:NaN,width:0,height:0,bitrate:NaN,fps:NaN,rotation:0,bitrateMeasured:false},outputBlob:null,outputFile:null,outputUrl:null,renameTargetFile:null,worker:null,workerUrl:null,rpcId:0,pending:new Map(),processing:false,cancelRequested:false,userChangedBitrate:false,logs:[],progressStartedAt:0,progressTimer:null,lastInfoKey:null,outputReduction:NaN,lastProgressRatio:0,fileGeneration:0,inspecting:false,operation:null};
+    const state={language:storage.get('lvc-language')||(navigator.language?.toLowerCase().startsWith('ja')?'ja':'en'),file:null,inputBytes:null,compressReady:false,inspectionSkipped:false,sourceUrl:null,source:{duration:NaN,width:0,height:0,bitrate:NaN,fps:NaN,rotation:0,bitrateMeasured:false,hasAudio:null},outputTargetBytes:null,failureKey:null,outputBlob:null,outputFile:null,outputUrl:null,renameTargetFile:null,worker:null,workerUrl:null,rpcId:0,pending:new Map(),processing:false,cancelRequested:false,userChangedBitrate:false,userChangedResolution:false,userChangedFps:false,logs:[],progressStartedAt:0,progressTimer:null,lastInfoKey:null,outputReduction:NaN,lastProgressRatio:0,fileGeneration:0,inspecting:false,operation:null};
     const t=key=>I18N[state.language]?.[key]??key;
     // Small selections are captured immediately: later reads need no access to an ephemeral File.
     // Larger videos retain WORKERFS to avoid copying the full input into WASM memory.
@@ -224,7 +393,7 @@
       catch(error){console.warn('Source snapshot unavailable; falling back to WORKERFS.',error);return null;}
     }
     const locale=()=>state.language==='ja'?'ja-JP':'en-US';
-    const formatBytes=bytes=>{if(!Number.isFinite(bytes))return'—';const units=['B','KB','MB','GB'];let value=bytes,i=0;while(value>=1024&&i<units.length-1){value/=1024;i++;}return`${value.toLocaleString(locale(),{maximumFractionDigits:i<2?0:2})} ${units[i]}`;};
+    const formatBytes=bytes=>{if(!Number.isFinite(bytes))return'—';const units=['B','KB','MB','GB'];let value=bytes,i=0;while(value>=1000&&i<units.length-1){value/=1000;i++;}return`${value.toLocaleString(locale(),{maximumFractionDigits:i<2?0:2})} ${units[i]}`;};
     const formatDuration=seconds=>{if(!Number.isFinite(seconds))return'—';const s=Math.round(seconds),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),r=s%60;return h?`${h}:${String(m).padStart(2,'0')}:${String(r).padStart(2,'0')}`:`${m}:${String(r).padStart(2,'0')}`;};
     const extensionOf=name=>(name.split('.').pop()||'mp4').toLowerCase().replace(/[^a-z0-9]/g,'')||'mp4';
     const safeBaseName=name=>(name.replace(/\.[^.]+$/,'').replace(/[\\/:*?"<>|]+/g,'-').trim()||'video');
@@ -255,11 +424,60 @@
       closeResultRename();
     }
     function updateOutputExtension(){els.outputExtension.textContent=`.${codecInfo().ext}`;}
-    function setCompressDisabled(disabled){els.compressButton.disabled=disabled;els.mobileCompressButton.disabled=disabled;}
+    function syncActions(target=targetBudget()){
+      const hasResult=Boolean(state.outputFile);
+      const canCompress=state.compressReady&&!state.processing&&!target.error;
+      els.compressButton.disabled=!canCompress;
+      els.mobileCompressButton.disabled=!hasResult&&!canCompress;
+      els.mobilePrimaryLabel.textContent=t(hasResult?'download':'mobileCompress');
+      els.mobilePrimaryIcon.setAttribute('d',hasResult?'M12 3v12m0 0 5-5m-5 5-5-5 M4 16v4h16v-4':'M4 7h16M7 4v6M17 4v6M6 13h12v7H6z M9 16h6');
+      els.compressLabel.textContent=t(hasResult?'recompress':'compress');
+      for(const preset of sizePresets){
+        preset.disabled=state.processing;
+        preset.setAttribute('aria-pressed',String(Number(els.targetSizeInput.value)===Number(preset.dataset.size)));
+      }
+      els.clearTargetButton.hidden=els.targetSizeInput.value===''&&!els.targetSizeInput.validity?.badInput;
+      els.clearTargetButton.disabled=state.processing;
+      els.editSettingsButton.disabled=state.processing;
+      els.renameButton.disabled=!hasResult||state.processing;
+      els.resetButton.disabled=state.processing;
+    }
+    const sizePresets=document.querySelectorAll('[data-size]');
+    function showPreview(result){
+      const showResult=Boolean(result&&state.outputFile);
+      if(showResult!==els.sourceView.hidden){
+        (showResult?els.sourcePreview:els.resultPreview).pause();
+      }
+      els.sourceView.hidden=showResult;
+      els.resultCard.hidden=!showResult;
+      els.viewSwitch.hidden=!state.outputFile;
+      els.resultToggle.disabled=!state.outputFile;
+      els.sourceToggle.setAttribute('aria-pressed',String(!showResult));
+      els.resultToggle.setAttribute('aria-pressed',String(showResult));
+    }
+    function openSettings(){
+      els.settingsDetails.open=true;
+      scrollMobile(els.settingsCard,els.mobileSettingsButton);
+    }
     function setMobileActive(button){[els.mobileFileButton,els.mobileSettingsButton,els.mobileEstimateButton].forEach(item=>item.classList.toggle('active',item===button));}
     function scrollMobile(target,button){setMobileActive(button);const header=document.querySelector('.app-header'),offset=(header?.getBoundingClientRect().height||0)+12,top=Math.max(0,window.scrollY+target.getBoundingClientRect().top-offset);window.scrollTo({top,behavior:'smooth'});}
     const round50=value=>Math.max(250,Math.round(value/50)*50);
-    function applyLanguage(){document.getElementById('runtimeNotice').textContent=runtimeAllowed()?t(RUNTIME_VARIANT==='multi-thread'?'runtimeMt':'runtimeSt'):t('runtimeBlocked');els.renameCloseButton.setAttribute('aria-label',t('cancel'));document.documentElement.lang=state.language;document.querySelectorAll('[data-i18n]').forEach(el=>{const value=t(el.dataset.i18n);if(value!==el.dataset.i18n)el.textContent=value;});els.languageLabel.textContent=state.language==='ja'?'EN':'JA';els.languageButton.setAttribute('aria-label',state.language==='ja'?'英語に切り替え':'Switch to Japanese');els.languageButton.title=els.languageButton.getAttribute('aria-label');els.helpButton.setAttribute('aria-label',t('help'));els.helpButton.title=t('help');document.querySelectorAll('[data-setting-info]').forEach(button=>button.setAttribute('aria-label',`${t(`info${button.dataset.settingInfo[0].toUpperCase()+button.dataset.settingInfo.slice(1)}Title`)}: ${t('help')}`));if(state.lastInfoKey&&els.settingInfoDialog.open)showSettingInfo(state.lastInfoKey);updateCodecHint();updateOutputExtension();updateBitrateLimits(true,true);updateEstimate();updateFileInfo();renderResultSavings();}
+    function applyLanguage(){document.getElementById('runtimeNotice').textContent=runtimeAllowed()?t(RUNTIME_VARIANT==='multi-thread'?'runtimeMt':'runtimeSt'):t('runtimeBlocked');els.portableLink.hidden=runtimeAllowed();
+      els.runtimeAdvice.hidden=runtimeAllowed();
+      els.runtimeInfo.textContent=t(RUNTIME_VARIANT==='multi-thread'?'runtimeMt':'runtimeSt');
+      els.targetSizeInput.placeholder=t('sizePlaceholder');
+      if(!els.portableLink.hidden){
+        const location=window.location;
+        const pathname=location?.pathname||'';
+        if(/\/mt\/(?:index\.html)?$/i.test(pathname)){
+          els.portableLink.href='../';
+        }else if(/\.mt(?:\.self-extract)?\.html$/i.test(pathname)){
+          els.portableLink.href=pathname.split('/').pop().replace(/\.mt\./i,'.');
+        }else{
+          els.portableLink.href=APP_CONFIG.standardVersionUrl||'../';
+        }
+      }
+      els.renameCloseButton.setAttribute('aria-label',t('cancel'));document.documentElement.lang=state.language;document.querySelectorAll('[data-i18n]').forEach(el=>{const value=t(el.dataset.i18n);if(value!==el.dataset.i18n)el.textContent=value;});els.languageLabel.textContent=state.language==='ja'?'EN':'JA';els.languageButton.setAttribute('aria-label',state.language==='ja'?'英語に切り替え':'Switch to Japanese');els.languageButton.title=els.languageButton.getAttribute('aria-label');els.helpButton.setAttribute('aria-label',t('help'));els.helpButton.title=t('help');document.querySelectorAll('[data-setting-info]').forEach(button=>button.setAttribute('aria-label',`${t(`info${button.dataset.settingInfo[0].toUpperCase()+button.dataset.settingInfo.slice(1)}Title`)}: ${t('help')}`));if(state.lastInfoKey&&els.settingInfoDialog.open)showSettingInfo(state.lastInfoKey);updateCodecHint();updateOutputExtension();updateBitrateLimits(true,true);updateEstimate();updateFileInfo();renderResultSavings();renderResultTarget();if(state.failureKey)renderFailure();}
     function toast(message,type=''){const el=document.createElement('div');el.className=`toast ${type}`;el.textContent=message;els.toastRegion.append(el);setTimeout(()=>el.remove(),4200);}
     function codecInfo(){return els.codecSelect.value==='vp9'?{id:'vp9',label:'WebM / VP9',ext:'webm',mime:'video/webm',audio:'Opus'}:{id:'h264',label:'MP4 / H.264',ext:'mp4',mime:'video/mp4',audio:'AAC'};}
     function targetDimensions(){if(!state.source.width||!state.source.height)return null;const limit=els.resolutionSelect.value==='original'?Math.max(state.source.width,state.source.height):Number(els.resolutionSelect.value);const longest=Math.max(state.source.width,state.source.height);const scale=Math.min(1,limit/longest);let width=Math.max(2,Math.round(state.source.width*scale/2)*2),height=Math.max(2,Math.round(state.source.height*scale/2)*2);return{width,height};}
@@ -268,13 +486,76 @@
     function baseBitrateForDimensions(){const dims=targetDimensions();if(!dims)return 3200;const pixels=dims.width*dims.height;let value=pixels<=640*360?550:pixels<=854*480?900:pixels<=1280*720?1800:pixels<=1920*1080?3200:pixels<=2560*1440?6000:10000;const fps=effectiveFps();if(fps>45)value*=1.45;else if(fps<27)value*=.88;return value;}
     function recommendedBitrate(){const vp9=codecInfo().id==='vp9',efficiency=vp9?.72:1,sourceFactor=vp9?.70:.88;let value=baseBitrateForDimensions()*efficiency;if(Number.isFinite(state.source.bitrate)&&state.source.bitrate>0)value=Math.min(value,Math.max(250,state.source.bitrate*sourceFactor));return round50(Math.max(250,value));}
     function bitrateMaximum(){const dims=targetDimensions(),pixels=dims?dims.width*dims.height:1920*1080;let max=pixels<=640*360?1200:pixels<=854*480?2000:pixels<=1280*720?4000:pixels<=1920*1080?8000:pixels<=2560*1440?12000:18000;max=Math.max(max,recommendedBitrate()*1.5,Number.isFinite(state.source.bitrate)?state.source.bitrate*1.15:0);return Math.ceil(max/500)*500;}
-    function updateBitrateLimits(keepValue=true,preserveCurrent=false){const min=50,max=bitrateMaximum(),recommended=recommendedBitrate(),current=Number(els.bitrateInput.value);els.bitrateRange.min=min;els.bitrateRange.max=max;els.bitrateInput.min=min;els.bitrateInput.max=max;if(preserveCurrent&&Number.isFinite(current))setBitrate(current,false);else if(!keepValue||!state.userChangedBitrate)setBitrate(recommended,false);else setBitrate(Number.isFinite(current)?current:recommended,false);els.bitrateHint.textContent=t('recommendedHint').replace('{recommended}',recommended.toLocaleString(locale())).replace('{min}',min.toLocaleString(locale())).replace('{max}',max.toLocaleString(locale()));}
+    const SIZE_OVERHEAD=1.035;
+    function audioBudgetKbps(){
+      return state.source.hasAudio===false||els.removeAudio.checked?0:Number(els.audioBitrateSelect.value)||0;
+    }
+    function targetBudget(){
+      const input=els.targetSizeInput;
+      if(input.validity?.badInput)return {error:'targetInvalid'};
+      if(input.value==='')return {};
+      const bytes=Math.floor(Number(input.value)*1e6);
+      if(!Number.isSafeInteger(bytes)||bytes<=0)return {error:'targetInvalid'};
+      if(!(state.source.duration>0&&Number.isFinite(state.source.duration)))return {bytes,error:'targetWaiting'};
+      const bitrate=Math.floor(bytes*8/(state.source.duration*1000*SIZE_OVERHEAD)-audioBudgetKbps());
+      return bitrate<50?{bytes,bitrate:50,error:'targetTooSmall'}:{bytes,bitrate};
+    }
+    function renderResultTarget(){
+      const limit=state.outputTargetBytes;
+      els.resultTarget.hidden=!limit||!state.outputFile;
+      if(els.resultTarget.hidden)return;
+      const difference=limit-state.outputFile.size;
+      els.resultTarget.classList.toggle('target-over',difference<0);
+      els.resultTarget.textContent=t(difference<0?'targetOver':'targetUnder')
+        .replace('{limit}',(limit/1e6).toLocaleString(locale(),{maximumFractionDigits:6}))
+        .replace('{diff}',formatBytes(Math.abs(difference)));
+    }
+    function updateBitrateLimits(keepValue=true,preserveCurrent=false){
+      const min=50,max=bitrateMaximum(),recommended=recommendedBitrate();
+      els.bitrateRange.min=els.bitrateInput.min=min;
+      els.bitrateRange.max=els.bitrateInput.max=max;
+      const target=targetBudget();
+      const current=Number(els.bitrateInput.value);
+      let next=recommended;
+      if(target.bitrate!==undefined)next=Math.min(target.bitrate,recommended);
+      else if(Number.isFinite(current)&&(preserveCurrent||(keepValue&&state.userChangedBitrate)))next=current;
+      setBitrate(next);
+      els.bitrateHint.textContent=target.bytes||target.error?t('targetBitrateHint'):t('recommendedHint')
+        .replace('{recommended}',recommended.toLocaleString(locale()))
+        .replace('{min}',min.toLocaleString(locale())).replace('{max}',max.toLocaleString(locale()));
+    }
     function setBitrate(value,markUser=false){const min=Number(els.bitrateRange.min)||50,max=Number(els.bitrateRange.max)||8000,v=Math.round(Math.max(min,Math.min(max,Number(value)||min)));els.bitrateRange.value=v;els.bitrateInput.value=v;if(markUser)state.userChangedBitrate=true;updateEstimate();}
     function updateCodecHint(){els.codecHint.textContent=t(codecInfo().id==='vp9'?'vp9':'h264');}
     function setControlsDisabled(disabled){document.querySelectorAll('input,select,button.recommend-btn').forEach(el=>el.disabled=disabled);}
     function renderResultSavings(){const reduction=state.outputReduction;if(!Number.isFinite(reduction)){els.resultSavings.textContent='—';return;}els.resultSavings.textContent=t(reduction>=0?'resultReduction':'resultIncrease').replace('{value}',Math.abs(reduction).toFixed(1));els.resultSavings.classList.toggle('savings',reduction>=0);els.resultSavings.classList.toggle('increase',reduction<0);}
     function updateFileInfo(){if(!state.file)return;els.fileSize.textContent=formatBytes(state.file.size);els.fileDuration.textContent=formatDuration(state.source.duration);els.fileResolution.textContent=state.source.width&&state.source.height?`${state.source.width} × ${state.source.height}`:'—';els.fileBitrate.textContent=Number.isFinite(state.source.bitrate)?`${Math.round(state.source.bitrate).toLocaleString(locale())} kbps`:'—';els.bitrateNote.textContent=state.inspecting?t('analyzing'):(state.source.bitrateMeasured?t('measured'):(state.inspectionSkipped?t('analysisSkipped'):t('unavailable')));els.fileFps.textContent=Number.isFinite(state.source.fps)?`${state.source.fps.toFixed(state.source.fps>=50?0:1)} fps`:'—';els.fpsNote.textContent=Number.isFinite(state.source.fps)?t('measured'):t('unavailable');const ext=extensionOf(state.file.name);els.fileFormat.textContent=ext;els.fileType.textContent=state.file.type||ext.toUpperCase();}
-    function updateEstimate(){const info=codecInfo(),dims=targetDimensions(),videoKbps=Number(els.bitrateInput.value)||0,audioKbps=els.removeAudio.checked?0:Number(els.audioBitrateSelect.value)||0;els.summaryCodec.textContent=info.label;els.summaryAudio.textContent=els.removeAudio.checked?t('noAudio'):`${audioKbps} kbps`;els.summaryResolution.textContent=dims?`${dims.width} × ${dims.height}`:'—';els.summaryFps.textContent=els.fpsSelect.value==='original'?t('original'):`${els.fpsSelect.value} fps`;if(!state.file){els.estimateSize.textContent='—';els.estimateCopy.textContent=t('estimateBeforeFile');els.estimateSavings.textContent='—';els.estimateSavings.classList.remove('increase');els.originalBarSize.textContent='—';els.estimateBarSize.textContent='—';els.estimateBar.style.width='0%';return;}els.originalBarSize.textContent=formatBytes(state.file.size);if(!Number.isFinite(state.source.duration)||state.source.duration<=0){els.estimateSize.textContent='—';els.estimateCopy.textContent=t('unknownDuration');els.estimateSavings.textContent='—';els.estimateSavings.classList.remove('increase');els.estimateBarSize.textContent='—';els.estimateBar.style.width='0%';return;}const estimate=state.source.duration*(videoKbps+audioKbps)*1000/8*1.035;els.estimateSize.textContent=formatBytes(estimate);els.estimateBarSize.textContent=formatBytes(estimate);els.estimateCopy.textContent=t('estimateNote');const change=(1-estimate/state.file.size)*100;els.estimateSavings.textContent=t(change>=0?'estimatedReduction':'estimatedIncrease').replace('{value}',Math.abs(change).toFixed(0));els.estimateSavings.classList.toggle('increase',change<0);els.estimateBar.style.width=`${Math.min(100,Math.max(3,estimate/state.file.size*100))}%`;}
+    function updateEstimate(){const videoKbps=Number(els.bitrateInput.value)||0,audioKbps=audioBudgetKbps();
+      const target=targetBudget(),autoBitrate=Boolean(target.bytes||target.error),silent=state.source.hasAudio===false;
+      els.targetHint.textContent=t(target.error||(autoBitrate?'targetActive':'targetOptional'));
+      els.targetHint.classList.toggle('target-warning',target.error==='targetInvalid'||target.error==='targetTooSmall');
+      els.targetSizeInput.setAttribute('aria-invalid',String(target.error==='targetInvalid'||target.error==='targetTooSmall'));
+      els.bitrateInput.disabled=els.bitrateRange.disabled=els.recommendButton.disabled=state.processing||autoBitrate;
+      els.removeAudio.disabled=state.processing||silent;
+      els.audioBitrateSelect.disabled=state.processing||silent||els.removeAudio.checked;
+      els.removeAudioHint.textContent=t(silent?'noAudioTrack':'removeAudioHint');
+      syncActions(target);
+      els.originalBarSize.textContent=state.file?formatBytes(state.file.size):'—';
+      if(!state.file||!Number.isFinite(state.source.duration)||state.source.duration<=0){
+        els.estimateSize.textContent=els.estimateSavings.textContent='—';
+        els.estimateCopy.textContent=t(state.file?'unknownDuration':'estimateBeforeFile');
+        els.estimateSavings.classList.remove('increase');
+
+        return;
+      }
+      const estimate=state.source.duration*(videoKbps+audioKbps)*1000/8*SIZE_OVERHEAD;
+      const ratio=estimate/state.file.size;
+      const change=(1-ratio)*100;
+      els.estimateSize.textContent=formatBytes(estimate);
+      els.estimateCopy.textContent='';
+      els.estimateSavings.textContent=t(change>=0?'estimatedReduction':'estimatedIncrease').replace('{value}',Math.abs(change).toFixed(0));
+      els.estimateSavings.classList.toggle('increase',change<0);
+
+    }
     function isCurrentOperation(operation){return state.operation===operation&&state.file===operation.file&&state.fileGeneration===operation.generation;}
     function retireOperation(){const operation=state.operation;state.operation=null;if(operation){for(const cleanup of [...operation.cleanups])cleanup();operation.cleanups.clear();}}
     function beginOperation(file,generation=state.fileGeneration){retireOperation();const operation={file,generation,cleanups:new Set(),disposeWorker:null};state.operation=operation;return operation;}
@@ -295,19 +576,21 @@
       });
     }
     function releaseSource(){if(state.sourceUrl){URL.revokeObjectURL(state.sourceUrl);state.sourceUrl=null;}els.sourcePreview.removeAttribute('src');els.sourcePreview.load();}
-    function releaseOutput(){closeResultRename();els.renameButton.disabled=true;document.body.classList.remove('has-output');if(state.outputUrl){URL.revokeObjectURL(state.outputUrl);state.outputUrl=null;}state.outputBlob=null;state.outputFile=null;state.outputReduction=NaN;els.resultPreview.removeAttribute('src');els.resultPreview.load();els.resultCard.classList.remove('is-visible');}
-    function clearFile(){if(state.processing)return;state.fileGeneration++;retireOperation();releaseSource();releaseOutput();document.body.classList.remove('has-file','has-output','is-processing');state.file=null;state.inputBytes=null;state.compressReady=false;state.inspectionSkipped=false;state.source={duration:NaN,width:0,height:0,bitrate:NaN,fps:NaN,rotation:0,bitrateMeasured:false};state.inspecting=false;state.userChangedBitrate=false;els.fileInput.value='';els.outputNameInput.value='';els.dropZone.hidden=false;els.filePanel.classList.remove('is-visible');setCompressDisabled(true);els.resolutionSelect.value='1920';els.fpsSelect.value='original';els.speedSelect.value='fast';els.codecSelect.value='h264';updateOutputExtension();updateCodecHint();updateBitrateLimits(false);updateEstimate();}
+    function releaseOutput(){closeResultRename();els.renameButton.disabled=true;document.body.classList.remove('has-output');if(state.outputUrl){URL.revokeObjectURL(state.outputUrl);state.outputUrl=null;}state.outputBlob=null;state.outputFile=null;state.outputTargetBytes=null;state.outputReduction=NaN;els.resultPreview.removeAttribute('src');els.resultPreview.load();els.resultCard.classList.remove('is-visible');showPreview(false);}
+    function clearFile(){if(state.processing)return;state.fileGeneration++;retireOperation();releaseSource();releaseOutput();resetProgress();document.body.classList.remove('has-file','has-output','is-processing');state.file=null;state.inputBytes=null;state.compressReady=false;state.inspectionSkipped=false;state.source={duration:NaN,width:0,height:0,bitrate:NaN,fps:NaN,rotation:0,bitrateMeasured:false,hasAudio:null};state.inspecting=false;state.userChangedBitrate=false;els.targetSizeInput.value='';els.fileInput.value='';els.outputNameInput.value='';els.dropZone.hidden=false;els.filePanel.classList.remove('is-visible');syncActions();els.resolutionSelect.value='1920';els.fpsSelect.value='original';els.speedSelect.value='fast';els.codecSelect.value='h264';updateOutputExtension();updateCodecHint();updateBitrateLimits(false);updateEstimate();}
     async function selectFile(file){
       if(!file||state.processing)return;
       if(!runtimeAllowed()){toast(t('runtimeBlocked'),'error');return;}
       if(!(file.type.startsWith('video/')||/\.(mp4|mov|m4v|webm|mkv|avi|mts|m2ts|ogv)$/i.test(file.name))){toast(t('invalidFile'),'error');return;}
+      if(file.size===0){toast(t('emptyFile'),'error');return;}
       if(file.size>1.5*1024**3){toast(t('fileTooLarge'),'error');return;}
       const generation=++state.fileGeneration;
       const snapshotPromise=snapshotSmallInput(file);
-      const operation=beginOperation(file,generation);releaseSource();releaseOutput();
-      state.file=file;state.inputBytes=null;state.compressReady=false;state.inspectionSkipped=false;state.source={duration:NaN,width:0,height:0,bitrate:NaN,fps:NaN,rotation:0,bitrateMeasured:false};state.inspecting=false;state.userChangedBitrate=false;
+      const operation=beginOperation(file,generation);releaseSource();releaseOutput();resetProgress();
+      state.file=file;state.inputBytes=null;state.compressReady=false;state.inspectionSkipped=false;state.source={duration:NaN,width:0,height:0,bitrate:NaN,fps:NaN,rotation:0,bitrateMeasured:false,hasAudio:null};state.inspecting=false;state.userChangedBitrate=false;
+      state.userChangedResolution=false;state.userChangedFps=false;
       document.body.classList.add('has-file');document.body.classList.remove('has-output');
-      state.sourceUrl=URL.createObjectURL(file);els.sourcePreview.src=state.sourceUrl;els.fileName.textContent=file.name;els.outputNameInput.value=defaultOutputBaseName(file.name);updateOutputExtension();els.dropZone.hidden=true;els.filePanel.classList.add('is-visible');setCompressDisabled(true);setMobileActive(els.mobileSettingsButton);updateFileInfo();
+      state.sourceUrl=URL.createObjectURL(file);els.sourcePreview.src=state.sourceUrl;els.fileName.textContent=file.name;els.outputNameInput.value=defaultOutputBaseName(file.name);updateOutputExtension();els.dropZone.hidden=true;els.filePanel.classList.add('is-visible');syncActions();setMobileActive(els.mobileFileButton);updateFileInfo();
       await new Promise(resolve=>{
         let finished=false;
         const cleanup=()=>{clearTimeout(timeout);els.sourcePreview.removeEventListener('loadedmetadata',ok);els.sourcePreview.removeEventListener('error',bad);operation.cleanups.delete(done);};
@@ -320,9 +603,10 @@
       const inputBytes=await snapshotPromise;
       if(!isCurrentOperation(operation))return;
       state.inputBytes=inputBytes;
-      els.resolutionSelect.value=recommendedResolution();updateFileInfo();updateBitrateLimits(false);updateEstimate();
+      if(!state.userChangedResolution)els.resolutionSelect.value=recommendedResolution();
+      updateFileInfo();updateBitrateLimits(true);updateEstimate();
       // Source metadata and any small-file snapshot are ready; bitrate inspection is optional.
-      state.compressReady=true;setCompressDisabled(false);
+      state.compressReady=true;syncActions();
       await inspectSource(file,generation,operation);
     }
 
@@ -410,8 +694,9 @@
         state.source.rotation=Number(video.rotation)||0;
         const measured=Number(video.bitRateKbps);state.source.bitrate=measured>0?measured:NaN;state.source.bitrateMeasured=measured>0;
         const measuredFps=Number(video.fps);if(measuredFps>0)state.source.fps=measuredFps;
-        els.resolutionSelect.value=recommendedResolution();
-        if(Number.isFinite(state.source.fps)&&state.source.fps>45)els.fpsSelect.value='30';else els.fpsSelect.value='original';
+        state.source.hasAudio=report.audio===null?false:report.audio?true:null;
+        if(!state.userChangedResolution)els.resolutionSelect.value=recommendedResolution();
+        if(!state.userChangedFps)els.fpsSelect.value=state.source.fps>45?'30':'original';
         if(!state.userChangedBitrate)updateBitrateLimits(false);
         else updateBitrateLimits(true,true);
       }catch(error){
@@ -421,17 +706,128 @@
         if(!Number.isFinite(state.source.fps)){const fps=await estimateFrameRate(els.sourcePreview,operation);if(!isCurrentOperation(operation))return;state.source.fps=fps;}
         if(!state.userChangedBitrate)updateBitrateLimits(false);else updateBitrateLimits(true,true);
       }finally{
-        if(isCurrentOperation(operation)){state.inspecting=false;terminateWorker(operation);updateFileInfo();updateEstimate();setCompressDisabled(!state.compressReady||state.processing);}
+        if(isCurrentOperation(operation)){state.inspecting=false;terminateWorker(operation);updateFileInfo();updateEstimate();syncActions();}
       }
     }
     function setProgress(value){state.lastProgressRatio=Math.max(state.lastProgressRatio,Number(value)||0);const pct=Math.round(state.lastProgressRatio*100);els.progressFill.classList.remove('indeterminate');els.progressFill.style.width=`${pct}%`;els.progressPercent.textContent=`${pct}%`;}
     function showProgress(title,sub,indeterminate=false){els.progressCard.classList.add('is-visible');els.progressTitle.textContent=title;els.progressStage.textContent=sub||'';els.progressPercent.textContent=indeterminate?'…':'0%';els.progressFill.classList.toggle('indeterminate',indeterminate);els.progressFill.style.width=indeterminate?'38%':'0%';els.progressDetail.textContent='FFmpeg 9 compact WASM';els.progressCard.scrollIntoView({behavior:'smooth',block:'nearest'});}
     function buildArgs(inputName,outputName){const limit=els.resolutionSelect.value==='original'?0:Number(els.resolutionSelect.value)||0,bitrate=Number(els.bitrateInput.value)||3200,audio=Number(els.audioBitrateSelect.value)||96,fps=els.fpsSelect.value==='original'?0:Number(els.fpsSelect.value)||0,info=codecInfo(),args=['--input',inputName,'--output',outputName,'--codec',info.id,'--speed',els.speedSelect.value,'--max-width',String(limit),'--max-height',String(limit),'--fps',String(fps),'--video-bitrate',String(bitrate),'--audio-bitrate',String(audio)];if(els.removeAudio.checked)args.push('--no-audio');return args;}
-    async function compress(){if(!runtimeAllowed()){toast(t('runtimeBlocked'),'error');return;}if(!state.file||state.processing||!state.compressReady)return;const wasInspecting=state.inspecting;const operation=beginOperation(state.file);if(wasInspecting){state.inspectionSkipped=true;state.inspecting=false;updateFileInfo();}state.processing=true;document.body.classList.add('is-processing');state.cancelRequested=false;state.lastProgressRatio=0;startProgressTimer();releaseOutput();state.logs=[];els.logBox.textContent='';setCompressDisabled(true);setControlsDisabled(true);showProgress(t('engineLoading'),t('engineNote'),true);const info=codecInfo(),inputName=workerInputName(state.file),outputName=`/output.${info.ext}`;try{showProgress(t('readingFile'),formatBytes(state.file.size),true);showProgress(t('compressing'),`${els.bitrateInput.value} kbps · ${info.label}`,false);const outputBuffer=await runCompact(state.file,inputName,outputName,buildArgs(inputName,outputName),operation);if(!isCurrentOperation(operation))return;els.progressTitle.textContent=t('finishing');setProgress(1);state.outputBlob=new Blob([outputBuffer],{type:info.mime});const filename=`${outputBaseName()}.${info.ext}`;state.outputFile=new File([state.outputBlob],filename,{type:info.mime,lastModified:Date.now()});state.outputUrl=URL.createObjectURL(state.outputBlob);els.resultPreview.src=state.outputUrl;els.resultOriginalSize.textContent=formatBytes(state.file.size);els.resultOutputSize.textContent=formatBytes(state.outputBlob.size);state.outputReduction=(1-state.outputBlob.size/state.file.size)*100;renderResultSavings();els.resultName.textContent=filename;els.renameButton.disabled=false;els.resultElapsed.textContent=formatElapsed((performance.now()-state.progressStartedAt)/1000);els.progressCard.classList.remove('is-visible');els.resultCard.classList.add('is-visible');document.body.classList.add('has-output');els.resultCard.scrollIntoView({behavior:'smooth',block:'start'});toast(t('complete'));}catch(error){if(isCurrentOperation(operation)){console.error(error);const message=error?.message||String(error),isWasmCsp=/Content Security Policy|wasm-unsafe-eval|unsafe-eval/i.test(message)&&/WebAssembly|CompileError|instantiate/i.test(message);const isSourceUnreadable=/NotReadableError|requested file could not be read|permission problems after a reference/i.test(message),userMessage=isSourceUnreadable?t('sourceUnreadable'):(isWasmCsp?t('wasmCspFailed'):t('failed'));toast(userMessage,'error');els.progressDetail.textContent=isSourceUnreadable?userMessage:message;state.logs.push(message);if(state.logs.length>200)state.logs.shift();els.logBox.textContent=state.logs.join('\n');}}finally{if(isCurrentOperation(operation)){stopProgressTimer();terminateWorker(operation);state.processing=false;document.body.classList.remove('is-processing');setControlsDisabled(false);setCompressDisabled(!state.compressReady);state.cancelRequested=false;}}}
-    function cancel(){if(!state.processing)return;state.cancelRequested=true;retireOperation();stopProgressTimer();els.progressCard.classList.remove('is-visible');setControlsDisabled(false);setCompressDisabled(!state.compressReady);state.processing=false;document.body.classList.remove('is-processing');toast(t('cancelled'));}
+    function resetProgress(){
+      state.failureKey=null;
+      document.querySelectorAll('#toastRegion .error').forEach(toast=>toast.remove());
+      els.progressCard.classList.remove('has-error','is-visible');
+      els.cancelButton.hidden=false;
+      els.chooseAfterError.hidden=true;
+    }
+    function renderFailure(){
+      els.progressCard.classList.add('is-visible','has-error');
+      els.progressTitle.textContent=t('failedTitle');
+      els.progressStage.textContent='';
+      els.progressDetail.textContent=t(state.failureKey);
+      els.cancelButton.hidden=true;
+      els.chooseAfterError.hidden=false;
+    }
+    function finishProcessing(){
+      stopProgressTimer();
+      state.processing=false;
+      state.cancelRequested=false;
+      document.body.classList.remove('is-processing');
+      setControlsDisabled(false);
+      updateEstimate();
+    }
+    async function compress(){
+      if(!runtimeAllowed()){toast(t('runtimeBlocked'),'error');return;}
+      const target=targetBudget();
+      if(!state.file||state.processing||!state.compressReady||target.error)return;
+      const operation=beginOperation(state.file);
+      if(state.inspecting){state.inspectionSkipped=true;state.inspecting=false;updateFileInfo();}
+      const info=codecInfo(),inputName=workerInputName(state.file),outputName=`/output.${info.ext}`;
+      const filename=`${outputBaseName()}.${info.ext}`;
+      state.processing=true;
+      document.body.classList.add('is-processing');
+      state.lastProgressRatio=0;
+      resetProgress();
+      startProgressTimer();
+      closeResultRename();
+      state.logs=[];
+      els.logBox.textContent='';
+      setControlsDisabled(true);
+      syncActions();
+      showProgress(t('compressing'),`${els.bitrateInput.value} kbps · ${info.label}`,false);
+      try{
+        const outputBuffer=await runCompact(state.file,inputName,outputName,buildArgs(inputName,outputName),operation);
+        if(!isCurrentOperation(operation))return;
+        const blob=new Blob([outputBuffer],{type:info.mime});
+        const file=new File([blob],filename,{type:info.mime,lastModified:Date.now()});
+        const url=URL.createObjectURL(blob);
+        releaseOutput();
+        state.outputBlob=blob;
+        state.outputFile=file;
+        state.outputUrl=url;
+        state.outputTargetBytes=target.bytes??null;
+        els.resultPreview.src=url;
+        els.resultOriginalSize.textContent=formatBytes(state.file.size);
+        els.resultOutputSize.textContent=formatBytes(blob.size);
+        state.outputReduction=(1-blob.size/state.file.size)*100;
+        renderResultSavings();
+        renderResultTarget();
+        els.resultName.textContent=filename;
+        els.resultElapsed.textContent=formatElapsed((performance.now()-state.progressStartedAt)/1000);
+        els.progressCard.classList.remove('is-visible');
+        els.resultCard.classList.add('is-visible');
+        document.body.classList.add('has-output');
+        showPreview(true);
+        els.fileCard.scrollIntoView({behavior:'smooth',block:'start'});
+        els.downloadButton.focus({preventScroll:true});
+        toast(t('complete'));
+      }catch(error){
+        if(!isCurrentOperation(operation))return;
+        console.error(error);
+        const message=error?.message||String(error);
+        const isWasmCsp=/Content Security Policy|wasm-unsafe-eval|unsafe-eval/i.test(message)&&/WebAssembly|CompileError|instantiate/i.test(message);
+        const isSourceUnreadable=/NotReadableError|requested file could not be read|permission problems after a reference/i.test(message);
+        state.failureKey=isSourceUnreadable?'sourceUnreadable':isWasmCsp?'wasmCspFailed':'failed';
+        state.logs.push(message);
+        els.logBox.textContent=state.logs.slice(-200).join('\n');
+        renderFailure();
+        toast(t(state.failureKey),'error');
+      }finally{
+        if(isCurrentOperation(operation)){terminateWorker(operation);finishProcessing();}
+      }
+    }
+    function cancel(){
+      if(!state.processing)return;
+      state.cancelRequested=true;
+      retireOperation();
+      resetProgress();
+      finishProcessing();
+      toast(t('cancelled'));
+    }
     function download(silent=false){if(!state.outputFile)return;const a=document.createElement('a');a.href=state.outputUrl;a.download=state.outputFile.name;document.body.append(a);a.click();a.remove();if(!silent)toast(t('downloaded'));}
     async function share(){if(!state.outputFile)return;try{if(navigator.share&&(!navigator.canShare||navigator.canShare({files:[state.outputFile]}))){await navigator.share({files:[state.outputFile],title:state.outputFile.name});toast(t('shared'));}else{download(true);toast(t('shareUnsupported'));}}catch(error){if(error?.name!=='AbortError')toast(error.message||t('shareUnsupported'),'error');}}
 
+    els.targetSizeInput.addEventListener('input',()=>{
+      state.userChangedBitrate=false;
+      updateBitrateLimits(false);
+    });
+    for(const preset of sizePresets){
+      preset.addEventListener('click',()=>{
+        els.targetSizeInput.value=preset.dataset.size;
+        els.targetSizeInput.dispatchEvent(new Event('input'));
+      });
+    }
+    els.clearTargetButton.addEventListener('click',()=>{
+      els.targetSizeInput.value='';
+      els.targetSizeInput.dispatchEvent(new Event('input'));
+      els.targetSizeInput.focus();
+    });
+    els.sourceToggle.addEventListener('click',()=>showPreview(false));
+    els.resultToggle.addEventListener('click',()=>showPreview(true));
+    els.editSettingsButton.addEventListener('click',()=>{
+      openSettings();
+      els.resolutionSelect.focus({preventScroll:true});
+    });
+    els.chooseAfterError.addEventListener('click',()=>els.fileInput.click());
     els.renameButton.addEventListener('click',openResultRename);
     els.renameForm.addEventListener('submit',event=>{event.preventDefault();applyResultRename();});
     els.renameCancelButton.addEventListener('click',closeResultRename);
@@ -442,9 +838,9 @@
 
     els.languageButton.addEventListener('click',()=>{state.language=state.language==='ja'?'en':'ja';storage.set('lvc-language',state.language);applyLanguage();});
     els.helpButton.addEventListener('click',()=>els.helpDialog.showModal());els.helpCloseButton.addEventListener('click',()=>els.helpDialog.close());els.helpDialog.addEventListener('click',event=>{if(event.target===els.helpDialog)els.helpDialog.close();});document.querySelectorAll('[data-setting-info]').forEach(button=>button.addEventListener('click',()=>showSettingInfo(button.dataset.settingInfo)));els.settingInfoCloseButton.addEventListener('click',()=>els.settingInfoDialog.close());els.settingInfoDialog.addEventListener('click',event=>{if(event.target===els.settingInfoDialog)els.settingInfoDialog.close();});els.resetConfirmCloseButton.addEventListener('click',()=>els.resetConfirmDialog.close());els.resetConfirmCancelButton.addEventListener('click',()=>els.resetConfirmDialog.close());els.resetConfirmDialog.addEventListener('click',event=>{if(event.target===els.resetConfirmDialog)els.resetConfirmDialog.close();});els.resetConfirmButton.addEventListener('click',()=>{els.resetConfirmDialog.close();clearFile();window.scrollTo({top:0,behavior:'smooth'});els.fileInput.click();});
-    els.fileInput.addEventListener('change',event=>selectFile(event.target.files?.[0]));const fileFallbackButton=document.getElementById('fileFallbackButton'),fileFallbackInput=document.getElementById('fileFallbackInput');fileFallbackButton?.addEventListener('click',()=>fileFallbackInput?.click());fileFallbackInput?.addEventListener('change',event=>{selectFile(event.target.files?.[0]);event.target.value='';});els.changeFileButton.addEventListener('click',()=>els.fileInput.click());els.clearFileButton.addEventListener('click',clearFile);els.dropZone.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();els.fileInput.click();}});['dragenter','dragover'].forEach(type=>els.dropZone.addEventListener(type,event=>{event.preventDefault();els.dropZone.classList.add('is-dragging');}));['dragleave','drop'].forEach(type=>els.dropZone.addEventListener(type,event=>{event.preventDefault();els.dropZone.classList.remove('is-dragging');}));els.dropZone.addEventListener('drop',event=>selectFile(event.dataTransfer?.files?.[0]));
-    els.bitrateRange.addEventListener('input',()=>setBitrate(els.bitrateRange.value,true));els.bitrateInput.addEventListener('change',()=>setBitrate(els.bitrateInput.value,true));els.recommendButton.addEventListener('click',()=>{state.userChangedBitrate=false;updateBitrateLimits(false);});els.codecSelect.addEventListener('change',()=>{updateCodecHint();updateOutputExtension();if(!state.userChangedBitrate)updateBitrateLimits(false);else updateBitrateLimits(true,true);updateEstimate();});els.outputNameInput.addEventListener('blur',outputBaseName);els.resolutionSelect.addEventListener('change',()=>{updateBitrateLimits(true);updateEstimate();});els.fpsSelect.addEventListener('change',()=>{updateBitrateLimits(true);updateEstimate();});[els.removeAudio,els.audioBitrateSelect].forEach(el=>el.addEventListener('change',()=>{updateBitrateLimits(true);updateEstimate();}));els.mobileFileButton.addEventListener('click',()=>scrollMobile(els.fileCard,els.mobileFileButton));els.mobileSettingsButton.addEventListener('click',()=>scrollMobile(els.settingsCard,els.mobileSettingsButton));els.mobileEstimateButton.addEventListener('click',()=>scrollMobile(els.estimateCard,els.mobileEstimateButton));els.mobileCompressButton.addEventListener('click',compress);els.compressButton.addEventListener('click',compress);els.cancelButton.addEventListener('click',cancel);els.downloadButton.addEventListener('click',()=>download(false));els.shareButton.addEventListener('click',share);els.resetButton.addEventListener('click',()=>els.resetConfirmDialog.showModal());window.addEventListener('beforeunload',()=>{retireOperation();releaseSource();releaseOutput();});
-    const version=APP_CONFIG.version||BUILD_MANIFEST.app?.version||'';els.versionBadge.textContent=`v${version}`;els.versionText.textContent=`${APP_CONFIG.name||'Local Video Compressor'} v${version}`;const ffmpegDependency=BUILD_MANIFEST.dependencies?.find(item=>item.id==='ffmpeg-wasm-builder');if(ffmpegDependency){els.ffmpegVersionText.textContent=`FFmpeg WASM Builder v${ffmpegDependency.version||''}`;if(ffmpegDependency.correspondingSourceUrl)els.ffmpegSourceLink.href=ffmpegDependency.correspondingSourceUrl;else els.ffmpegSourceLink.hidden=true;}else{els.ffmpegVersionText.textContent='';els.ffmpegSourceLink.hidden=true;}applyLanguage();updateOutputExtension();setCompressDisabled(true);updateBitrateLimits(false);updateEstimate();setMobileActive(els.mobileFileButton);
+    els.fileInput.addEventListener('change',event=>selectFile(event.target.files?.[0]));const fileFallbackButton=document.getElementById('fileFallbackButton'),fileFallbackInput=document.getElementById('fileFallbackInput');fileFallbackButton?.addEventListener('click',()=>fileFallbackInput?.click());fileFallbackInput?.addEventListener('change',event=>{selectFile(event.target.files?.[0]);event.target.value='';});els.changeFileButton.addEventListener('click',()=>els.fileInput.click());els.clearFileButton.addEventListener('click',clearFile);['dragenter','dragover'].forEach(type=>els.dropZone.addEventListener(type,event=>{event.preventDefault();els.dropZone.classList.add('is-dragging');}));['dragleave','drop'].forEach(type=>els.dropZone.addEventListener(type,event=>{event.preventDefault();els.dropZone.classList.remove('is-dragging');}));els.dropZone.addEventListener('drop',event=>selectFile(event.dataTransfer?.files?.[0]));
+    els.bitrateRange.addEventListener('input',()=>setBitrate(els.bitrateRange.value,true));els.bitrateInput.addEventListener('change',()=>setBitrate(els.bitrateInput.value,true));els.recommendButton.addEventListener('click',()=>{state.userChangedBitrate=false;updateBitrateLimits(false);});els.codecSelect.addEventListener('change',()=>{updateCodecHint();updateOutputExtension();if(!state.userChangedBitrate)updateBitrateLimits(false);else updateBitrateLimits(true,true);updateEstimate();});els.outputNameInput.addEventListener('blur',outputBaseName);els.resolutionSelect.addEventListener('change',()=>{state.userChangedResolution=true;updateBitrateLimits(true);updateEstimate();});els.fpsSelect.addEventListener('change',()=>{state.userChangedFps=true;updateBitrateLimits(true);updateEstimate();});[els.removeAudio,els.audioBitrateSelect].forEach(el=>el.addEventListener('change',()=>{updateBitrateLimits(true);updateEstimate();}));els.mobileFileButton.addEventListener('click',()=>scrollMobile(els.fileCard,els.mobileFileButton));els.mobileSettingsButton.addEventListener('click',openSettings);els.mobileEstimateButton.addEventListener('click',()=>scrollMobile(els.estimateCard,els.mobileEstimateButton));els.mobileCompressButton.addEventListener('click',()=>state.outputFile?download():compress());els.compressButton.addEventListener('click',compress);els.cancelButton.addEventListener('click',cancel);els.downloadButton.addEventListener('click',()=>download(false));els.shareButton.addEventListener('click',share);els.resetButton.addEventListener('click',()=>els.resetConfirmDialog.showModal());window.addEventListener('beforeunload',()=>{retireOperation();releaseSource();releaseOutput();});
+    const version=APP_CONFIG.version||BUILD_MANIFEST.app?.version||'';els.versionBadge.textContent=`v${version}`;els.versionText.textContent=`${APP_CONFIG.name||'Local Video Compressor'} v${version}`;const ffmpegDependency=BUILD_MANIFEST.dependencies?.find(item=>item.id==='ffmpeg-wasm-builder');if(ffmpegDependency){els.ffmpegVersionText.textContent=`FFmpeg WASM Builder v${ffmpegDependency.version||''}`;if(ffmpegDependency.correspondingSourceUrl)els.ffmpegSourceLink.href=ffmpegDependency.correspondingSourceUrl;else els.ffmpegSourceLink.hidden=true;}else{els.ffmpegVersionText.textContent='';els.ffmpegSourceLink.hidden=true;}applyLanguage();updateOutputExtension();syncActions();updateBitrateLimits(false);updateEstimate();showPreview(false);setMobileActive(els.mobileFileButton);
   })();
   </script>
 </body>

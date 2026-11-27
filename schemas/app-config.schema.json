@@ -91,6 +91,10 @@
       },
       "additionalProperties": false
     },
+    "standardVersionUrl": {
+      "type": "string",
+      "format": "uri"
+    },
     "defaultLanguage": {
       "enum": [
         "auto",
