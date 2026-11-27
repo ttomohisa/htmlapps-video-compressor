@@ -32,6 +32,8 @@ The Multi-thread demo may reload once on first use to enable cross-origin isolat
 - Small videos (up to 32 MiB) are read once after selection and supplied through MEMFS, avoiding later FileReaderSync permission failures
 - Larger videos keep WORKERFS input so they are not copied wholesale into MEMFS before processing
 - Compression can start before the video-bitrate inspection completes; the current settings are used and inspection is stopped safely
+- Enter an optional target file size in MB in the estimate card to set the video bitrate from duration and audio allocation. The result shows how far the actual file is above or below the limit.
+- Preview and save the last successful result even after a failed or cancelled retry. The mobile primary action switches to Save once a result is ready.
 - Progress, processing log, and cancellation
 - Preview, save, and share output
 - Editable next-run output file name with automatic `.mp4` / `.webm` extension handling

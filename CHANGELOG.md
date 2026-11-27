@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Keep the last completed output available through a cancelled or failed recompression. The mobile primary action saves the result, with a separate route back to settings.
+- Preserve manual resolution, FPS and bitrate during source inspection. Report empty inputs and encode failures with recovery actions, and link unsupported multi-thread environments to the standard version.
+- Add optional target sizes in decimal MB, account for silent inputs and show the actual difference from the requested limit after encoding.
+
 - Hide the informational footer on smartphones and move its existing app version to the end of Help, preserving the header version and functional bottom action bar.
 
 ## 1.3.7 - 2026-10-11

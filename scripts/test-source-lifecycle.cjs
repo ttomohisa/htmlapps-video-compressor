@@ -81,7 +81,7 @@ function environment(options = {}) {
     setTimeout: (fn, ms) => { const id = ++timerId; timers.set(id, { fn, ms }); return id; },
     clearTimeout: id => timers.delete(id), setInterval: () => ++timerId, clearInterval() {}
   };
-  sandbox.window = { addEventListener() {}, scrollTo() {}, scrollY: 0 };
+  sandbox.window = { location: { pathname: options.pathname || '/' }, addEventListener() {}, scrollTo() {}, scrollY: 0 };
   const context = vm.createContext(sandbox);
   let script = html.match(/<script>\s*([\s\S]*?)<\/script>/)[1]
     .replace('__APP_CONFIG_JSON__', '{}').replace('__BUILD_MANIFEST_JSON__', '{}').replace('__EMBEDDED_ASSET_BUNDLE_JSON__', '{}');
@@ -218,7 +218,7 @@ test('cancel during cached-core microtask prevents worker creation and output pu
   assert.equal(e.api.state.outputFile, null); assert.equal(e.api.state.processing, false); noWorkerResources(e);
 });
 for (const codec of ['h264', 'vp9']) test('normal ' + codec + ' names, arguments, dimensions, estimate and result remain intact', async () => {
-  const e = environment(); await e.ready(); assert.equal(e.el('bitrateInput').value, 1600); assert.equal(e.el('estimateSize').textContent, '2.09 MB');
+  const e = environment(); await e.ready(); assert.equal(e.el('bitrateInput').value, 1600); assert.equal(e.el('estimateSize').textContent, '2.19 MB');
   assert.deepEqual(JSON.parse(JSON.stringify(e.api.targetDimensions())), { width: 1280, height: 720 });
   e.el('codecSelect').value = codec; e.el('codecSelect').dispatch('change'); e.el('removeAudio').checked = codec === 'vp9'; e.el('removeAudio').dispatch('change');
   const ext = codec === 'vp9' ? 'webm' : 'mp4'; e.el('outputNameInput').value = '  日本語 <clip>.' + ext + ' ';
@@ -722,4 +722,131 @@ test('normal completed inspection still applies measured bitrate recommendations
   assert.equal(e.el('compressButton').disabled, true);
   assert.equal(e.el('mobileCompressButton').disabled, true);
   noWorkerResources(e);
+});
+
+test('a cancelled or failed retry keeps the last download, until a new encode succeeds', async () => {
+  const e = environment();
+  await finishOutput(e);
+  const file = e.api.state.outputFile;
+  const url = e.api.state.outputUrl;
+  for (const action of ['cancel', 'fail']) {
+    const job = e.api.compress();
+    await flush();
+    if (action === 'cancel') e.api.cancel();
+    else e.workers.at(-1).fail('encode diagnostic');
+    await job;
+    assert.equal(e.api.state.outputFile, file);
+    assert.equal(e.el('resultPreview').src, url);
+    assert.ok(e.urls.has(url));
+    assert.equal(e.el('mobilePrimaryLabel').textContent, 'Save');
+    e.el('mobileCompressButton').click();
+    assert.equal(e.el('toastRegion').children.at(-1).textContent, e.api.t('downloaded'));
+  }
+  const next = e.api.compress();
+  await flush();
+  e.workers.at(-1).reply(new Uint8Array([8]).buffer);
+  await next;
+  assert.equal(e.api.state.outputFile.size, 1);
+  assert.equal(e.urls.has(url), false);
+});
+
+test('manual resolution, bitrate and FPS survive metadata and stream inspection', async () => {
+  const e = environment();
+  e.core.resolve(new Uint8Array([0]));
+  const selection = e.api.selectFile(e.fixture());
+  for (const [id, value] of [['resolutionSelect', '640'], ['fpsSelect', '24'], ['bitrateInput', '400']]) {
+    e.el(id).value = value;
+    e.el(id).dispatch('change');
+  }
+  e.metadata(10, 3840, 2160);
+  await flush();
+  e.workers.at(-1).reply(e.inspection(60, 10, 3840, 2160));
+  await selection;
+  assert.equal(e.el('resolutionSelect').value, '640');
+  assert.equal(e.el('fpsSelect').value, '24');
+  assert.equal(e.el('bitrateInput').value, 400);
+});
+
+test('reject an empty replacement before losing the current file', async () => {
+  const e = environment();
+  await finishOutput(e);
+  e.api.selectFile(e.fixture('empty.mp4', 0));
+  assert.equal(e.api.state.file.name, 'alpha.mp4');
+  assert.match(e.el('toastRegion').children.at(-1).textContent, /empty/i);
+});
+
+test('failed compression offers recovery and keeps the diagnostic in the log', async () => {
+  const e = environment();
+  await e.ready();
+  const run = e.api.compress();
+  await flush();
+  e.workers.at(-1).fail('decoder diagnostic');
+  await run;
+  assert.equal(e.el('progressTitle').textContent, 'Compression failed');
+  assert.equal(e.el('cancelButton').hidden, true);
+  assert.equal(e.el('chooseAfterError').hidden, false);
+  assert.doesNotMatch(e.el('progressDetail').textContent, /decoder diagnostic/);
+  assert.match(e.el('logBox').textContent, /decoder diagnostic/);
+  e.api.clearFile();
+  assert.equal(e.el('progressCard').classList.contains('is-visible'), false);
+});
+
+test('an inspected silent source has no audio budget or editable audio settings', async () => {
+  const e = environment();
+  e.core.resolve(new Uint8Array([0]));
+  const selection = e.api.selectFile(e.fixture());
+  e.metadata(); await flush();
+  const report = JSON.parse(new TextDecoder().decode(e.inspection()));
+  report.audio = null;
+  e.workers.at(-1).reply(new TextEncoder().encode(JSON.stringify(report)).buffer);
+  await selection;
+  assert.equal(e.el('summaryAudio').textContent, 'No audio track');
+  assert.equal(e.el('removeAudio').disabled, true);
+  const before = e.el('estimateSize').textContent;
+  e.el('removeAudio').checked = true;
+  e.el('removeAudio').dispatch('change');
+  assert.equal(e.el('estimateSize').textContent, before);
+});
+
+test('blocked MT shows an explicit portable link and supported builds hide it', () => {
+  const blocked = environment({threading:'multi-thread', isolated:false});
+  assert.equal(blocked.el('portableLink').hidden, false);
+  assert.match(html, /<a[^>]+id="portableLink"[^>]+href=/);
+  assert.equal(environment().el('portableLink').hidden, true);
+  for (const [pathname, expected] of [
+    ['/tool/mt/', '../'], ['/tool/mt/index.html', '../'],
+    ['/dir/video-compressor.mt.html', 'video-compressor.html'],
+    ['/dir/index.mt.self-extract.html', 'index.self-extract.html']
+  ]) {
+    const e = environment({threading:'multi-thread', isolated:false, pathname});
+    assert.equal(e.el('portableLink').href, expected);
+  }
+});
+
+test('target MB budgets for audio, handles unachievable limits and compares actual bytes', async () => {
+  const e = environment();
+  await e.ready();
+  function setTarget(value) {
+    e.el('targetSizeInput').value = value;
+    e.el('targetSizeInput').dispatch('input');
+  }
+  setTarget('0.5');
+  assert.equal(e.el('bitrateInput').value, 290);
+  e.el('removeAudio').checked = true;
+  e.el('removeAudio').dispatch('change');
+  assert.equal(e.el('bitrateInput').value, 386);
+  setTarget('0.001');
+  assert.equal(e.el('compressButton').disabled, true);
+  setTarget('0.5');
+  const run = e.api.compress();
+  await flush();
+  assert.ok(e.workers.at(-1).message.payload.args.includes('386'));
+  e.workers.at(-1).reply(new Uint8Array(500100).buffer);
+  await run;
+  assert.match(e.el('resultTarget').textContent, /100 B over/);
+  const comparison = e.el('resultTarget').textContent;
+  setTarget('25');
+  assert.equal(e.el('resultTarget').textContent, comparison);
+  setTarget('');
+  assert.equal(e.el('bitrateInput').disabled, false);
 });

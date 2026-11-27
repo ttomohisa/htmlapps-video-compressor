@@ -48,6 +48,9 @@ Provide a simple, fully self-contained browser video compressor. A non-expert sh
 - Resolution: original, 4K, 1440p, 1080p, 720p, 480p, 360p.
 - Preserve display-oriented aspect ratio, never upscale, and produce even dimensions.
 - Video bitrate: the app measures the source-video bitrate for reference, then initializes the setting to the codec/dimension-aware recommended bitrate. The user may override it, and the recommendation action restores the same recommended value.
+- The optional target size uses decimal MB (1,000,000 bytes). Divide the available bytes by duration and the same container overhead used by the estimate, then subtract the output audio bitrate. Cap the recommended video bitrate at this budget. Show an actionable message when even 50 kbps cannot fit or duration is unavailable. Clearing the target enables manual bitrate control.
+- An inspected source without an audio stream contributes zero audio bytes to the estimate. Audio controls reflect the track status. Until inspection reports it, include the selected audio bitrate.
+- Apply automatic resolution and frame rate only to fields the user has not changed for this source.
 - Remove-audio checkbox.
 - Advanced: output fps (original/60/30/24), encoding speed, audio bitrate (64/96/128/192 kbps).
 - H.264 uses x264 speed presets; VP9 maps the same user-facing speed choices to libvpx `cpu-used` values.
@@ -65,7 +68,8 @@ Provide a simple, fully self-contained browser video compressor. A non-expert sh
 - Both Compress actions become available when initial source metadata and the small-video snapshot (if needed) are ready. A video-bitrate inspection in progress must not block them. Starting compression retires inspection, uses the currently displayed settings, and ignores late results. Cancellation restores both actions.
 - Output remains in MEMFS and is transferred back to the main thread as an ArrayBuffer.
 - Parse `__FFMPEG_WASM_PROGRESS__` messages for progress.
-- Cancellation terminates the Worker.
+- Cancellation terminates the Worker. A previous successful encode remains available to preview and save through a failed or cancelled retry. Replace it only after the new output is ready, and compare actual bytes to the target captured for that encode.
+- Reject empty files before changing the selection. A failed encode shows a terminal error, a file chooser and its diagnostic log.
 
 ## Privacy
 - `connect-src 'none'` is mandatory.
@@ -92,7 +96,7 @@ Use the template-aligned card and control language on narrow screens. Keep the s
 - The fixed bottom bar is visible from the initial empty state and provides Video, Settings, Estimate, and Compress actions.
 - Compress remains disabled until initial source information/input preparation is ready, but must not wait for video-bitrate inspection to complete. The other actions may navigate to their sections at any time.
 - Mobile navigation must stop with the target card border visible below the sticky header.
-- The estimated-size card keeps its own “Compress with these settings” button even when the fixed bottom Compress action is present.
+- The estimate card keeps its own compression action. Once an output exists, the fixed primary action saves it. The result card links back to settings for a new encode.
 
 ## Modal accessibility and responsive audit
 
